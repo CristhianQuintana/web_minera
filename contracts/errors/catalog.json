@@ -1,0 +1,13 @@
+{
+  "unauthorized": "El correo o la contraseña no son correctos.",
+  "inactive_account": "Tu cuenta está inactiva. Contacta al administrador.",
+  "session_expired": "Tu sesión ha expirado. Vuelve a iniciar sesión.",
+  "login_failed": "No pudimos completar el inicio de sesión. Intenta nuevamente.",
+  "forbidden": "No tienes permisos para realizar esta acción.",
+  "not_found": "El recurso solicitado no existe o ya no está disponible.",
+  "conflict": "Este registro fue actualizado por otro usuario.",
+  "invitation_invalid": "Esta invitación ya no es válida.",
+  "invite_sent": "Invitación enviada correctamente.",
+  "forgot_password": "Si existe una cuenta asociada a este correo, recibirás instrucciones para recuperar el acceso.",
+  "offline": "No hay conexión con el servidor."
+}
