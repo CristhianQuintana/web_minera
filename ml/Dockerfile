@@ -5,4 +5,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 ENV PYTHONPATH=/app
 EXPOSE 8001
-CMD ["uvicorn", "presentation.api.main:app", "--host", "0.0.0.0", "--port", "8001"]
+CMD ["uvicorn", "adapters.inbound.http.main:app", "--host", "0.0.0.0", "--port", "8001"]

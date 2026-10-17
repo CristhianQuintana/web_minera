@@ -1,7 +1,16 @@
 from fastapi import APIRouter, Depends, Query, Response
 from fastapi.responses import PlainTextResponse
 
-from app.adapters.inbound.http.dependencies import get_context, get_platform
+from app.adapters.inbound.http.dependencies import (
+    get_activate_account,
+    get_authenticate,
+    get_context,
+    get_invite_user,
+    get_platform,
+    get_register_lot,
+    get_review_alert,
+)
+from app.application.auth_context import AuthContext
 from app.application.dto import (
     ActivateCommand,
     AlertReviewCommand,
@@ -18,8 +27,14 @@ from app.application.dto import (
     WeighingCommand,
 )
 from app.application.services.platform import PlatformService
+from app.application.use_cases import (
+    ActivateAccountUseCase,
+    AuthenticateUseCase,
+    InviteUserUseCase,
+    RegisterLotUseCase,
+    ReviewAlertUseCase,
+)
 from app.domain.value_objects import Permission
-from app.infrastructure.security.auth_context import AuthContext
 
 auth_router = APIRouter(prefix="/api/v1/auth", tags=["auth"])
 api_router = APIRouter(prefix="/api/v1", tags=["api"])
@@ -45,8 +60,12 @@ def _set_session(response: Response, tokens: dict) -> None:
 
 
 @auth_router.post("/login")
-def login(command: LoginCommand, response: Response, platform: PlatformService = Depends(get_platform)):
-    result = platform.authenticate(command)
+def login(
+    command: LoginCommand,
+    response: Response,
+    authenticate: AuthenticateUseCase = Depends(get_authenticate),
+):
+    result = authenticate.execute(command)
     _set_session(response, result)
     return result
 
@@ -86,8 +105,11 @@ def validate_activation(token: str, platform: PlatformService = Depends(get_plat
 
 
 @auth_router.post("/activate")
-def activate(command: ActivateCommand, platform: PlatformService = Depends(get_platform)):
-    return platform.activate_account(command)
+def activate(
+    command: ActivateCommand,
+    activate_account: ActivateAccountUseCase = Depends(get_activate_account),
+):
+    return activate_account.execute(command)
 
 
 @api_router.get("/dashboard")
@@ -138,9 +160,9 @@ def lot_timeline(lot_id: str, ctx: AuthContext = Depends(get_context), platform:
 def create_lot(
     command: RegisterLotCommand,
     ctx: AuthContext = Depends(get_context),
-    platform: PlatformService = Depends(get_platform),
+    register_lot: RegisterLotUseCase = Depends(get_register_lot),
 ):
-    return platform.register_lot(ctx, command)
+    return register_lot.execute(ctx, command)
 
 
 @api_router.get("/custody")
@@ -259,9 +281,9 @@ def review_alert(
     record_id: str,
     command: AlertReviewCommand,
     ctx: AuthContext = Depends(get_context),
-    platform: PlatformService = Depends(get_platform),
+    review: ReviewAlertUseCase = Depends(get_review_alert),
 ):
-    return platform.review_alert(ctx, record_id, command)
+    return review.execute(ctx, record_id, command)
 
 
 @api_router.get("/audits")
@@ -316,8 +338,12 @@ def users(
 
 
 @api_router.post("/users/invite")
-def invite(command: InviteCommand, ctx: AuthContext = Depends(get_context), platform: PlatformService = Depends(get_platform)):
-    return platform.invite_user(ctx, command)
+def invite(
+    command: InviteCommand,
+    ctx: AuthContext = Depends(get_context),
+    invite_user: InviteUserUseCase = Depends(get_invite_user),
+):
+    return invite_user.execute(ctx, command)
 
 
 @api_router.post("/users/{user_id}/resend-invite")

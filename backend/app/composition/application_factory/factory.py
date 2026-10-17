@@ -12,13 +12,20 @@ def create_app() -> FastAPI:
     container = build_container()
     app = FastAPI(title="WEB_MINERA API", version="1.0.0")
     app.state.container = container
+    origins = {
+        container.settings.frontend_origin,
+        "http://localhost",
+        "http://localhost:3000",
+        "http://127.0.0.1",
+        "http://127.0.0.1:3000",
+    }
     app.add_middleware(
         CORSMiddleware,
-            allow_origins=[container.settings.frontend_origin, "http://localhost:3000"],
-            allow_credentials=True,
-            allow_methods=["*"],
-            allow_headers=["*"],
-        )
+        allow_origins=sorted(o for o in origins if o),
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
     register_error_handlers(app)
     app.include_router(auth_router)
     app.include_router(api_router)

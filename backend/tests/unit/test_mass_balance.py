@@ -32,6 +32,26 @@ def test_lot_registration_rejects_empty_code() -> None:
         assert "código" in str(exc).lower()
 
 
+def test_lot_registration_rejects_missing_mineral_quantity_and_unit() -> None:
+    from app.domain.exceptions import InvalidLotState, InvalidQuantity
+
+    try:
+        LotRegistrationRules.validate("LOT-1", "", 10, "kg")
+        raise AssertionError("expected mineral error")
+    except InvalidLotState:
+        pass
+    try:
+        LotRegistrationRules.validate("LOT-1", "Oro", 0, "kg")
+        raise AssertionError("expected quantity error")
+    except InvalidQuantity:
+        pass
+    try:
+        LotRegistrationRules.validate("LOT-1", "Oro", 10, "")
+        raise AssertionError("expected unit error")
+    except InvalidQuantity:
+        pass
+
+
 def test_auditor_cannot_register_lot() -> None:
     assert not allows(UserRole.AUDITOR, Permission.REGISTER_LOT)
     assert allows(UserRole.ADMIN, Permission.MANAGE_USERS)

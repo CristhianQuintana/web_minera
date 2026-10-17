@@ -4,6 +4,9 @@ from typing import Any, Protocol
 
 from app.domain.entities import Actor
 
+# Reexportar gateway unificado para descubrimiento de puertos outbound
+from app.ports.outbound.gateway import AppConfigPort, DataGatewayPort  # noqa: F401
+
 
 class QueryPort(Protocol):
     def select(

@@ -8,7 +8,7 @@ import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
-from app.adapters.outbound.supabase.client import SupabaseGateway
+from app.application.auth_context import AuthContext
 from app.application.dto import (
     ActivateCommand,
     AlertReviewCommand,
@@ -35,8 +35,7 @@ from app.domain.exceptions import (
 from app.domain.rules import CustodyTransferRules, LotRegistrationRules, ReceptionRules
 from app.domain.services import DeviationCalculator, MassBalanceCalculator
 from app.domain.value_objects import Permission, UserRole, allows
-from app.infrastructure.configuration.settings import Settings
-from app.infrastructure.security.auth_context import AuthContext
+from app.ports.outbound.gateway import AppConfigPort, DataGatewayPort
 from app.ports.outbound.repositories import EmailPort, MLInferencePort
 
 DEMO_EMAIL = "cristhian@gmail.com"
@@ -75,13 +74,13 @@ def _envelope(items: list[Any], total: int, query: PageQuery) -> dict[str, Any]:
 
 
 class PlatformService:
-    """Orquesta casos de uso. Recibe puertos, no implementaciones concretas desde aquí:
-    el container inyecta el gateway y los puertos externos."""
+    """Orquesta casos de uso. Recibe únicamente puertos outbound;
+    el composition root inyecta adaptadores concretos."""
 
     def __init__(
         self,
-        gateway: SupabaseGateway,
-        settings: Settings,
+        gateway: DataGatewayPort,
+        settings: AppConfigPort,
         email: EmailPort,
         ml: MLInferencePort,
     ) -> None:
@@ -115,7 +114,10 @@ class PlatformService:
         )
 
     def authenticate(self, command: LoginCommand) -> dict[str, Any]:
-        if command.email.strip().lower() == DEMO_EMAIL and command.password == DEMO_PASSWORD:
+        email = command.email.strip().lower()
+        if email == DEMO_EMAIL:
+            if command.password != DEMO_PASSWORD:
+                raise UnauthorizedError("El correo o la contraseña no son correctos.")
             return {
                 "access_token": DEMO_TOKEN,
                 "refresh_token": DEMO_TOKEN,

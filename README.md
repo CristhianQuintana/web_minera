@@ -51,8 +51,24 @@ Nunca colocar `service_role` en el frontend. Si se configura `SUPABASE_SERVICE_R
 
 No hay registro público. Use un usuario existente de Auth (por ejemplo `productor.prueba@cooperativa.org`) o invite desde `/users` con un administrador.
 
-## Docker
+## Docker (recomendado para el PMV)
+
+Con Docker Desktop abierto, desde la raíz `WEB_MINERA/`:
 
 ```bash
-docker compose up --build
+copy .env.example .env
+# Completar SUPABASE_* y NEXT_PUBLIC_* en .env
+
+docker compose up -d --build
+docker compose ps
 ```
+
+Abrir:
+
+- http://localhost — frontend vía Nginx
+- http://localhost/api/health — health del backend
+
+Servicios: `nginx` (puerto 80), `frontend` (3000 interno), `backend` (8000 interno).  
+ML no se dockeriza en este despliegue. Supabase permanece externo.
+
+Login de demostración (sin Supabase): `cristhian@gmail.com` / `Cristhian123`

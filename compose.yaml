@@ -1,0 +1,54 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        # Vacío a propósito: las rutas del cliente ya son /api/v1/...
+        # Nginx en el mismo origen las enruta al backend.
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-}
+        NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL:-}
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY:-}
+    restart: unless-stopped
+    networks:
+      - web_minera
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      SUPABASE_URL: ${SUPABASE_URL:-}
+      SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY:-}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY:-}
+      JWT_SECRET: ${JWT_SECRET:-}
+      ML_SERVICE_URL: ${ML_SERVICE_URL:-}
+      FRONTEND_ORIGIN: ${FRONTEND_ORIGIN:-http://localhost}
+      APP_ENV: ${APP_ENV:-production}
+      INVITE_EXPIRY_HOURS: ${INVITE_EXPIRY_HOURS:-72}
+      INVITE_BASE_URL: ${INVITE_BASE_URL:-http://localhost/activate-account}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_FROM: ${SMTP_FROM:-no-reply@webminera.local}
+    networks:
+      - web_minera
+
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - web_minera
+
+networks:
+  web_minera:
+    driver: bridge
