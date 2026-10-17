@@ -178,7 +178,7 @@ Análisis de imports (equivalente a análisis estático): tests de aislamiento +
 - [x] Sin ciclos domain→adapters / application→adapters  
 - [x] Pruebas aplicables pasan y quedan registradas  
 - [x] Documentación refleja el estado real  
-- [x] Cambios publicados en la rama `main` de GitHub (ver commit de esta auditoría)  
+- [x] Cambios publicados en la rama `main` de GitHub (commit 444b9f6 en main)  
 - [x] Sin incumplimientos críticos ocultos en el alcance auditado  
 
 ### Pendientes explícitos (no críticos para WEB_MINERA)
