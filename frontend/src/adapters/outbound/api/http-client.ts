@@ -5,6 +5,10 @@ import {
 } from "@/adapters/outbound/demo/demo-catalog";
 import { env } from "@/config/env";
 
+function demoEnabled(): boolean {
+  return Boolean(env.demoAuthEnabled);
+}
+
 export class ApiError extends Error {
   constructor(
     public status: number,
@@ -88,6 +92,7 @@ export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
 }
 
 function shouldUseDemo(path: string, init: RequestInit): boolean {
+  if (!demoEnabled()) return false;
   if (isDemoToken(token())) return true;
   if (path === "/api/v1/auth/login") {
     try {

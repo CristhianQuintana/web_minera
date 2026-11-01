@@ -113,9 +113,15 @@ class PlatformService:
             admin=self._admin(),
         )
 
+    def _demo_enabled(self) -> bool:
+        demo_flag = getattr(self._settings, "demo_auth_enabled", None)
+        if demo_flag is not None:
+            return bool(demo_flag)
+        return not bool(getattr(self._settings, "is_production", False))
+
     def authenticate(self, command: LoginCommand) -> dict[str, Any]:
         email = command.email.strip().lower()
-        if email == DEMO_EMAIL:
+        if self._demo_enabled() and email == DEMO_EMAIL:
             if command.password != DEMO_PASSWORD:
                 raise UnauthorizedError("El correo o la contraseña no son correctos.")
             return {
@@ -166,7 +172,7 @@ class PlatformService:
         }
 
     def resolve_context(self, access_token: str) -> AuthContext:
-        if access_token == DEMO_TOKEN:
+        if self._demo_enabled() and access_token == DEMO_TOKEN:
             return AuthContext(actor=_demo_actor(), access_token=access_token)
         user = self._db.get_user(access_token)
         if not user or not user.get("id"):

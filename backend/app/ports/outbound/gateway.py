@@ -18,6 +18,9 @@ class AppConfigPort(Protocol):
     def has_service_role(self) -> bool: ...
 
     @property
+    def is_production(self) -> bool: ...
+
+    @property
     def invite_expiry_hours(self) -> int: ...
 
     @property

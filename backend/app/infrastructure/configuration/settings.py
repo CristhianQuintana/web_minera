@@ -6,15 +6,18 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
-    supabase_url: str = "https://oewpepqrtoezbvrxhrfe.supabase.co"
-    supabase_anon_key: str = "sb_publishable_51MkYSgxXND4Sfqzhz1smA_pke0IOJY"
+    # Sin valores de proyecto embebidos: deben venir de variables de entorno.
+    supabase_url: str = ""
+    supabase_anon_key: str = ""
     supabase_service_role_key: str = ""
     jwt_secret: str = ""
-    ml_service_url: str = "http://localhost:8001"
+    ml_service_url: str = ""
     frontend_origin: str = "http://localhost:3000"
     app_env: str = "development"
     invite_expiry_hours: int = 72
     invite_base_url: str = "http://localhost:3000/activate-account"
+    allow_demo_auth: bool = True
+    cors_extra_origins: str = ""
     smtp_host: str = ""
     smtp_port: int = 587
     smtp_user: str = ""
@@ -23,11 +26,18 @@ class Settings(BaseSettings):
 
     @property
     def is_production(self) -> bool:
-        return self.app_env == "production"
+        return self.app_env.strip().lower() == "production"
 
     @property
     def has_service_role(self) -> bool:
         return bool(self.supabase_service_role_key.strip())
+
+    @property
+    def demo_auth_enabled(self) -> bool:
+        """Demo login solo fuera de producción, salvo override explícito."""
+        if self.is_production:
+            return False
+        return self.allow_demo_auth
 
 
 @lru_cache

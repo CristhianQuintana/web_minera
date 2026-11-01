@@ -1,11 +1,17 @@
 # Base de datos WEB_MINERA
 
-La persistencia vive en el mismo proyecto Supabase que `APP_MINERA`.
+Persistencia en Supabase (proyecto configurado en `.env` / `backend/.env`).
 
-## Orden
+## Proyecto actual
+
+- URL: `https://mxkegjxjhmlsujfjmaxw.supabase.co`
+- Bootstrap completo (proyecto vacío): pegar **`bootstrap_full.sql`** en SQL Editor — ver `APLICAR_EN_SUPABASE.md`.
+
+## Orden (incremental)
 
 1. Migraciones móviles 0001, 0004 y 0005 (si aún no están).
 2. `migrations/0006_web_platform.sql` — o pegar `supabase_compile.sql` en el SQL Editor.
+3. En proyecto **nuevo**, preferir un solo run de `bootstrap_full.sql`.
 
 ## Tablas nuevas
 
