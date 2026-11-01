@@ -20,8 +20,4 @@ export const env = {
   apiUrl: resolveApiUrl(),
   supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL ?? "",
   supabaseAnonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "",
-  /** Demo auth solo en builds no productivos, o con flag explícito. */
-  demoAuthEnabled:
-    process.env.NEXT_PUBLIC_ENABLE_DEMO_AUTH === "true" ||
-    (process.env.NODE_ENV !== "production" && process.env.NEXT_PUBLIC_ENABLE_DEMO_AUTH !== "false"),
 };

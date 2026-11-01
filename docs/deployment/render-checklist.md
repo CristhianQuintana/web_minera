@@ -10,18 +10,19 @@
 | Start | `uvicorn app.main:app --host 0.0.0.0 --port $PORT` |
 | Health Check Path | `/health` |
 
-Variables mínimas: `APP_ENV=production`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `FRONTEND_ORIGIN`, `INVITE_BASE_URL`.  
-Opcionales: `SUPABASE_SERVICE_ROLE_KEY`, `ML_SERVICE_URL`, SMTP, `JWT_SECRET`, `CORS_EXTRA_ORIGINS`.
-
-En producción el login demo queda **deshabilitado** por defecto (`APP_ENV=production`).
-
-Para habilitar el PMV demo en Render (usuario `cristhian@gmail.com` / `Cristhian123`), agregar en el **backend**:
+Variables mínimas:
 
 ```env
-ALLOW_DEMO_AUTH=true
+APP_ENV=production
+SUPABASE_URL=https://<proyecto>.supabase.co
+SUPABASE_ANON_KEY=<anon_key>
+FRONTEND_ORIGIN=https://<frontend>.onrender.com
+INVITE_BASE_URL=https://<frontend>.onrender.com/activate-account
 ```
 
-y redesplegar el backend. Sin esta variable (o con usuario Auth real en Supabase), el login devolverá **401**.
+Opcionales: `SUPABASE_SERVICE_ROLE_KEY`, `ML_SERVICE_URL`, SMTP, `JWT_SECRET`, `CORS_EXTRA_ORIGINS`.
+
+**Importante:** no definir `ALLOW_DEMO_AUTH` ni ningún bypass de autenticación. La API solo acepta JWT emitidos por Supabase Auth.
 
 ## Frontend (`web-minera-frontend`)
 
@@ -40,6 +41,11 @@ NEXT_PUBLIC_SUPABASE_URL=https://<proyecto>.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon_key>
 ```
 
-No definir `NEXT_PUBLIC_ENABLE_DEMO_AUTH=true` en producción.
+No definir `NEXT_PUBLIC_ENABLE_DEMO_AUTH`. Tras cambiar `NEXT_PUBLIC_*`, forzar **Clear build cache + Redeploy**.
 
-Tras cambiar `NEXT_PUBLIC_*`, forzar **Clear build cache + Redeploy**.
+## Usuario real
+
+1. Crear el usuario en **Supabase Auth → Users**.
+2. Ejecutar el SQL de bootstrap (`database/bootstrap_full.sql`) si las tablas aún no existen.
+3. Asignar perfil y organización con `database/seeds/promote_admin.sql` (ajustar correo).
+4. Verificar login en producción con ese usuario (sin tokens `demo-*`).

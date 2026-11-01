@@ -16,8 +16,6 @@ class Settings(BaseSettings):
     app_env: str = "development"
     invite_expiry_hours: int = 72
     invite_base_url: str = "http://localhost:3000/activate-account"
-    # auto | true | false — en producción el demo solo se activa con "true" explícito
-    allow_demo_auth: str = "auto"
     cors_extra_origins: str = ""
     smtp_host: str = ""
     smtp_port: int = 587
@@ -32,16 +30,6 @@ class Settings(BaseSettings):
     @property
     def has_service_role(self) -> bool:
         return bool(self.supabase_service_role_key.strip())
-
-    @property
-    def demo_auth_enabled(self) -> bool:
-        """Demo login: auto=off en production; true fuerza PMV; false desactiva siempre."""
-        flag = (self.allow_demo_auth or "auto").strip().lower()
-        if flag in {"1", "true", "yes", "on"}:
-            return True
-        if flag in {"0", "false", "no", "off"}:
-            return False
-        return not self.is_production
 
 
 @lru_cache

@@ -2,6 +2,7 @@
 
 import { getCurrentUserUseCase, logoutUseCase } from "@/composition/container";
 import { platform } from "@/composition/container";
+import { hasAccessToken } from "@/adapters/outbound/api/http-client";
 import { useSessionStore } from "@/infrastructure/auth/session-store";
 import { Badge, Button, Skeleton } from "@/shared/components/ui";
 import { cn } from "@/shared/utils/format";
@@ -54,7 +55,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [notifyOpen, setNotifyOpen] = useState(false);
   const [search, setSearch] = useState("");
 
-  const me = useQuery({ queryKey: ["me"], queryFn: getCurrentUserUseCase, retry: false });
+  const me = useQuery({
+    queryKey: ["me"],
+    queryFn: getCurrentUserUseCase,
+    retry: false,
+    enabled: typeof window !== "undefined" && hasAccessToken(),
+  });
   const notifications = useQuery({
     queryKey: ["notifications"],
     queryFn: () => platform.list("/api/v1/notifications", { page_size: 8 }),
@@ -65,6 +71,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     queryFn: () => platform.search(search),
     enabled: search.length > 1,
   });
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && !hasAccessToken()) {
+      router.replace("/login");
+    }
+  }, [router]);
 
   useEffect(() => {
     if (me.data) setUser(me.data);

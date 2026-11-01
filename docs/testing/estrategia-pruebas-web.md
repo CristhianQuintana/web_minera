@@ -75,7 +75,7 @@ Los identificadores `CP-01` a `CP-05` del informe general corresponden al **móv
 | CP-W03 | Unitaria frontend | Validación de correo | Esquema Zod cargado | `correo-invalido` | Error «Formato de correo no válido.» |
 | CP-W04 | Unitaria frontend | Validación de contraseña | Esquema Zod cargado | Contraseña de 3 caracteres | El esquema rechaza el valor |
 | CP-W05 | API | Health check | Backend o TestClient activo | `GET /health` | HTTP 200 y `{ "status": "ok" }` |
-| CP-W06 | API | Sesión demo | TestClient | Login con credenciales demo | Token `demo-local-cristhian` y rol `admin` |
+| CP-W06 | API | Sesión real | TestClient + mock Supabase | Login con JWT Supabase simulado | Token JWT real (sin `demo-*`) y perfil con organización |
 | CP-W07 | UI/E2E | Consulta de lotes | Usuario autenticado | Abrir `/lots` y pulsar Detalle | Tabla con `LOT-2026-00021` y drawer «Detalle del lote» |
 | CP-W08 | Unitaria backend | Registrar lote inválido | Regla de dominio | Código vacío o cantidad ≤ 0 | Excepción de dominio; no se crea el lote |
 | CP-W09 | Unitaria backend | Balance de masas | Cantidad origen 100, recibida 98, tolerancia 3 % | Evaluación de regla | Estado `within_tolerance` |

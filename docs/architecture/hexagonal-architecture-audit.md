@@ -57,7 +57,7 @@ frontend/src/
   domain/                # entidades TS
   application/           # dto + use-cases (fábricas sobre PlatformPort)
   ports/outbound/        # PlatformPort
-  adapters/outbound/     # http-client, platform-adapter, demo-catalog
+  adapters/outbound/     # http-client, platform-adapter (Supabase Auth)
   composition/           # container.ts (único cableado concreto)
   infrastructure/        # session-store, providers
   presentation/          # layouts / módulos UI

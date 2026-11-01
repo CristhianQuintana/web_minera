@@ -2,7 +2,6 @@
 
 import { loginUseCase } from "@/composition/container";
 import { ApiError } from "@/adapters/outbound/api/http-client";
-import { env } from "@/config/env";
 import { useSessionStore } from "@/infrastructure/auth/session-store";
 import { Button, Input } from "@/shared/components/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -65,11 +64,6 @@ export default function LoginPage() {
             {form.formState.isSubmitting ? "Ingresando..." : "Ingresar"}
           </Button>
           {message ? <p className="text-sm text-error">{message}</p> : null}
-          {env.demoAuthEnabled ? (
-            <p className="text-xs text-muted">
-              Acceso de demostración: cristhian@gmail.com / Cristhian123
-            </p>
-          ) : null}
         </form>
       </section>
     </main>

@@ -268,7 +268,7 @@ No se declara conformidad del ecosistema completo mientras **APP_MINERA** no se 
 |---|---|---|---|---|---|---|
 | SEC-001 | WEB_MINERA | A03 | `npm audit --omit=dev`: 5 vulnerabilidades (4 high, 1 critical) en cadena Next/sharp/postcss/source-map-js/zod | Crítica / Alta | Actualizar `next` y dependencias (`npm audit fix` / bump controlado); re-ejecutar audit | **Pendiente remediación** |
 | SEC-002 | WEB_MINERA | A03 | `pip-audit`: hallazgos en `python-multipart`, `starlette`, `orjson`, `python-jose`, `pyasn1`, `ecdsa` | Alta | Subir versiones en `requirements/base.txt` (p. ej. multipart≥0.0.31, starlette acorde a FastAPI) y re-auditar | **Pendiente remediación** |
-| SEC-003 | WEB_MINERA | A04 / A07 | Credenciales demo (`DEMO_PASSWORD`) embebidas en `platform.py` / catálogo frontend para PMV | Media | Condicionar demo a `APP_ENV!=production` o feature flag; rotar si se expuso en prod | **Pendiente remediación** (aceptable solo en demo) |
+| SEC-003 | WEB_MINERA | A04 / A07 | Credenciales demo (`DEMO_PASSWORD`) embebidas en `platform.py` / catálogo frontend para PMV | Media | Eliminar bypass demo; solo Supabase Auth | **Remediado** — auth demo eliminada |
 | SEC-004 | WEB_MINERA | A02 | Documentación OpenAPI `/docs` habilitada por defecto en FastAPI | Baja | Deshabilitar `docs_url`/`redoc_url` cuando `APP_ENV=production` | **Pendiente remediación** |
 
 **Nota:** Si una herramienta no reporta un tipo de fallo, **no** se afirma que el sistema esté libre de vulnerabilidades. Semgrep, SonarQube y ZAP quedan como mejora del plan de evolución.
@@ -324,7 +324,7 @@ Escala **propuesta del proyecto**, no normativa oficial FURPS+.
 |---|---|---|---|---|
 | Alta | Seguridad | Actualizar deps (`npm`/`pip`) y re-ejecutar audits | 0 críticas/altas pendientes en alcance | WEB_MINERA |
 | Alta | Funcionalidad | Cerrar fichas funcionales con capturas reales | 100 % RF aplicables con evidencia | WEB_MINERA |
-| Alta | Auth demo | Desactivar bypass demo en producción | `APP_ENV=production` sin `DEMO_PASSWORD` activo | WEB_MINERA |
+| Alta | Auth demo | Eliminar bypass demo; solo JWT Supabase | `APP_ENV=production` sin `ALLOW_DEMO_AUTH` | WEB_MINERA — **hecho** |
 | Media | Rendimiento | k6/JMeter en login/lotes | p95 dentro de umbral acordado | WEB_MINERA / backend |
 | Media | Usabilidad | Revisión a11y/contraste del panel | Criterios aplicables cumplidos | WEB_MINERA |
 | Media | Confiabilidad | Fallo de red/API y recuperación UI | Comportamiento controlado documentado | WEB_MINERA |

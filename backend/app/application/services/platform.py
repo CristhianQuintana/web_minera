@@ -38,23 +38,6 @@ from app.domain.value_objects import Permission, UserRole, allows
 from app.ports.outbound.gateway import AppConfigPort, DataGatewayPort
 from app.ports.outbound.repositories import EmailPort, MLInferencePort
 
-DEMO_EMAIL = "cristhian@gmail.com"
-DEMO_PASSWORD = "Cristhian123"
-DEMO_TOKEN = "demo-local-cristhian"
-
-
-def _demo_actor() -> Actor:
-    return Actor(
-        id="demo-user-cristhian",
-        email=DEMO_EMAIL,
-        full_name="Cristhian",
-        role=UserRole.ADMIN,
-        organization_id="demo-org",
-        status="active",
-        invitation_status="active",
-    )
-
-
 def _now() -> datetime:
     return datetime.now(timezone.utc)
 
@@ -113,28 +96,15 @@ class PlatformService:
             admin=self._admin(),
         )
 
-    def _demo_enabled(self) -> bool:
-        demo_flag = getattr(self._settings, "demo_auth_enabled", None)
-        if demo_flag is not None:
-            return bool(demo_flag)
-        return not bool(getattr(self._settings, "is_production", False))
-
     def authenticate(self, command: LoginCommand) -> dict[str, Any]:
-        email = command.email.strip().lower()
-        if self._demo_enabled() and email == DEMO_EMAIL:
-            if command.password != DEMO_PASSWORD:
-                raise UnauthorizedError("El correo o la contraseña no son correctos.")
-            return {
-                "access_token": DEMO_TOKEN,
-                "refresh_token": DEMO_TOKEN,
-                "expires_in": 60 * 60 * 12,
-                "user": self.serialize_actor(_demo_actor()),
-            }
-        session = self._db.sign_in(command.email, command.password)
+        session = self._db.sign_in(command.email.strip(), command.password)
         user = session.get("user") or {}
-        profile = self._db.get("profiles", user.get("id", ""), admin=True) if user.get("id") else None
-        if not profile and user.get("id"):
-            profile = self._db.get("profiles", user["id"], access_token=session.get("access_token"))
+        user_id = user.get("id") or ""
+        if not user_id:
+            raise UnauthorizedError("El correo o la contraseña no son correctos.")
+        profile = self._db.get("profiles", user_id, admin=True)
+        if not profile:
+            profile = self._db.get("profiles", user_id, access_token=session.get("access_token"))
         if not profile:
             raise UnauthorizedError("El correo o la contraseña no son correctos.")
         if profile.get("status") != "active" or profile.get("invitation_status") == "inactive":
@@ -142,15 +112,20 @@ class PlatformService:
         if profile.get("invitation_status") == "expired":
             raise InactiveAccountError("Tu cuenta está inactiva. Contacta al administrador.")
         actor = self._db.map_actor(profile, command.email)
+        if not actor.organization_id or actor.organization_id in {"demo-org", "demo-local-cristhian"}:
+            raise UnauthorizedError("Tu cuenta no tiene una organización válida asignada.")
         self._db.update(
             "profiles",
             actor.id,
-            {"last_activity_at": _now().isoformat(), "email": command.email},
+            {"last_activity_at": _now().isoformat(), "email": command.email.strip()},
             access_token=session.get("access_token"),
             admin=self._admin(),
         )
+        access_token = session.get("access_token") or ""
+        if not access_token or access_token.startswith("demo-"):
+            raise UnauthorizedError("El correo o la contraseña no son correctos.")
         return {
-            "access_token": session.get("access_token"),
+            "access_token": access_token,
             "refresh_token": session.get("refresh_token"),
             "expires_in": session.get("expires_in"),
             "user": self.serialize_actor(actor),
@@ -172,8 +147,8 @@ class PlatformService:
         }
 
     def resolve_context(self, access_token: str) -> AuthContext:
-        if self._demo_enabled() and access_token == DEMO_TOKEN:
-            return AuthContext(actor=_demo_actor(), access_token=access_token)
+        if not access_token or access_token.startswith("demo-"):
+            raise UnauthorizedError("Tu sesión ha expirado. Vuelve a iniciar sesión.")
         user = self._db.get_user(access_token)
         if not user or not user.get("id"):
             raise UnauthorizedError("Tu sesión ha expirado. Vuelve a iniciar sesión.")
@@ -183,6 +158,8 @@ class PlatformService:
         if profile.get("status") != "active":
             raise InactiveAccountError("Tu cuenta está inactiva. Contacta al administrador.")
         actor = self._db.map_actor(profile, user.get("email") or profile.get("email") or "")
+        if not actor.organization_id or actor.organization_id in {"demo-org", "demo-local-cristhian"}:
+            raise UnauthorizedError("Tu cuenta no tiene una organización válida asignada.")
         return AuthContext(actor=actor, access_token=access_token)
 
     def forgot_password(self, email: str) -> dict[str, str]:
@@ -192,10 +169,16 @@ class PlatformService:
         }
 
     def refresh(self, refresh_token: str) -> dict[str, Any]:
-        return self._db.refresh(refresh_token)
+        if not refresh_token or refresh_token.startswith("demo-"):
+            raise UnauthorizedError("Tu sesión ha expirado. Vuelve a iniciar sesión.")
+        session = self._db.refresh(refresh_token)
+        access_token = session.get("access_token") or ""
+        if not access_token or access_token.startswith("demo-"):
+            raise UnauthorizedError("Tu sesión ha expirado. Vuelve a iniciar sesión.")
+        return session
 
     def logout(self, access_token: str) -> None:
-        if access_token == DEMO_TOKEN:
+        if not access_token or access_token.startswith("demo-"):
             return
         self._db.sign_out(access_token)
 

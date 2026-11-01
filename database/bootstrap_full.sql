@@ -972,7 +972,8 @@ grant all on all sequences in schema public to service_role;
 
 
 
--- ========== seed mínimo organización demo ==========
-insert into public.organizations (id, name)
-values ('aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee', 'Cooperativa Demo WEB_MINERA')
-on conflict (id) do nothing;
+-- Organización piloto (real). No se crean organizaciones ficticias tipo demo-org.
+-- Asigna perfiles reales con database/seeds/promote_admin.sql tras crear el usuario en Auth.
+-- insert into public.organizations (id, name)
+-- values ('e857fa80-1678-4b27-b80f-c38f471a8931', 'Cooperativa piloto')
+-- on conflict (id) do nothing;

@@ -1,8 +1,7 @@
-# Aplicar tablas en el nuevo proyecto Supabase
+# Aplicar tablas en el proyecto Supabase
 
-**Proyecto:** `https://mxkegjxjhmlsujfjmaxw.supabase.co`  
 **Archivo SQL completo:** [`bootstrap_full.sql`](./bootstrap_full.sql)  
-(incluye migraciones `0001` + `0004` + `0005` + `0006` + organización demo)
+(incluye migraciones `0001` + `0004` + `0005` + `0006` y organización piloto)
 
 ## Por qué hace falta este paso
 
@@ -12,7 +11,7 @@ Hace falta ejecutar SQL en el Dashboard (o usar la **database password** / `serv
 ## Pasos (SQL Editor — recomendado)
 
 1. Inicia sesión en https://supabase.com/dashboard  
-2. Abre el proyecto `mxkegjxjhmlsujfjmaxw`  
+2. Abre tu proyecto  
 3. Ve a **SQL → New query**  
 4. Copia **todo** el contenido de `database/bootstrap_full.sql`  
 5. Pulsa **Run**  
@@ -21,17 +20,17 @@ Hace falta ejecutar SQL en el Dashboard (o usar la **database password** / `serv
 ## Después del SQL — usuario admin
 
 1. **Authentication → Users → Add user**  
-   - Email: el que usarás en la web (p. ej. `cristhian@gmail.com`)  
+   - Email: el que usarás en la web  
    - Password: la que elijas  
    - Auto Confirm: sí  
 2. Ejecuta en SQL (ajustando email y nombre):
 
 ```sql
--- Tras crear el usuario en Auth, promocionar a admin
+-- Tras crear el usuario en Auth, promocionar a admin de la cooperativa piloto
 insert into public.profiles (id, full_name, role, organization_id, status, email, invitation_status)
-select u.id, 'Administrador', 'admin', 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee', 'active', u.email, 'active'
+select u.id, 'Administrador', 'admin', 'e857fa80-1678-4b27-b80f-c38f471a8931', 'active', u.email, 'active'
 from auth.users u
-where u.email = 'cristhian@gmail.com'
+where u.email = 'TU_CORREO@dominio.com'
 on conflict (id) do update set
   role = 'admin',
   status = 'active',
@@ -42,29 +41,20 @@ on conflict (id) do update set
 
 O usa `database/seeds/promote_admin.sql` si ya está alineado.
 
-## Credenciales ya configuradas en local
+## Variables de entorno
 
-Archivos actualizados (gitignored donde corresponde):
-
-- `backend/.env`
-- `.env`
-- `frontend/.env.local`
+Configura en backend y frontend (sin `ALLOW_DEMO_AUTH` ni flags demo):
 
 ```
-SUPABASE_URL=https://mxkegjxjhmlsujfjmaxw.supabase.co
-SUPABASE_ANON_KEY=sb_publishable_RqbCkFxs4eidqmEKonxIGA_Dm26QiTZ
+APP_ENV=production
+SUPABASE_URL=https://<proyecto>.supabase.co
+SUPABASE_ANON_KEY=<anon_key>
+SUPABASE_SERVICE_ROLE_KEY=<service_role>   # necesario para invitar usuarios
+NEXT_PUBLIC_SUPABASE_URL=...
+NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+NEXT_PUBLIC_API_URL=https://<backend>
 ```
 
-Para operaciones admin (invitar usuarios) hace falta además:
+## Autenticación
 
-```
-SUPABASE_SERVICE_ROLE_KEY=<Settings → API → service_role>
-```
-
-## Mientras no existan tablas
-
-El **login demo** del PMV sigue funcionando sin Supabase:
-
-- Correo: `cristhian@gmail.com`
-- Contraseña: `Cristhian123`
-- URL local: http://localhost:3000/login
+Solo se admite **Supabase Auth** (JWT reales). No existe login demo ni tokens `demo-*`.

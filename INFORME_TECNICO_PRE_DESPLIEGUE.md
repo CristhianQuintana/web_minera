@@ -146,7 +146,7 @@ Definidas también como `ARG`/`ENV` en `frontend/Dockerfile`.
 |---|---|
 | `frontend/src/config/env.ts` | Fallback `http://localhost:8000` si `NEXT_PUBLIC_API_URL` no está definida |
 | Fallbacks de Supabase en `env.ts` | URL/anon key antiguas por defecto si faltan env (riesgo en prod si no se setean) |
-| Modo demo | Login demo interceptado en cliente (`demo-catalog.ts`) sin necesidad de API |
+| Modo demo | **Eliminado** — solo Supabase Auth (JWT reales); ver `Document/informe-eliminacion-auth-demo.md` |
 
 ---
 
@@ -369,7 +369,7 @@ Estado en instancia remota: **pendiente** hasta aplicar scripts.
 | FE ↔ BE | Paths `/api/v1/...` + base URL correcta; cookies/`credentials` si se usan |
 | BE ↔ ML | `ML_SERVICE_URL=https://<ml>.onrender.com` o omitir y aceptar fallback |
 | Env | Todas las de las tablas §§2–5; `APP_ENV=production` |
-| Demo | Condicionar/eliminar bypass `DEMO_*` en producción |
+| Demo | Bypass demo eliminado; no definir `ALLOW_DEMO_AUTH` en Render |
 | Health | Usar `GET /health` (backend y ML) como health check Render |
 | Secretos | Solo env de Render; nunca en git; regenerar si se filtraron |
 | Disco efímero | No depender de filesystem local; evidencias en Supabase Storage |
