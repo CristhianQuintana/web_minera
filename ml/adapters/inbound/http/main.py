@@ -3,7 +3,7 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 
-from composition import container
+from composition import estimate_use_case
 
 app = FastAPI(title="WEB_MINERA ML", version="1.0.0")
 
@@ -22,5 +22,5 @@ def health() -> dict[str, str]:
 
 @app.post("/inference/estimate")
 def estimate(payload: EstimateRequest) -> dict:
-    use_case = container.estimate_use_case()
+    use_case = estimate_use_case()
     return use_case.execute(payload.model_dump())
