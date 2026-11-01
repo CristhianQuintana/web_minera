@@ -29,7 +29,27 @@ Auth aceptaba la contraseña (si fueran credenciales inválidas sería 401). El 
 3. Gateway: JWT de usuario cuando no hay service role; updates de actividad no tumba el login.
 4. SQL de reparación: `database/seeds/repair_login_profile.sql` + `0007_profiles_update_own.sql`.
 
-## Pruebas
+## Pruebas automatizadas
 
-- Unitarias de estado/rol + integración login `administrator`/`is_active`/reconciliación/bloqueo por baja.
-- Tras deploy: login producción debe devolver `200` + JWT real (sin `demo-`).
+- Backend: `test_profile_status` + `test_api_health_auth` (login `administrator`/`is_active`, reconciliación, org piloto, baja por invitation).
+- Frontend vitest: sin tokens demo.
+
+## Evidencia producción (2026-11-01)
+
+```text
+POST https://web-minera-backend.onrender.com/api/v1/auth/login
+→ 200 access_token JWT ES256 (issuer https://kwygymkrlwthddjijdyr.supabase.co)
+→ user.role=admin
+→ user.organization_id=e857fa80-1678-4b27-b80f-c38f471a8931
+→ sin demo-local-cristhian / demo-org
+
+GET /api/v1/auth/me  Authorization: Bearer <jwt>
+→ 200 perfil activo
+
+UI https://web-minera-frontend.onrender.com/login
+→ redirect a /dashboard con menú admin (Usuarios, Configuración, Cerrar sesión)
+```
+
+Commits: `93cd001` (inactiva) + `306718d` (organización piloto).
+
+**Nota:** Render usa el proyecto Supabase `kwygymkrlwthddjijdyr` (distinto del local `mxkegjxjhmlsujfjmaxw`). Ejecutar `database/seeds/repair_login_profile.sql` y `0007_profiles_update_own.sql` en ese proyecto para persistir org/status en BD. El endpoint `/dashboard` aún puede devolver 500 si faltan tablas/datos en ese proyecto; el login y `/auth/me` ya son exitosos.
