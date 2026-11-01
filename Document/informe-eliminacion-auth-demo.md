@@ -1,6 +1,7 @@
 # Informe: eliminación de autenticación demo — WEB_MINERA
 
-**Fecha:** 2026-10-20  
+**Fecha:** 2026-11-01  
+**Commit:** `3fe2a1815b3049adebbe05d6a6db451a35741a1c` (`main`)  
 **Objetivo:** Operar exclusivamente con usuarios reales y JWT de Supabase Auth.
 
 ## Cambios realizados
@@ -40,8 +41,12 @@
 | FE-01 | Persistencia token demo | Rechazada | OK (vitest) |
 | FE-02 | Token JWT real | Aceptado | OK (vitest) |
 | FE-03 | Aislamiento hexagonal FE | Sin violaciones | OK (vitest) |
-| E2E-01 | Credenciales incorrectas | Permanecer en login | Requiere app en marcha |
-| E2E-02 | Login/logout real | Dashboard / login | Requiere `E2E_EMAIL` + `E2E_PASSWORD` |
+| LIVE-01 | Login incorrecto vs Supabase real | 401 | OK |
+| LIVE-02 | Token/refresh demo | 401 | OK |
+| E2E-01 | Credenciales incorrectas (UI) | Permanecer en login | Requiere app en marcha + Playwright |
+| E2E-02 | Login/logout real (UI) | Dashboard / login | Requiere `E2E_EMAIL` + `E2E_PASSWORD` |
+
+**Suites:** backend `33 passed`; frontend vitest `19 passed`.
 
 ## Acción requerida en Render
 
