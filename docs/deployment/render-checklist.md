@@ -13,7 +13,15 @@
 Variables mínimas: `APP_ENV=production`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `FRONTEND_ORIGIN`, `INVITE_BASE_URL`.  
 Opcionales: `SUPABASE_SERVICE_ROLE_KEY`, `ML_SERVICE_URL`, SMTP, `JWT_SECRET`, `CORS_EXTRA_ORIGINS`.
 
-En producción el login demo queda **deshabilitado** automáticamente (`APP_ENV=production`).
+En producción el login demo queda **deshabilitado** por defecto (`APP_ENV=production`).
+
+Para habilitar el PMV demo en Render (usuario `cristhian@gmail.com` / `Cristhian123`), agregar en el **backend**:
+
+```env
+ALLOW_DEMO_AUTH=true
+```
+
+y redesplegar el backend. Sin esta variable (o con usuario Auth real en Supabase), el login devolverá **401**.
 
 ## Frontend (`web-minera-frontend`)
 

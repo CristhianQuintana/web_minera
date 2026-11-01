@@ -16,7 +16,8 @@ class Settings(BaseSettings):
     app_env: str = "development"
     invite_expiry_hours: int = 72
     invite_base_url: str = "http://localhost:3000/activate-account"
-    allow_demo_auth: bool = True
+    # auto | true | false — en producción el demo solo se activa con "true" explícito
+    allow_demo_auth: str = "auto"
     cors_extra_origins: str = ""
     smtp_host: str = ""
     smtp_port: int = 587
@@ -34,10 +35,13 @@ class Settings(BaseSettings):
 
     @property
     def demo_auth_enabled(self) -> bool:
-        """Demo login solo fuera de producción, salvo override explícito."""
-        if self.is_production:
+        """Demo login: auto=off en production; true fuerza PMV; false desactiva siempre."""
+        flag = (self.allow_demo_auth or "auto").strip().lower()
+        if flag in {"1", "true", "yes", "on"}:
+            return True
+        if flag in {"0", "false", "no", "off"}:
             return False
-        return self.allow_demo_auth
+        return not self.is_production
 
 
 @lru_cache
