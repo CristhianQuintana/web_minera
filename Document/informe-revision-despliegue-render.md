@@ -2,7 +2,8 @@
 
 **Fecha:** 2026-11-01  
 **Repo:** https://github.com/CristhianQuintana/web_minera  
-**Rama:** `main`
+**Rama:** `main`  
+**Commit publicado:** `4c0a9ce` — *fix: corregir configuración de despliegue en Render*
 
 ## Problemas identificados en Render (commit `4d9b0dd`)
 
@@ -20,16 +21,17 @@
 5. Eliminados fallbacks hardcodeados de Supabase en `settings.py` y `env.ts`.  
 6. Checklist: `docs/deployment/render-checklist.md`.
 
-## Validaciones locales
+## Validaciones locales (ejecutadas 2026-11-01)
 
 | Prueba | Resultado |
 |---|---|
-| `python --version` (venv backend) | 3.11.9 |
-| `pip install -r requirements/base.txt` | Ver evidencia en commit/CI |
-| `GET /health` | Esperado `{"status":"ok"}` |
-| `npm run build` (frontend) | Ver evidencia local |
-| Supabase tablas/Auth real | **Pendiente** si el proyecto remoto aún no tiene bootstrap SQL |
-| Deploy Live en Render | **Pendiente** tras push + Root Directory frontend |
+| `python --version` (venv backend) | **3.11.9** |
+| `pip install -r requirements/base.txt` | **OK** |
+| Pytest isolation + health + auth demo | **12 passed** |
+| Vitest demo + isolation | **9 passed** |
+| `npm run build` (frontend) | **OK** (22 rutas generadas) |
+| Supabase tablas/Auth real | **Pendiente** (aplicar `database/bootstrap_full.sql` + usuario Auth) |
+| Deploy Live en Render | **Pendiente** — redeploy commit `4c0a9ce` + Root Directory `frontend` |
 
 ## Acción manual obligatoria en Render Dashboard
 
