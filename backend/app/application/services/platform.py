@@ -39,6 +39,11 @@ from app.domain.value_objects import Permission, UserRole, allows
 from app.ports.outbound.gateway import AppConfigPort, DataGatewayPort
 from app.ports.outbound.repositories import EmailPort, MLInferencePort
 
+# Organización piloto del bootstrap (UUID estable de migraciones). No es demo-org.
+PILOTO_ORG_ID = "e857fa80-1678-4b27-b80f-c38f471a8931"
+PILOTO_ORG_NAME = "Cooperativa piloto"
+
+
 def _now() -> datetime:
     return datetime.now(timezone.utc)
 
@@ -120,6 +125,55 @@ class PlatformService:
                 pass
         return merged
 
+    def _ensure_profile_organization(
+        self,
+        profile: dict[str, Any],
+        auth_user: dict[str, Any],
+        access_token: str,
+    ) -> dict[str, Any]:
+        org_id = str(profile.get("organization_id") or "").strip()
+        if org_id and org_id not in {"demo-org", "demo-local-cristhian"}:
+            return profile
+        if not auth_user.get("email_confirmed_at") or auth_user.get("banned_until"):
+            return profile
+
+        merged = dict(profile)
+        merged["organization_id"] = PILOTO_ORG_ID
+        merged["status"] = "active"
+        if not merged.get("invitation_status") or merged.get("invitation_status") == "pending":
+            merged["invitation_status"] = "active"
+
+        patch = {
+            "organization_id": PILOTO_ORG_ID,
+            "status": "active",
+            "invitation_status": merged["invitation_status"],
+            "updated_at": _now().isoformat(),
+        }
+        try:
+            if self._admin():
+                existing = self._db.get("organizations", PILOTO_ORG_ID, admin=True)
+                if not existing:
+                    self._db.insert(
+                        "organizations",
+                        {"id": PILOTO_ORG_ID, "name": PILOTO_ORG_NAME},
+                        admin=True,
+                    )
+                patched = self._db.update("profiles", profile["id"], patch, admin=True)
+            else:
+                patched = self._db.update(
+                    "profiles",
+                    profile["id"],
+                    patch,
+                    access_token=access_token,
+                )
+            if isinstance(patched, dict) and patched:
+                merged.update(patched)
+                if not merged.get("organization_id"):
+                    merged["organization_id"] = PILOTO_ORG_ID
+        except Exception:
+            pass
+        return merged
+
 
     def _audit(self, ctx: AuthContext, action: str, entity: str, entity_id: str | None, result: str, extra: dict | None = None) -> None:
         self._db.insert(
@@ -158,6 +212,7 @@ class PlatformService:
         # No rehabilita cuentas con invitation_status inactive/expired (baja explícita).
         profile = self._reconcile_confirmed_profile(profile, user, access_token)
         assert_profile_can_login(profile)
+        profile = self._ensure_profile_organization(profile, user, access_token)
         normalized = normalize_profile_row(profile, command.email.strip())
         actor = self._db.map_actor(normalized, command.email.strip())
         if not actor.organization_id or actor.organization_id in {"demo-org", "demo-local-cristhian"}:
@@ -171,6 +226,7 @@ class PlatformService:
                     "email": command.email.strip(),
                     "status": "active",
                     "role": actor.role.value,
+                    "organization_id": actor.organization_id,
                 },
                 access_token=access_token,
                 admin=self._admin(),
@@ -209,7 +265,9 @@ class PlatformService:
         profile = self._db.get("profiles", user["id"], access_token=access_token, admin=self._admin())
         if not profile:
             raise UnauthorizedError("Tu sesión ha expirado. Vuelve a iniciar sesión.")
+        profile = self._reconcile_confirmed_profile(profile, user, access_token)
         assert_profile_can_login(profile)
+        profile = self._ensure_profile_organization(profile, user, access_token)
         email = user.get("email") or profile.get("email") or ""
         actor = self._db.map_actor(normalize_profile_row(profile, email), email)
         if not actor.organization_id or actor.organization_id in {"demo-org", "demo-local-cristhian"}:
