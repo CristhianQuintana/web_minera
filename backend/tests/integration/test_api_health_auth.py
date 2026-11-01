@@ -68,6 +68,110 @@ def test_login_with_supabase_session_returns_user() -> None:
     gateway.sign_in.assert_called_once()
 
 
+def test_login_accepts_is_active_and_administrator_role() -> None:
+    """Reproduce la incidencia de producción: Auth OK + is_active/administrator."""
+    from app.adapters.outbound.supabase.client import SupabaseGateway
+
+    gateway = MagicMock()
+    gateway.sign_in.return_value = {
+        "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.real",
+        "refresh_token": "refresh-real-token",
+        "expires_in": 3600,
+        "user": {
+            "id": "user-cristhian",
+            "email": "cristhian@gmail.com",
+            "email_confirmed_at": "2026-11-01T00:00:00Z",
+            "banned_until": None,
+        },
+    }
+    gateway.get.return_value = {
+        "id": "user-cristhian",
+        "email": "cristhian@gmail.com",
+        "full_name": "Cristhian",
+        "role": "administrator",
+        "organization_id": "e857fa80-1678-4b27-b80f-c38f471a8931",
+        "is_active": True,
+        "invitation_status": "active",
+    }
+    binder = SupabaseGateway.__new__(SupabaseGateway)
+    gateway.map_actor.side_effect = lambda row, email="": SupabaseGateway.map_actor(binder, row, email)
+
+    client = _client_with_gateway(gateway)
+    response = client.post(
+        "/api/v1/auth/login",
+        json={"email": "cristhian@gmail.com", "password": "Cristhian123"},
+    )
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert body["user"]["role"] == "admin"
+    assert body["user"]["status"] == "active"
+    assert "demo-" not in body["access_token"]
+
+
+def test_login_reconciles_inactive_status_for_confirmed_auth_user() -> None:
+    from app.adapters.outbound.supabase.client import SupabaseGateway
+
+    gateway = MagicMock()
+    gateway.sign_in.return_value = {
+        "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.real",
+        "refresh_token": "refresh-real-token",
+        "expires_in": 3600,
+        "user": {
+            "id": "user-cristhian",
+            "email": "cristhian@gmail.com",
+            "email_confirmed_at": "2026-11-01T00:00:00Z",
+            "banned_until": None,
+        },
+    }
+    gateway.get.return_value = {
+        "id": "user-cristhian",
+        "email": "cristhian@gmail.com",
+        "full_name": "Cristhian",
+        "role": "admin",
+        "organization_id": "e857fa80-1678-4b27-b80f-c38f471a8931",
+        "status": "inactive",
+        "invitation_status": "active",
+    }
+    binder = SupabaseGateway.__new__(SupabaseGateway)
+    gateway.map_actor.side_effect = lambda row, email="": SupabaseGateway.map_actor(binder, row, email)
+
+    client = _client_with_gateway(gateway)
+    response = client.post(
+        "/api/v1/auth/login",
+        json={"email": "cristhian@gmail.com", "password": "Cristhian123"},
+    )
+    assert response.status_code == 200, response.text
+    assert response.json()["user"]["status"] == "active"
+
+
+def test_login_keeps_deactivated_invitation_blocked() -> None:
+    gateway = MagicMock()
+    gateway.sign_in.return_value = {
+        "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.real",
+        "refresh_token": "refresh-real-token",
+        "expires_in": 3600,
+        "user": {
+            "id": "user-x",
+            "email": "x@y.com",
+            "email_confirmed_at": "2026-11-01T00:00:00Z",
+        },
+    }
+    gateway.get.return_value = {
+        "id": "user-x",
+        "role": "admin",
+        "organization_id": "e857fa80-1678-4b27-b80f-c38f471a8931",
+        "status": "inactive",
+        "invitation_status": "inactive",
+    }
+    client = _client_with_gateway(gateway)
+    response = client.post(
+        "/api/v1/auth/login",
+        json={"email": "x@y.com", "password": "Secreta123!"},
+    )
+    assert response.status_code == 403
+    assert response.json()["error"]["code"] == "inactive_account"
+
+
 def test_login_rejects_wrong_credentials() -> None:
     gateway = MagicMock()
     gateway.sign_in.side_effect = UnauthorizedError("El correo o la contraseña no son correctos.")

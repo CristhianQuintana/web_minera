@@ -9,6 +9,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from app.application.auth_context import AuthContext
+from app.application.profile_access import assert_profile_can_login, normalize_profile_row
 from app.application.dto import (
     ActivateCommand,
     AlertReviewCommand,
@@ -80,6 +81,46 @@ class PlatformService:
     def _token(self, ctx: AuthContext | None) -> str | None:
         return ctx.access_token if ctx else None
 
+    def _reconcile_confirmed_profile(
+        self,
+        profile: dict[str, Any],
+        auth_user: dict[str, Any],
+        access_token: str,
+    ) -> dict[str, Any]:
+        from app.domain.services.profile_status import invitation_blocks_login, profile_is_active
+
+        if profile_is_active(profile):
+            return profile
+        if invitation_blocks_login(profile):
+            return profile
+        if not auth_user.get("email_confirmed_at"):
+            return profile
+        if auth_user.get("banned_until"):
+            return profile
+        patch = {
+            "status": "active",
+            "invitation_status": "active",
+            "updated_at": _now().isoformat(),
+        }
+        merged = dict(profile)
+        merged.update(patch)
+        # Persistir solo con service role (RLS de profiles suele ser solo SELECT).
+        if self._admin():
+            try:
+                updated = self._db.update(
+                    "profiles",
+                    profile["id"],
+                    patch,
+                    access_token=access_token,
+                    admin=True,
+                )
+                if isinstance(updated, dict) and updated:
+                    merged.update(updated)
+            except Exception:
+                pass
+        return merged
+
+
     def _audit(self, ctx: AuthContext, action: str, entity: str, entity_id: str | None, result: str, extra: dict | None = None) -> None:
         self._db.insert(
             "audit_log",
@@ -100,30 +141,43 @@ class PlatformService:
         session = self._db.sign_in(command.email.strip(), command.password)
         user = session.get("user") or {}
         user_id = user.get("id") or ""
+        access_token = session.get("access_token") or ""
         if not user_id:
             raise UnauthorizedError("El correo o la contraseña no son correctos.")
-        profile = self._db.get("profiles", user_id, admin=True)
-        if not profile:
-            profile = self._db.get("profiles", user_id, access_token=session.get("access_token"))
-        if not profile:
-            raise UnauthorizedError("El correo o la contraseña no son correctos.")
-        if profile.get("status") != "active" or profile.get("invitation_status") == "inactive":
-            raise InactiveAccountError("Tu cuenta está inactiva. Contacta al administrador.")
-        if profile.get("invitation_status") == "expired":
-            raise InactiveAccountError("Tu cuenta está inactiva. Contacta al administrador.")
-        actor = self._db.map_actor(profile, command.email)
-        if not actor.organization_id or actor.organization_id in {"demo-org", "demo-local-cristhian"}:
-            raise UnauthorizedError("Tu cuenta no tiene una organización válida asignada.")
-        self._db.update(
-            "profiles",
-            actor.id,
-            {"last_activity_at": _now().isoformat(), "email": command.email.strip()},
-            access_token=session.get("access_token"),
-            admin=self._admin(),
-        )
-        access_token = session.get("access_token") or ""
         if not access_token or access_token.startswith("demo-"):
             raise UnauthorizedError("El correo o la contraseña no son correctos.")
+        profile = None
+        if self._admin():
+            profile = self._db.get("profiles", user_id, admin=True)
+        if not profile:
+            profile = self._db.get("profiles", user_id, access_token=access_token)
+        if not profile:
+            raise UnauthorizedError("El correo o la contraseña no son correctos.")
+        # Si Auth confirmó al usuario y no está baneado, pero profiles.status quedó
+        # inconsistente (p. ej. inactive con invitation activa), alinear el perfil.
+        # No rehabilita cuentas con invitation_status inactive/expired (baja explícita).
+        profile = self._reconcile_confirmed_profile(profile, user, access_token)
+        assert_profile_can_login(profile)
+        normalized = normalize_profile_row(profile, command.email.strip())
+        actor = self._db.map_actor(normalized, command.email.strip())
+        if not actor.organization_id or actor.organization_id in {"demo-org", "demo-local-cristhian"}:
+            raise UnauthorizedError("Tu cuenta no tiene una organización válida asignada.")
+        try:
+            self._db.update(
+                "profiles",
+                actor.id,
+                {
+                    "last_activity_at": _now().isoformat(),
+                    "email": command.email.strip(),
+                    "status": "active",
+                    "role": actor.role.value,
+                },
+                access_token=access_token,
+                admin=self._admin(),
+            )
+        except Exception:
+            # La sesión Auth ya es válida; no fallar el login por telemetría/RLS.
+            pass
         return {
             "access_token": access_token,
             "refresh_token": session.get("refresh_token"),
@@ -155,9 +209,9 @@ class PlatformService:
         profile = self._db.get("profiles", user["id"], access_token=access_token, admin=self._admin())
         if not profile:
             raise UnauthorizedError("Tu sesión ha expirado. Vuelve a iniciar sesión.")
-        if profile.get("status") != "active":
-            raise InactiveAccountError("Tu cuenta está inactiva. Contacta al administrador.")
-        actor = self._db.map_actor(profile, user.get("email") or profile.get("email") or "")
+        assert_profile_can_login(profile)
+        email = user.get("email") or profile.get("email") or ""
+        actor = self._db.map_actor(normalize_profile_row(profile, email), email)
         if not actor.organization_id or actor.organization_id in {"demo-org", "demo-local-cristhian"}:
             raise UnauthorizedError("Tu cuenta no tiene una organización válida asignada.")
         return AuthContext(actor=actor, access_token=access_token)

@@ -6,6 +6,7 @@ import httpx
 
 from app.domain.entities import Actor
 from app.domain.exceptions import UnauthorizedError
+from app.domain.services.profile_status import normalize_role
 from app.domain.value_objects import UserRole
 from app.infrastructure.configuration.settings import Settings
 
@@ -20,14 +21,18 @@ class SupabaseGateway:
         self._service = settings.supabase_service_role_key
 
     def _headers(self, access_token: str | None = None, admin: bool = False) -> dict[str, str]:
-        key = self._service if admin and self._service else self._anon
-        token = key
-        if access_token and not admin:
-            token = access_token
-        elif admin and self._service:
-            token = self._service
+        # Service role solo cuando existe; si no, usar JWT del usuario (nunca anon sin token
+        # para lecturas de perfil autenticado).
+        if admin and self._service:
+            return {
+                "apikey": self._anon or self._service,
+                "Authorization": f"Bearer {self._service}",
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            }
+        token = access_token or self._anon
         return {
-            "apikey": key if (admin and self._service) else self._anon,
+            "apikey": self._anon,
             "Authorization": f"Bearer {token}",
             "Content-Type": "application/json",
             "Accept": "application/json",
@@ -265,13 +270,17 @@ class SupabaseGateway:
         return f"{self._url}/storage/v1{signed}"
 
     def map_actor(self, row: dict[str, Any], email: str = "") -> Actor:
+        role = UserRole(normalize_role(row.get("role")))
+        status = str(row.get("status") or "inactive").strip().lower()
+        if status not in {"active", "inactive"}:
+            status = "active" if status in {"true", "1", "yes"} else "inactive"
         return Actor(
             id=row["id"],
             email=row.get("email") or email,
             full_name=row.get("full_name") or "",
-            role=UserRole(row.get("role") or "auditor"),
-            organization_id=row.get("organization_id") or "",
-            status=row.get("status") or "inactive",
-            invitation_status=row.get("invitation_status") or "active",
+            role=role,
+            organization_id=str(row.get("organization_id") or ""),
+            status=status,
+            invitation_status=str(row.get("invitation_status") or "active"),
             last_activity_at=row.get("last_activity_at"),
         )
