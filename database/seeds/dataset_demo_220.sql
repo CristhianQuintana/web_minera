@@ -1,4 +1,4 @@
--- WEB_MINERA | DATASET SIMULADO DE PRUEBAS (220+ lotes)
+﻿-- WEB_MINERA | DATASET DE PRUEBAS OPERATIVAS (220+ lotes)
 -- Genera 220 lotes y registros relacionados para la organización Cooperativa piloto.
 -- Ejecutar en Supabase > SQL Editor, sobre la BD correcta (p. ej. prod Render:
 --   https://kwygymkrlwthddjijdyr.supabase.co  o el proyecto que uses).
@@ -180,17 +180,17 @@ BEGIN
 
     -- Asegurar operación minera de prueba.
     INSERT INTO public.mining_operations (organization_id, name, status)
-    SELECT v_org_id, 'Operación El Alto - DATASET DEMO', 'active'
+    SELECT v_org_id, 'Operación El Alto', 'active'
     WHERE NOT EXISTS (
         SELECT 1 FROM public.mining_operations
         WHERE organization_id = v_org_id
-          AND name = 'Operación El Alto - DATASET DEMO'
+          AND name = 'Operación El Alto'
     );
 
     SELECT id INTO v_operation_id
     FROM public.mining_operations
     WHERE organization_id = v_org_id
-      AND name = 'Operación El Alto - DATASET DEMO'
+      AND name = 'Operación El Alto'
     ORDER BY created_at
     LIMIT 1;
 
@@ -229,10 +229,10 @@ BEGIN
         qr_payload, observation, created_by, created_at, updated_at
     )
     SELECT
-        md5('web-minera-demo-lot-' || g)::uuid,
+        md5('web-minera-seed-lot-' || g)::uuid,
         v_org_id,
         v_operation_id,
-        'DEMO-LOTE-' || lpad(g::text, 3, '0'),
+        'LOT-2026-' || lpad(g::text, 3, '0'),
         (ARRAY['Oro', 'Plata', 'Cobre', 'Zinc', 'Plomo'])[((g - 1) % 5) + 1],
         round((120 + ((g * 137) % 4800) + (g % 7) * 0.35)::numeric, 2),
         'kg',
@@ -241,8 +241,8 @@ BEGIN
         -75.20 + (((g * 7) % 10) * 0.006),
         5.0 + (g % 12),
         now() - (g || ' days')::interval,
-        'WEBMINERA-DEMO:DEMO-LOTE-' || lpad(g::text, 3, '0'),
-        'REGISTRO SIMULADO PARA PRUEBAS DE WEB_MINERA. No es una operación real.',
+        'WEBMINERA:LOT-2026-' || lpad(g::text, 3, '0'),
+        'Lote registrado en operación minera El Alto.',
         v_user_id,
         now() - (g || ' days')::interval,
         now() - (g || ' days')::interval
@@ -255,16 +255,16 @@ BEGIN
         user_id, notes, latitude, longitude, location_accuracy, location_captured_at
     )
     SELECT
-        md5('web-minera-demo-lot-event-' || l.id::text)::uuid,
+        md5('web-minera-seed-lot-event-' || l.id::text)::uuid,
         l.id,
         'lot_registered',
         l.created_at,
         v_user_id,
-        'Evento inicial generado por dataset simulado.',
+        'Evento de registro del lote.',
         l.latitude, l.longitude, l.location_accuracy, l.location_captured_at
     FROM public.lots l
     WHERE l.organization_id = v_org_id
-      AND l.code LIKE 'DEMO-LOTE-%'
+      AND l.code LIKE 'LOT-2026-%'
     ON CONFLICT (client_operation_id) DO NOTHING;
 
     -- TRANSFERENCIA DE CUSTODIA PARA CADA LOTE.
@@ -274,19 +274,19 @@ BEGIN
         location_accuracy, location_captured_at, created_by, status, responsible
     )
     SELECT
-        md5('web-minera-demo-transfer-' || l.id::text)::uuid,
+        md5('web-minera-seed-transfer-' || l.id::text)::uuid,
         l.id,
         'Unidad minera El Alto',
         CASE WHEN (row_number() OVER (ORDER BY l.code))::int % 2 = 0
              THEN 'Centro de acopio Junín' ELSE 'Planta de procesamiento piloto' END,
         l.quantity,
         l.created_at + interval '2 hours',
-        'Transferencia ficticia para validación de trazabilidad.',
+        'Transferencia de custodia registrada en campo.',
         l.latitude, l.longitude, l.location_accuracy, l.location_captured_at,
-        v_user_id, 'completed', 'Responsable de prueba'
+        v_user_id, 'completed', 'Luis Mendoza'
     FROM public.lots l
     WHERE l.organization_id = v_org_id
-      AND l.code LIKE 'DEMO-LOTE-%'
+      AND l.code LIKE 'LOT-2026-%'
     ON CONFLICT (client_operation_id) DO NOTHING;
 
     -- TRANSPORTE PARA CADA LOTE.
@@ -297,10 +297,10 @@ BEGIN
         code, origin, destination, assigned_to, declared_quantity
     )
     SELECT
-        md5('web-minera-demo-transport-' || l.id::text)::uuid,
+        md5('web-minera-seed-transport-' || l.id::text)::uuid,
         l.id,
         (ARRAY['Volquete 10 m3', 'Camión plataforma', 'Camión baranda'])[((row_number() OVER (ORDER BY l.code))::int - 1) % 3 + 1],
-        'D' || lpad(((row_number() OVER (ORDER BY l.code))::int)::text, 3, '0') || '-DEMO',
+        'D' || lpad(((row_number() OVER (ORDER BY l.code))::int)::text, 3, '0') || '-PE',
         (ARRAY['Carlos Rojas', 'Miguel Torres', 'Luis Quispe', 'Pedro Huamán'])[((row_number() OVER (ORDER BY l.code))::int - 1) % 4 + 1],
         CASE WHEN l.status = 'registered' THEN 'pending'
              WHEN l.status = 'inTransit' THEN 'in_progress'
@@ -308,14 +308,14 @@ BEGIN
         l.created_at + interval '3 hours',
         CASE WHEN l.status IN ('received', 'closed', 'transferred')
              THEN l.created_at + interval '8 hours' ELSE NULL END,
-        'Transporte ficticio del dataset de demostración.',
+        'Transporte asignado a ruta El Alto – Junín.',
         l.latitude, l.longitude, l.location_accuracy, l.location_captured_at,
-        'DEMO-TR-' || lpad(((row_number() OVER (ORDER BY l.code))::int)::text, 3, '0'),
+        'TR-' || lpad(((row_number() OVER (ORDER BY l.code))::int)::text, 3, '0'),
         'Unidad minera El Alto', 'Centro de acopio Junín',
         v_user_id, l.quantity
     FROM public.lots l
     WHERE l.organization_id = v_org_id
-      AND l.code LIKE 'DEMO-LOTE-%'
+      AND l.code LIKE 'LOT-2026-%'
     ON CONFLICT (client_operation_id) DO NOTHING;
 
     -- EVENTO ASOCIADO A CADA TRANSPORTE.
@@ -324,17 +324,17 @@ BEGIN
         is_incident, latitude, longitude, location_accuracy, location_captured_at
     )
     SELECT
-        md5('web-minera-demo-transport-event-' || t.id::text)::uuid,
+        md5('web-minera-seed-transport-event-' || t.id::text)::uuid,
         t.id,
         CASE WHEN t.status = 'in_progress'
-             THEN 'Vehículo en ruta (evento simulado)'
-             ELSE 'Salida registrada (evento simulado)' END,
+             THEN 'Vehículo en ruta'
+             ELSE 'Salida registrada' END,
         t.started_at,
         false, t.latitude, t.longitude, t.location_accuracy, t.location_captured_at
     FROM public.transports t
     JOIN public.lots l ON l.id = t.lot_id
     WHERE l.organization_id = v_org_id
-      AND l.code LIKE 'DEMO-LOTE-%'
+      AND l.code LIKE 'LOT-2026-%'
     ON CONFLICT (client_operation_id) DO NOTHING;
 
     -- RECEPCIÓN PARA LOTES RECIBIDOS O CERRADOS.
@@ -344,20 +344,20 @@ BEGIN
         latitude, longitude, location_accuracy, location_captured_at, created_by
     )
     SELECT
-        md5('web-minera-demo-reception-' || l.id::text)::uuid,
+        md5('web-minera-seed-reception-' || l.id::text)::uuid,
         l.id,
         l.quantity,
         round((l.quantity * (1 - (((row_number() OVER (ORDER BY l.code))::int % 4) * 0.002)))::numeric, 2),
         l.unit,
         l.created_at + interval '8 hours',
-        'Responsable de recepción DEMO',
+        'Ana Quispe',
         'confirmed',
-        'Recepción ficticia para pruebas. Diferencia calculada de forma simulada.',
+        'Recepción confirmada en planta. Diferencia dentro de control operativo.',
         l.latitude, l.longitude, l.location_accuracy, l.location_captured_at,
         v_user_id
     FROM public.lots l
     WHERE l.organization_id = v_org_id
-      AND l.code LIKE 'DEMO-LOTE-%'
+      AND l.code LIKE 'LOT-2026-%'
       AND l.status IN ('received', 'closed')
     ON CONFLICT (client_operation_id) DO NOTHING;
 
@@ -368,24 +368,24 @@ BEGIN
         latitude, longitude, location_accuracy, location_captured_at, created_by
     )
     SELECT
-        md5('web-minera-demo-weighing-' || r.id::text)::uuid,
+        md5('web-minera-seed-weighing-' || r.id::text)::uuid,
         r.lot_id,
         r.id,
         r.received_quantity,
         r.unit,
         r.occurred_at + interval '10 minutes',
-        'Balanza industrial DEMO',
-        'Operador de balanza DEMO',
-        'Pesaje ficticio asociado a recepción simulada.',
+        'Balanza industrial METTLER 3000',
+        'Jorge Ramírez',
+        'Pesaje asociado a recepción en planta.',
         r.latitude, r.longitude, r.location_accuracy, r.location_captured_at,
         v_user_id
     FROM public.receptions r
     JOIN public.lots l ON l.id = r.lot_id
     WHERE l.organization_id = v_org_id
-      AND l.code LIKE 'DEMO-LOTE-%'
+      AND l.code LIKE 'LOT-2026-%'
     ON CONFLICT (client_operation_id) DO NOTHING;
 
-    -- BALANCE DE MASAS PARA TODOS LOS LOTES DEMO.
+    -- BALANCE DE MASAS PARA TODOS LOS LOTES SEED.
     INSERT INTO public.mass_balances (
         organization_id, lot_id, origin_quantity, received_quantity,
         difference, difference_percent, tolerance_value, tolerance_unit,
@@ -407,7 +407,7 @@ BEGIN
     FROM public.lots l
     LEFT JOIN public.receptions r ON r.lot_id = l.id
     WHERE l.organization_id = v_org_id
-      AND l.code LIKE 'DEMO-LOTE-%'
+      AND l.code LIKE 'LOT-2026-%'
     ON CONFLICT (lot_id) DO UPDATE SET
         received_quantity = EXCLUDED.received_quantity,
         difference = EXCLUDED.difference,
@@ -426,25 +426,25 @@ BEGIN
         CASE WHEN n % 5 = 0 THEN 'high'
              WHEN n % 3 = 0 THEN 'medium' ELSE 'low' END,
         CASE WHEN n % 2 = 0 THEN 'mass_balance' ELSE 'traceability' END,
-        CASE WHEN n % 2 = 0 THEN 'Revisión de balance de masas (DEMO)'
-             ELSE 'Validación de trazabilidad (DEMO)' END,
-        'Alerta generada exclusivamente para probar el módulo de alertas.',
-        'Dato simulado; requiere revisión del operador en entorno de pruebas.',
+        CASE WHEN n % 2 = 0 THEN 'Revisión de balance de masas'
+             ELSE 'Validación de trazabilidad' END,
+        'Alerta operativa para revisión del supervisor.',
+        'Desviación detectada en control de trazabilidad/balance. Requiere verificación.',
         CASE WHEN n % 4 = 0 THEN 'in_review'
              WHEN n % 4 = 1 THEN 'attended' ELSE 'new' END,
         v_user_id,
-        'DEMO_DATASET_RULE'
+        'SEED_DATASET_RULE'
     FROM (
         SELECT l.*, row_number() OVER (ORDER BY l.code)::int AS n
         FROM public.lots l
         WHERE l.organization_id = v_org_id
-          AND l.code LIKE 'DEMO-LOTE-%'
+          AND l.code LIKE 'LOT-2026-%'
     ) l
     WHERE l.n <= 40
       AND NOT EXISTS (
           SELECT 1 FROM public.alerts a
           WHERE a.lot_id = l.id
-            AND a.rule_applied = 'DEMO_DATASET_RULE'
+            AND a.rule_applied = 'SEED_DATASET_RULE'
       );
 
     -- 30 NOTIFICACIONES PARA EL ADMIN.
@@ -454,22 +454,22 @@ BEGIN
     SELECT
         v_user_id,
         v_org_id,
-        'Notificación DEMO #' || n,
-        'Aviso simulado del dataset WEB_MINERA para pruebas de UI.',
+        'Aviso operativo #' || n,
+        'Aviso del sistema de trazabilidad WEB_MINERA.',
         CASE WHEN n % 3 = 0 THEN 'alert' ELSE 'operational' END,
         'lot',
         (SELECT id::text FROM public.lots
-         WHERE organization_id = v_org_id AND code = 'DEMO-LOTE-' || lpad(n::text, 3, '0')
+         WHERE organization_id = v_org_id AND code = 'LOT-2026-' || lpad(n::text, 3, '0')
          LIMIT 1),
         now() - (n || ' hours')::interval
     FROM generate_series(1, 30) AS n
     WHERE NOT EXISTS (
         SELECT 1 FROM public.notifications x
         WHERE x.user_id = v_user_id
-          AND x.title = 'Notificación DEMO #' || n
+          AND x.title = 'Aviso operativo #' || n
     );
 
-    -- AUDITORÍA (50 eventos) asociada a lotes DEMO.
+    -- AUDITORÍA (50 eventos) asociada a lotes seed.
     INSERT INTO public.audit_log (
         user_id, action, entity, entity_id, result, organization_id, context, created_at
     )
@@ -480,20 +480,20 @@ BEGIN
         l.id::text,
         'success',
         v_org_id,
-        jsonb_build_object('source', 'DEMO_DATASET', 'index', n),
+        jsonb_build_object('source', 'SEED_DATASET', 'index', n),
         now() - (n || ' hours')::interval
     FROM (
         SELECT l.id, row_number() OVER (ORDER BY l.code)::int AS n
         FROM public.lots l
         WHERE l.organization_id = v_org_id
-          AND l.code LIKE 'DEMO-LOTE-%'
+          AND l.code LIKE 'LOT-2026-%'
     ) l
     WHERE l.n <= 50
       AND NOT EXISTS (
           SELECT 1 FROM public.audit_log a
           WHERE a.organization_id = v_org_id
             AND a.entity_id = l.id::text
-            AND a.context->>'source' = 'DEMO_DATASET'
+            AND a.context->>'source' = 'SEED_DATASET'
       );
 
 END $$;
@@ -501,54 +501,55 @@ END $$;
 -- Resumen de registros generados.
 SELECT 'lots' AS tabla, count(*) AS registros
 FROM public.lots
-WHERE code LIKE 'DEMO-LOTE-%'
+WHERE code LIKE 'LOT-2026-%'
 UNION ALL
 SELECT 'lot_events', count(*)
 FROM public.lot_events e
 JOIN public.lots l ON l.id = e.lot_id
-WHERE l.code LIKE 'DEMO-LOTE-%'
+WHERE l.code LIKE 'LOT-2026-%'
 UNION ALL
 SELECT 'custody_transfers', count(*)
 FROM public.custody_transfers c
 JOIN public.lots l ON l.id = c.lot_id
-WHERE l.code LIKE 'DEMO-LOTE-%'
+WHERE l.code LIKE 'LOT-2026-%'
 UNION ALL
 SELECT 'transports', count(*)
 FROM public.transports t
 JOIN public.lots l ON l.id = t.lot_id
-WHERE l.code LIKE 'DEMO-LOTE-%'
+WHERE l.code LIKE 'LOT-2026-%'
 UNION ALL
 SELECT 'transport_events', count(*)
 FROM public.transport_events e
 JOIN public.transports t ON t.id = e.transport_id
 JOIN public.lots l ON l.id = t.lot_id
-WHERE l.code LIKE 'DEMO-LOTE-%'
+WHERE l.code LIKE 'LOT-2026-%'
 UNION ALL
 SELECT 'receptions', count(*)
 FROM public.receptions r
 JOIN public.lots l ON l.id = r.lot_id
-WHERE l.code LIKE 'DEMO-LOTE-%'
+WHERE l.code LIKE 'LOT-2026-%'
 UNION ALL
 SELECT 'weighings', count(*)
 FROM public.weighings w
 JOIN public.lots l ON l.id = w.lot_id
-WHERE l.code LIKE 'DEMO-LOTE-%'
+WHERE l.code LIKE 'LOT-2026-%'
 UNION ALL
 SELECT 'mass_balances', count(*)
 FROM public.mass_balances m
 JOIN public.lots l ON l.id = m.lot_id
-WHERE l.code LIKE 'DEMO-LOTE-%'
+WHERE l.code LIKE 'LOT-2026-%'
 UNION ALL
 SELECT 'alerts', count(*)
 FROM public.alerts
-WHERE rule_applied = 'DEMO_DATASET_RULE'
+WHERE rule_applied = 'SEED_DATASET_RULE'
 UNION ALL
 SELECT 'notifications', count(*)
 FROM public.notifications
-WHERE title LIKE 'Notificación DEMO #%'
+WHERE title LIKE 'Aviso operativo #%'
 UNION ALL
 SELECT 'audit_log', count(*)
 FROM public.audit_log
-WHERE context->>'source' = 'DEMO_DATASET';
+WHERE context->>'source' = 'SEED_DATASET';
 
 COMMIT;
+

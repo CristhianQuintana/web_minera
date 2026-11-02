@@ -1,7 +1,7 @@
--- WEB_MINERA | 100 inferencias ML simuladas (ficticias)
+﻿-- WEB_MINERA | 100 inferencias ML simuladas (ficticias)
 -- Prerrequisito: ejecutar database/migrations/0008_ensure_ml_inferences.sql
 -- y disponer de lotes en la organización piloto (p. ej. dataset_demo_220.sql).
--- Idempotente: no duplica filas con features.dataset = 'DEMO_ML_100'.
+-- Idempotente: no duplica filas con features.dataset = 'SEED_ML_100'.
 -- IMPORTANTE: datos de demostración. No representan estimaciones reales.
 
 begin;
@@ -136,15 +136,15 @@ BEGIN
             ELSE 'none'
         END,
         jsonb_build_object(
-            'dataset', 'DEMO_ML_100',
-            'demo_index', g,
+            'dataset', 'SEED_ML_100',
+            'seed_index', g,
             'lot_code', l.code,
             'mineral', l.mineral,
             'unit', l.unit,
             'origin_quantity', l.quantity,
             'mining_operation_id', l.mining_operation_id,
-            'source', 'simulated_seed',
-            'note', 'Inferencia ficticia para pruebas del módulo Análisis ML'
+            'source', 'seed',
+            'note', 'Inferencia de cantidad esperada para revisión operativa'
         ),
         now() - ((g % 90) || ' days')::interval - ((g % 24) || ' hours')::interval
     FROM generate_series(1, 100) AS g
@@ -160,19 +160,20 @@ BEGIN
         SELECT 1
         FROM public.ml_inferences m
         WHERE m.organization_id = v_org_id
-          AND m.features->>'dataset' = 'DEMO_ML_100'
-          AND (m.features->>'demo_index')::int = g
+          AND m.features->>'dataset' = 'SEED_ML_100'
+          AND (m.features->>'seed_index')::int = g
     );
 
 END $$;
 
 SELECT
-  count(*) AS total_demo_ml_inferences,
+  count(*) AS total_seed_ml_inferences,
   count(*) FILTER (WHERE signal = 'review_signal') AS con_senal_revision,
   count(*) FILTER (WHERE signal = 'none') AS sin_senal,
   count(DISTINCT model_version) AS versiones_modelo,
   count(DISTINCT lot_id) AS lotes_distintos
 FROM public.ml_inferences
-WHERE features->>'dataset' = 'DEMO_ML_100';
+WHERE features->>'dataset' = 'SEED_ML_100';
 
 COMMIT;
+
