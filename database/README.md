@@ -25,6 +25,14 @@ Persistencia en Supabase (proyecto configurado en `.env` / `backend/.env`).
 - `notifications`
 - `organization_settings`
 
+## Módulo ML (producción)
+
+Si `/api/v1/ml/inferences` falla porque la tabla no existe:
+
+1. Ejecutar `migrations/0008_ensure_ml_inferences.sql`
+2. (Opcional dataset) `seeds/dataset_ml_inferences_100.sql` — requiere lotes previos
+3. Detalle: `Document/informe-modulo-ml.md`
+
 ## Columnas nuevas
 
 - `profiles.email`, `profiles.last_activity_at`, `profiles.invitation_status`

@@ -903,38 +903,63 @@ class PlatformService:
     def estimate_quantity(self, ctx: AuthContext, lot_id: str) -> dict[str, Any]:
         ctx.require(Permission.ESTIMATE_ML)
         lot = self.get_row(ctx, "lots", lot_id, Permission.VIEW_LOTS)
-        receptions, _ = self._db.select("receptions", {"lot_id": lot_id}, limit=1, order="occurred_at.desc", access_token=ctx.access_token, admin=self._admin())
-        observed = float(receptions[0]["received_quantity"]) if receptions else None
-        result = self._ml.estimate(
-            {
-                "origin_quantity": float(lot["quantity"]),
-                "mineral": lot.get("mineral"),
-                "unit": lot.get("unit"),
-                "observed_quantity": observed,
-            }
+        if str(lot.get("organization_id") or "") != str(ctx.actor.organization_id):
+            raise ForbiddenError("No tienes permisos para realizar esta acción.")
+        receptions, _ = self._db.select(
+            "receptions",
+            {"lot_id": lot_id},
+            limit=1,
+            order="occurred_at.desc",
+            access_token=ctx.access_token,
+            admin=self._admin(),
         )
-        deviation = self._deviation.percent(result["expected_quantity"], observed)
+        observed = float(receptions[0]["received_quantity"]) if receptions else None
+        features = {
+            "origin_quantity": float(lot["quantity"]),
+            "mineral": lot.get("mineral"),
+            "unit": lot.get("unit"),
+            "observed_quantity": observed,
+            "lot_id": lot_id,
+            "lot_code": lot.get("code"),
+            "mining_operation_id": lot.get("mining_operation_id"),
+        }
+        result = self._ml.estimate(features)
+        expected = float(result["expected_quantity"])
+        deviation = self._deviation.percent(expected, observed)
         signal = "review_signal" if deviation is not None and abs(deviation) > 5 else "none"
-        models, _ = self._db.select("ml_models", {"status": "active"}, limit=1, access_token=ctx.access_token, admin=self._admin())
-        model = models[0] if models else {"id": None, "version": result.get("model_version", "1.0.0")}
+        models, _ = self._db.select(
+            "ml_models",
+            {"status": "active"},
+            order="registered_at.desc",
+            limit=5,
+            access_token=ctx.access_token,
+            admin=self._admin(),
+        )
+        preferred_version = str(result.get("model_version") or "")
+        model = next(
+            (m for m in models if str(m.get("version")) == preferred_version and not preferred_version.endswith("-fallback")),
+            models[0] if models else {"id": None, "version": preferred_version or "1.0.0"},
+        )
+        stored_features = dict(result.get("features") or features)
+        stored_features["source"] = result.get("source") or stored_features.get("source") or "unknown"
         inference = self._db.insert(
             "ml_inferences",
             {
                 "organization_id": ctx.actor.organization_id,
                 "lot_id": lot_id,
                 "model_id": model.get("id"),
-                "model_version": model.get("version") or result.get("model_version"),
-                "expected_quantity": result["expected_quantity"],
+                "model_version": preferred_version or model.get("version") or "1.0.0",
+                "expected_quantity": expected,
                 "observed_quantity": observed,
-                "deviation": (observed - result["expected_quantity"]) if observed is not None else None,
+                "deviation": (observed - expected) if observed is not None else None,
                 "deviation_percent": deviation,
                 "signal": signal,
-                "features": result.get("features") or {},
+                "features": stored_features,
             },
             access_token=ctx.access_token,
             admin=self._admin(),
         )
-        if signal == "review_signal":
+        if signal == "review_signal" and deviation is not None:
             self._ensure_alert(
                 ctx,
                 lot_id,

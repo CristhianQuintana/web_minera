@@ -353,6 +353,15 @@ drop policy if exists ml_inferences_select on public.ml_inferences;
 create policy ml_inferences_select on public.ml_inferences
   for select using (organization_id = public.current_org_id());
 
+drop policy if exists ml_inferences_insert on public.ml_inferences;
+create policy ml_inferences_insert on public.ml_inferences
+  for insert with check (
+    organization_id = public.current_org_id()
+    and public.current_role() in (
+      'admin', 'auditor', 'supervisor', 'control_center', 'receiver', 'plant_manager'
+    )
+  );
+
 drop policy if exists notifications_own on public.notifications;
 create policy notifications_own on public.notifications
   for all using (user_id = auth.uid())

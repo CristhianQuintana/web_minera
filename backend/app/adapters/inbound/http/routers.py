@@ -315,12 +315,29 @@ def ml_inferences(
     platform: PlatformService = Depends(get_platform),
     query: PageQuery = Depends(_query),
 ):
-    return platform.list_table(ctx, "ml_inferences", Permission.VIEW_ML, query, ["model_version", "signal"])
+    filters: dict = {"organization_id": ctx.actor.organization_id}
+    if query.status in {"none", "review_signal"}:
+        filters["signal"] = query.status
+    # ml_inferences no tiene columna status; mapear filtro a signal.
+    query_safe = query.model_copy(update={"status": None})
+    return platform.list_table(
+        ctx,
+        "ml_inferences",
+        Permission.VIEW_ML,
+        query_safe,
+        ["model_version", "signal"],
+        filters,
+    )
 
 
 @api_router.get("/ml/inferences/{record_id}")
 def ml_inference_detail(record_id: str, ctx: AuthContext = Depends(get_context), platform: PlatformService = Depends(get_platform)):
-    return platform.get_row(ctx, "ml_inferences", record_id, Permission.VIEW_ML)
+    row = platform.get_row(ctx, "ml_inferences", record_id, Permission.VIEW_ML)
+    if str(row.get("organization_id") or "") != str(ctx.actor.organization_id):
+        from app.domain.exceptions import ForbiddenError
+
+        raise ForbiddenError("No tienes permisos para realizar esta acción.")
+    return row
 
 
 @api_router.post("/ml/estimate/{lot_id}")

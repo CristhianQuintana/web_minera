@@ -5,7 +5,7 @@ from typing import Any
 import httpx
 
 from app.domain.entities import Actor
-from app.domain.exceptions import UnauthorizedError
+from app.domain.exceptions import NotFoundError, UnauthorizedError
 from app.domain.services.profile_status import normalize_role
 from app.domain.value_objects import UserRole
 from app.infrastructure.configuration.settings import Settings
@@ -169,6 +169,10 @@ class SupabaseGateway:
                 params=params,
                 headers={"Prefer": "count=exact"},
             )
+            if response.status_code == 404:
+                raise NotFoundError(
+                    f"La tabla '{table}' no está disponible en Supabase. Aplica la migración SQL correspondiente."
+                )
             response.raise_for_status()
             total = 0
             content_range = response.headers.get("content-range", "")

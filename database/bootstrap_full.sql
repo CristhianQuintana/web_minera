@@ -752,6 +752,9 @@ create table if not exists public.ml_inferences (
 
 create index if not exists ml_inferences_lot_idx on public.ml_inferences (lot_id);
 create index if not exists ml_inferences_org_idx on public.ml_inferences (organization_id);
+create index if not exists ml_inferences_org_created_idx
+  on public.ml_inferences (organization_id, created_at desc);
+create index if not exists ml_inferences_signal_idx on public.ml_inferences (signal);
 
 do $$
 begin
@@ -847,6 +850,16 @@ where not exists (
   select 1 from public.ml_models where name = 'expected-quantity-baseline' and version = '1.0.0'
 );
 
+insert into public.ml_models (name, version, status, metrics)
+select
+  'expected-quantity-baseline',
+  '1.1.0',
+  'active',
+  '{"mae": 2.1, "mape": 2.8, "description": "Estimador v1.1 con ajuste mineral"}'::jsonb
+where not exists (
+  select 1 from public.ml_models where name = 'expected-quantity-baseline' and version = '1.1.0'
+);
+
 insert into public.organization_settings (organization_id, general)
 select o.id, jsonb_build_object('timezone', 'America/Bogota', 'locale', 'es-CO')
 from public.organizations o
@@ -939,6 +952,15 @@ create policy ml_models_select on public.ml_models
 drop policy if exists ml_inferences_select on public.ml_inferences;
 create policy ml_inferences_select on public.ml_inferences
   for select using (organization_id = public.current_org_id());
+
+drop policy if exists ml_inferences_insert on public.ml_inferences;
+create policy ml_inferences_insert on public.ml_inferences
+  for insert with check (
+    organization_id = public.current_org_id()
+    and public.current_role() in (
+      'admin', 'auditor', 'supervisor', 'control_center', 'receiver', 'plant_manager'
+    )
+  );
 
 drop policy if exists notifications_own on public.notifications;
 create policy notifications_own on public.notifications

@@ -17,12 +17,34 @@ export default function MLPage() {
         emptyTitle="No hay inferencias."
         emptyDescription="Las estimaciones versionadas aparecerán aquí."
         columns={[
-          { key: "lot_id", label: "Lote" },
+          {
+            key: "lot_code",
+            label: "Lote",
+            render: (row) =>
+              String((row.features as Record<string, unknown> | undefined)?.lot_code ?? row.lot_id ?? "—"),
+          },
           { key: "model_version", label: "Versión" },
-          { key: "expected_quantity", label: "Esperada" },
-          { key: "observed_quantity", label: "Observada" },
-          { key: "deviation_percent", label: "Desviación" },
-          { key: "signal", label: "Señal" },
+          {
+            key: "expected_quantity",
+            label: "Esperada",
+            render: (row) => formatQuantity(Number(row.expected_quantity), "kg"),
+          },
+          {
+            key: "observed_quantity",
+            label: "Observada",
+            render: (row) =>
+              row.observed_quantity == null ? "—" : formatQuantity(Number(row.observed_quantity), "kg"),
+          },
+          {
+            key: "deviation_percent",
+            label: "Desviación",
+            render: (row) => (row.deviation_percent != null ? `${Number(row.deviation_percent).toFixed(2)}%` : "—"),
+          },
+          {
+            key: "signal",
+            label: "Señal",
+            render: (row) => labelOf(String(row.signal)),
+          },
         ]}
         detailTitle="Detalle de inferencia"
         extraActions={(row, helpers) => (
@@ -41,16 +63,29 @@ export default function MLPage() {
             Estimar
           </Button>
         )}
-        renderDetail={(row) => (
-          <div>
-            <Field label="Lote" value={String(row.lot_id)} />
-            <Field label="Modelo" value={String(row.model_version)} />
-            <Field label="Cantidad esperada" value={formatQuantity(Number(row.expected_quantity), "kg")} />
-            <Field label="Cantidad observada" value={formatQuantity(Number(row.observed_quantity), "kg")} />
-            <Field label="Desviación estimada" value={row.deviation_percent != null ? `${row.deviation_percent}%` : "—"} />
-            <Field label="Señal" value={labelOf(String(row.signal))} />
-          </div>
-        )}
+        renderDetail={(row) => {
+          const features = (row.features as Record<string, unknown> | undefined) ?? {};
+          return (
+            <div>
+              <Field label="Lote" value={String(features.lot_code ?? row.lot_id)} />
+              <Field label="Mineral" value={String(features.mineral ?? "—")} />
+              <Field label="Modelo" value={String(row.model_version)} />
+              <Field label="Origen" value={formatQuantity(Number(features.origin_quantity ?? 0), "kg")} />
+              <Field label="Cantidad esperada" value={formatQuantity(Number(row.expected_quantity), "kg")} />
+              <Field
+                label="Cantidad observada"
+                value={row.observed_quantity == null ? "—" : formatQuantity(Number(row.observed_quantity), "kg")}
+              />
+              <Field
+                label="Desviación estimada"
+                value={row.deviation_percent != null ? `${Number(row.deviation_percent).toFixed(2)}%` : "—"}
+              />
+              <Field label="Señal" value={labelOf(String(row.signal))} />
+              <Field label="Fuente" value={String(features.source ?? "—")} />
+              <Field label="Fecha" value={String(row.created_at ?? "—")} />
+            </div>
+          );
+        }}
       />
     </PermissionGate>
   );
