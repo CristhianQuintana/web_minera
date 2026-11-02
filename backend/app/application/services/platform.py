@@ -372,18 +372,33 @@ class PlatformService:
         )
         return _envelope(items, total, query)
 
+    def _related_rows(self, ctx: AuthContext, table: str, lot_id: str, limit: int = 50) -> list[Any]:
+        try:
+            items, _ = self._db.select(
+                table,
+                {"lot_id": lot_id},
+                limit=limit,
+                access_token=ctx.access_token,
+                admin=self._admin(),
+            )
+            return items
+        except Exception:
+            return []
+
     def get_lot(self, ctx: AuthContext, lot_id: str) -> dict[str, Any]:
         ctx.require(Permission.VIEW_LOTS)
         lot = self._db.get("lots", lot_id, access_token=ctx.access_token, admin=self._admin())
         if not lot:
             raise NotFoundError("El lote no existe.")
-        evidences, _ = self._db.select("evidences", {"lot_id": lot_id}, limit=50, access_token=ctx.access_token, admin=self._admin())
-        transfers, _ = self._db.select("custody_transfers", {"lot_id": lot_id}, limit=50, access_token=ctx.access_token, admin=self._admin())
-        transports, _ = self._db.select("transports", {"lot_id": lot_id}, limit=50, access_token=ctx.access_token, admin=self._admin())
-        receptions, _ = self._db.select("receptions", {"lot_id": lot_id}, limit=50, access_token=ctx.access_token, admin=self._admin())
-        weighings, _ = self._db.select("weighings", {"lot_id": lot_id}, limit=50, access_token=ctx.access_token, admin=self._admin())
-        balances, _ = self._db.select("mass_balances", {"lot_id": lot_id}, limit=5, access_token=ctx.access_token, admin=self._admin())
-        audits, _ = self._db.select("audit_log", {"lot_id": lot_id}, limit=50, access_token=ctx.access_token, admin=self._admin())
+        if str(lot.get("organization_id") or "") != str(ctx.actor.organization_id):
+            raise ForbiddenError("No tienes permisos para realizar esta acción.")
+        evidences = self._related_rows(ctx, "evidences", lot_id)
+        transfers = self._related_rows(ctx, "custody_transfers", lot_id)
+        transports = self._related_rows(ctx, "transports", lot_id)
+        receptions = self._related_rows(ctx, "receptions", lot_id)
+        weighings = self._related_rows(ctx, "weighings", lot_id)
+        balances = self._related_rows(ctx, "mass_balances", lot_id, limit=5)
+        audits = self._related_rows(ctx, "audit_log", lot_id)
         return {
             **lot,
             "evidences": evidences,
