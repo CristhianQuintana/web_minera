@@ -1,5 +1,6 @@
 "use client";
 
+import { custodySchema, parseForm } from "@/application/dto/resource-schemas";
 import { PermissionGate } from "@/presentation/layouts/app-shell";
 import { Field, ResourcePage, SimpleForm } from "@/presentation/modules/resource-page";
 import { useSessionStore } from "@/infrastructure/auth/session-store";
@@ -31,13 +32,18 @@ export default function CustodyPage() {
         createForm={({ onSubmit, loading }) => (
           <SimpleForm
             loading={loading}
+            validate={(body) => {
+              const parsed = parseForm(custodySchema, body);
+              if (!parsed.ok) return parsed;
+              return { ok: true, data: parsed.data as Record<string, unknown> };
+            }}
             onSubmit={onSubmit}
             fields={[
               { name: "lot_id", label: "ID de lote" },
               { name: "origin", label: "Origen" },
               { name: "destination", label: "Destino" },
               { name: "quantity", label: "Cantidad", type: "number" },
-              { name: "notes", label: "Observación" },
+              { name: "notes", label: "Observación", required: false },
             ]}
           />
         )}

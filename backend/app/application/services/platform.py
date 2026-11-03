@@ -23,12 +23,11 @@ from app.application.dto import (
     SettingsCommand,
     ToleranceCommand,
     TransportCommand,
+    TransportEventCommand,
     WeighingCommand,
 )
-from app.domain.entities import Actor
 from app.domain.exceptions import (
     ForbiddenError,
-    InactiveAccountError,
     InvitationInvalidError,
     NotFoundError,
     UnauthorizedError,
@@ -418,6 +417,7 @@ class PlatformService:
 
     def lot_timeline(self, ctx: AuthContext, lot_id: str) -> dict[str, Any]:
         ctx.require(Permission.VIEW_LOTS)
+        self.get_lot(ctx, lot_id)
         events, _ = self._db.select(
             "lot_events",
             {"lot_id": lot_id},
@@ -515,6 +515,8 @@ class PlatformService:
     def start_custody(self, ctx: AuthContext, command: CustodyCommand) -> dict[str, Any]:
         ctx.require(Permission.TRANSFER_CUSTODY)
         lot = self.get_row(ctx, "lots", command.lot_id, Permission.VIEW_LOTS)
+        if str(lot.get("organization_id") or "") != str(ctx.actor.organization_id):
+            raise ForbiddenError("No tienes permisos para realizar esta acción.")
         CustodyTransferRules.validate(command.origin, command.destination, command.quantity, lot.get("status", ""))
         row = self._db.insert(
             "custody_transfers",
@@ -539,6 +541,9 @@ class PlatformService:
 
     def register_transport(self, ctx: AuthContext, command: TransportCommand) -> dict[str, Any]:
         ctx.require(Permission.REGISTER_TRANSPORT)
+        lot = self.get_row(ctx, "lots", command.lot_id, Permission.VIEW_LOTS)
+        if str(lot.get("organization_id") or "") != str(ctx.actor.organization_id):
+            raise ForbiddenError("No tienes permisos para realizar esta acción.")
         row = self._db.insert(
             "transports",
             {
@@ -558,7 +563,77 @@ class PlatformService:
             admin=self._admin(),
         )
         self._db.update("lots", command.lot_id, {"status": "inTransit"}, access_token=ctx.access_token, admin=self._admin())
+        self._db.insert(
+            "lot_events",
+            {
+                "client_operation_id": str(uuid.uuid4()),
+                "lot_id": command.lot_id,
+                "event_type": "transport_started",
+                "occurred_at": _now().isoformat(),
+                "user_id": ctx.actor.id,
+                "notes": f"Transporte {row['id']}",
+            },
+            access_token=ctx.access_token,
+            admin=self._admin(),
+        )
         self._audit(ctx, "register_transport", "transport", row["id"], "success")
+        return row
+
+    def list_transport_events(self, ctx: AuthContext, transport_id: str) -> dict[str, Any]:
+        ctx.require(Permission.VIEW_TRANSPORT)
+        transport = self.get_row(ctx, "transports", transport_id, Permission.VIEW_TRANSPORT)
+        lot = self.get_row(ctx, "lots", str(transport["lot_id"]), Permission.VIEW_LOTS)
+        if str(lot.get("organization_id") or "") != str(ctx.actor.organization_id):
+            raise ForbiddenError("No tienes permisos para realizar esta acción.")
+        items, _ = self._db.select(
+            "transport_events",
+            {"transport_id": transport_id},
+            order="occurred_at.asc",
+            limit=200,
+            access_token=ctx.access_token,
+            admin=self._admin(),
+        )
+        return {"items": items}
+
+    def register_transport_event(
+        self, ctx: AuthContext, transport_id: str, command: TransportEventCommand
+    ) -> dict[str, Any]:
+        ctx.require(Permission.REGISTER_TRANSPORT)
+        transport = self.get_row(ctx, "transports", transport_id, Permission.VIEW_TRANSPORT)
+        lot = self.get_row(ctx, "lots", str(transport["lot_id"]), Permission.VIEW_LOTS)
+        if str(lot.get("organization_id") or "") != str(ctx.actor.organization_id):
+            raise ForbiddenError("No tienes permisos para realizar esta acción.")
+        occurred = command.occurred_at or _now().isoformat()
+        row = self._db.insert(
+            "transport_events",
+            {
+                "client_operation_id": command.client_operation_id or str(uuid.uuid4()),
+                "transport_id": transport_id,
+                "description": command.description.strip(),
+                "event_type": command.event_type.strip(),
+                "occurred_at": occurred,
+                "is_incident": command.is_incident or command.event_type == "incident",
+                "latitude": command.latitude,
+                "longitude": command.longitude,
+                "user_id": ctx.actor.id,
+            },
+            access_token=ctx.access_token,
+            admin=self._admin(),
+        )
+        self._db.insert(
+            "lot_events",
+            {
+                "client_operation_id": str(uuid.uuid4()),
+                "lot_id": transport["lot_id"],
+                "event_type": f"transport_{command.event_type}",
+                "occurred_at": occurred,
+                "user_id": ctx.actor.id,
+                "notes": command.description.strip(),
+            },
+            access_token=ctx.access_token,
+            admin=self._admin(),
+        )
+        self._audit(ctx, "register_transport_event", "transport_event", row["id"], "success")
         return row
 
     def register_reception(self, ctx: AuthContext, command: ReceptionCommand) -> dict[str, Any]:

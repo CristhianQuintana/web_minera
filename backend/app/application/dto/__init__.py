@@ -55,6 +55,16 @@ class TransportCommand(BaseModel):
     client_operation_id: str | None = None
 
 
+class TransportEventCommand(BaseModel):
+    description: str = Field(min_length=2)
+    event_type: str = Field(min_length=1)
+    is_incident: bool = False
+    occurred_at: str | None = None
+    latitude: float | None = Field(default=None, ge=-90, le=90)
+    longitude: float | None = Field(default=None, ge=-180, le=180)
+    client_operation_id: str | None = None
+
+
 class ReceptionCommand(BaseModel):
     lot_id: str
     declared_quantity: float = Field(gt=0)

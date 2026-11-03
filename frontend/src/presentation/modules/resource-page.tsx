@@ -341,32 +341,65 @@ export function SimpleForm({
   onSubmit,
   loading,
   submitLabel = "Guardar",
+  validate,
 }: {
-  fields: Array<{ name: string; label: string; type?: string; options?: Array<{ value: string; label: string }> }>;
+  fields: Array<{
+    name: string;
+    label: string;
+    type?: string;
+    required?: boolean;
+    options?: Array<{ value: string; label: string }>;
+  }>;
   onSubmit: (body: Record<string, unknown>) => void;
   loading?: boolean;
   submitLabel?: string;
+  validate?: (
+    body: Record<string, unknown>,
+  ) => { ok: true; data: Record<string, unknown> } | { ok: false; errors: Record<string, string>; message: string };
 }) {
   const [values, setValues] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [formError, setFormError] = useState<string | null>(null);
   return (
     <form
       className="space-y-4"
+      noValidate={Boolean(validate)}
       onSubmit={(event) => {
         event.preventDefault();
         const body: Record<string, unknown> = { ...values };
         fields.forEach((field) => {
           if (field.type === "number" && values[field.name]) body[field.name] = Number(values[field.name]);
+          if (field.type === "checkbox") body[field.name] = values[field.name] === "true";
         });
+        if (validate) {
+          const result = validate(body);
+          if (!result.ok) {
+            setErrors(result.errors);
+            setFormError(result.message);
+            return;
+          }
+          setErrors({});
+          setFormError(null);
+          onSubmit(result.data);
+          return;
+        }
         onSubmit(body);
       }}
     >
+      {formError ? (
+        <p className="rounded-xl bg-red-50 px-3 py-2 text-sm text-error" role="alert">
+          {formError}
+        </p>
+      ) : null}
       {fields.map((field) =>
         field.options ? (
           <Select
             key={field.name}
             label={field.label}
             value={values[field.name] ?? ""}
+            error={errors[field.name]}
             onChange={(event) => setValues((current) => ({ ...current, [field.name]: event.target.value }))}
+            required={field.required !== false}
           >
             <option value="">Selecciona</option>
             {field.options.map((option) => (
@@ -381,8 +414,9 @@ export function SimpleForm({
             label={field.label}
             type={field.type ?? "text"}
             value={values[field.name] ?? ""}
+            error={errors[field.name]}
             onChange={(event) => setValues((current) => ({ ...current, [field.name]: event.target.value }))}
-            required
+            required={field.required !== false}
           />
         ),
       )}

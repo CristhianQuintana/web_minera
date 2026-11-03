@@ -1,0 +1,7 @@
+﻿python.exe : No known vulnerabilities found
+En línea: 8 Carácter: 1
++ & $py -m pip_audit -r requirements\base.txt 2>&1 | Out-File "$root\au ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (No known vulnerabilities found:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 

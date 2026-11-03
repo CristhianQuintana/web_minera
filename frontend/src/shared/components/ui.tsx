@@ -84,12 +84,17 @@ export function Select({
 export function Badge({ value, tone = "neutral" }: { value: string; tone?: "neutral" | "success" | "warning" | "error" | "info" }) {
   const colors = {
     neutral: "bg-slate-100 text-slate-700",
-    success: "bg-emerald-50 text-success",
-    warning: "bg-amber-50 text-warning",
-    error: "bg-red-50 text-error",
+    success: "bg-emerald-50 text-[var(--success-fg)]",
+    warning: "bg-amber-50 text-[var(--warning-fg)]",
+    error: "bg-red-50 text-[var(--error-fg)]",
     info: "bg-sky-50 text-info",
   }[tone];
-  return <span className={cn("inline-flex rounded-full px-2.5 py-1 text-xs font-medium", colors)}>{value}</span>;
+  return (
+    <span className={cn("inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium", colors)}>
+      <span className="sr-only">{tone === "success" ? "Éxito: " : tone === "warning" ? "Advertencia: " : tone === "error" ? "Error: " : ""}</span>
+      {value}
+    </span>
+  );
 }
 
 export function toneFor(status?: string): "neutral" | "success" | "warning" | "error" | "info" {
@@ -131,15 +136,18 @@ export function Skeleton({ className }: { className?: string }) {
 
 export function ToastHost({ toasts }: { toasts: Array<{ id: string; text: string; tone: "success" | "error" }> }) {
   return (
-    <div className="fixed right-4 top-4 z-[60] space-y-2">
+    <div className="fixed right-4 top-4 z-[60] space-y-2" role="status" aria-live="polite">
       {toasts.map((toast) => (
         <div
           key={toast.id}
           className={cn(
-            "rounded-xl px-4 py-3 text-sm text-white shadow-lg",
-            toast.tone === "success" ? "bg-success" : "bg-error",
+            "rounded-xl border px-4 py-3 text-sm shadow-lg",
+            toast.tone === "success"
+              ? "border-emerald-200 bg-emerald-50 text-[var(--success-fg)]"
+              : "border-red-200 bg-red-50 text-[var(--error-fg)]",
           )}
         >
+          <span className="font-medium">{toast.tone === "success" ? "Éxito: " : "Error: "}</span>
           {toast.text}
         </div>
       ))}

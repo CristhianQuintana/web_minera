@@ -9,8 +9,11 @@
   --text: #0f172a;
   --text-secondary: #64748b;
   --success: #16a34a;
+  --success-fg: #14532d;
   --warning: #d97706;
+  --warning-fg: #92400e;
   --error: #dc2626;
+  --error-fg: #991b1b;
   --info: #0284c7;
   --border: #e2e8f0;
   --overlay: rgb(15 23 42 / 0.4);
@@ -39,8 +42,11 @@
   --color-text: var(--text);
   --color-muted: var(--text-secondary);
   --color-success: var(--success);
+  --color-success-fg: var(--success-fg);
   --color-warning: var(--warning);
+  --color-warning-fg: var(--warning-fg);
   --color-error: var(--error);
+  --color-error-fg: var(--error-fg);
   --color-info: var(--info);
   --color-border: var(--border);
   --font-sans: var(--font-geist-sans);

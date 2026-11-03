@@ -24,6 +24,7 @@ from app.application.dto import (
     SettingsCommand,
     ToleranceCommand,
     TransportCommand,
+    TransportEventCommand,
     WeighingCommand,
 )
 from app.application.services.platform import PlatformService
@@ -201,6 +202,23 @@ def transport_detail(record_id: str, ctx: AuthContext = Depends(get_context), pl
 @api_router.post("/transport")
 def create_transport(command: TransportCommand, ctx: AuthContext = Depends(get_context), platform: PlatformService = Depends(get_platform)):
     return platform.register_transport(ctx, command)
+
+
+@api_router.get("/transport/{record_id}/events")
+def transport_events(
+    record_id: str, ctx: AuthContext = Depends(get_context), platform: PlatformService = Depends(get_platform)
+):
+    return platform.list_transport_events(ctx, record_id)
+
+
+@api_router.post("/transport/{record_id}/events")
+def create_transport_event(
+    record_id: str,
+    command: TransportEventCommand,
+    ctx: AuthContext = Depends(get_context),
+    platform: PlatformService = Depends(get_platform),
+):
+    return platform.register_transport_event(ctx, record_id, command)
 
 
 @api_router.get("/receptions")

@@ -1,0 +1,7 @@
+﻿# Fase 0 — Baseline PMV2 cierre
+Fecha: 2026-11-03 11:35:11 -05:00
+HEAD actual (post-auditoría): 61c665fa1b9f8404b86956520073f21eeb5ea828
+SHA auditoría histórica (NO reescribir): d9aef31569bee06c9e55e010e0537a9bcf8593a5
+Rama: main
+Remoto: origin https://github.com/CristhianQuintana/web_minera.git
+Árbol: limpio al inicio Fase 0
