@@ -1,17 +1,17 @@
 ID,Incremento,Requisito,Plataforma,Estado,Evidencia_codigo,Evidencia_prueba,Notas
-RF-01,1,Registro y autenticacion,WEB,Parcial,FE login/activate/forgot; BE /auth/*,Pytest auth; Playwright 2/4,E2E login skip sin secretos
-RF-02,1,Registro de lotes,WEB,Parcial,FE /lots + Zod; BE POST /lots,Unit schemas,E2E create pendiente
-RF-03,1,Validacion de datos,WEB,Parcial,Zod lotes/custodia/transporte + Pydantic,resource-schemas.test.ts,Otros formularios pendientes
-RF-04,1,Ubicacion geografica,WEB,Parcial,Detalle muestra lat/lon,Sin E2E,GPS captura = APP
-RF-05,1,Evidencias,WEB,Parcial,Decision B consulta WEB,evidence/RF-05/DECISION_ALCANCE.md,Upload = APP_MINERA
-RF-06,1,QR,WEB_N/A_APP,N/A,—,—,APP_MINERA
-RF-07,1,Consulta por permisos,WEB,Parcial,PermissionGate + RLS SQL,RLS vivo pendiente,WEB-AUD-012
+RF-01,1,Autenticacion,WEB,Parcial,Auth FE/BE,Playwright 5 pass (negativos+redirect); login OK skip,Aprobado parcial sin E2E_EMAIL
+RF-02,1,Registro lotes,WEB,Parcial,POST /lots + Zod,Unit schemas,E2E create No verificable
+RF-03,1,Validacion,WEB,Parcial,Zod+Pydantic,resource-schemas.test.ts,Parcial formularios restantes
+RF-04,1,Ubicacion,WEB,Parcial,Detalle lat/lon,Manual/codigo,GPS=APP
+RF-05,1,Evidencias,WEB,Parcial,Decision B consulta,evidence/RF-05,Upload=APP
+RF-06,1,QR fisico,WEB_N/A_APP,N/A,—,—,APP_MINERA
+RF-07,1,Consulta permisos,WEB,Parcial,PermissionGate+RLS SQL,Unit; RLS vivo NV,Riesgo aceptado
 RF-08,1,Offline,WEB_N/A_APP,N/A,—,—,APP_MINERA
 RF-09,1,Sync,WEB_N/A_APP,N/A,—,—,APP_MINERA
 RF-10,1,Estado sync,WEB_N/A_APP,N/A,—,—,APP_MINERA
-RF-11,1,Detalle lote,WEB,Parcial,Drawer + timeline UI,Unit,E2E pendiente
-RF-12,1,Roles,WEB,Parcial,Backend require + UI gate,Unit permissions,RLS vivo pendiente
-RF-I2-01,2,Custodia,WEB,Parcial,API/UI + org check + Zod,Unit,E2E pendiente
-RF-I2-02,2,Eventos transporte,WEB,Parcial,API transport_events + UI,test_transport_events,E2E pendiente
+RF-11,1,Detalle lote,WEB,Parcial,Drawer+timeline UI,Unit+codigo,E2E auth NV
+RF-12,1,Roles,WEB,Parcial,require()+gates,Unit permissions,RLS vivo NV
+RF-I2-01,2,Custodia,WEB,Parcial,API/UI+Zod+org check,Unit,E2E NV
+RF-I2-02,2,Eventos transporte,WEB,Parcial,transport_events API/UI,test_transport_events,E2E NV
 RF-I2-03,2,QR trazabilidad,WEB_N/A_APP,N/A,—,—,APP_MINERA
-RF-I2-04,2,Historial,WEB,Parcial,Timeline FE consume /lots/{id}/timeline,Unit,E2E pendiente
+RF-I2-04,2,Historial,WEB,Parcial,Timeline FE,Codigo+unit,E2E NV

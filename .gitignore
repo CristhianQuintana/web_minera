@@ -40,3 +40,7 @@ Thumbs.db
 
 # Docker
 docker-data/
+
+# k6 binary downloaded for audit
+audit/web_minera/performance/k6/bin/
+

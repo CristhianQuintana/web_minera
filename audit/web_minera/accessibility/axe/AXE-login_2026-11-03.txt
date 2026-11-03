@@ -1,0 +1,1 @@
+﻿AXE login: 0 critical/serious violations (2026-11-03). See playwright pmv2-public stdout.
