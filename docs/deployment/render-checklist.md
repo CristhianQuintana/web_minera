@@ -24,6 +24,18 @@ Opcionales: `SUPABASE_SERVICE_ROLE_KEY`, `ML_SERVICE_URL`, SMTP, `JWT_SECRET`, `
 
 **Importante:** no definir `ALLOW_DEMO_AUTH` ni ningún bypass de autenticación. La API solo acepta JWT emitidos por Supabase Auth.
 
+### Servicio ML (`web-minera-ml`)
+
+| Parámetro | Valor |
+|---|---|
+| Root Directory | `ml` |
+| Build | `pip install -r requirements.txt` |
+| Start | `PYTHONPATH=. uvicorn adapters.inbound.http.main:app --host 0.0.0.0 --port $PORT` |
+| Health | `GET /health` |
+
+En el backend: `ML_SERVICE_URL=https://<web-minera-ml>.onrender.com` (sin `/` final).  
+Además, en Supabase hay que crear las tablas con `database/seeds/APPLY_FIX_BALANCE_ML_DEMO.sql` (Balance + ML + limpieza DEMO).
+
 ## Frontend (`web-minera-frontend`)
 
 | Parámetro | Valor |

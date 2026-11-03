@@ -247,7 +247,14 @@ def mass_balance(
     platform: PlatformService = Depends(get_platform),
     query: PageQuery = Depends(_query),
 ):
-    return platform.list_table(ctx, "mass_balances", Permission.VIEW_BALANCE, query, ["status"])
+    return platform.list_table(
+        ctx,
+        "mass_balances",
+        Permission.VIEW_BALANCE,
+        query,
+        ["status"],
+        {"organization_id": ctx.actor.organization_id},
+    )
 
 
 @api_router.post("/mass-balance/{lot_id}/recalculate")
@@ -298,6 +305,38 @@ def audits(
 @api_router.get("/audits/cases/{lot_id}")
 def audit_case(lot_id: str, ctx: AuthContext = Depends(get_context), platform: PlatformService = Depends(get_platform)):
     return platform.audit_case(ctx, lot_id)
+
+
+@api_router.get("/ml/status")
+def ml_status(ctx: AuthContext = Depends(get_context), platform: PlatformService = Depends(get_platform)):
+    """Diagnóstico: conectividad al servicio ML y disponibilidad de tablas."""
+    from app.infrastructure.configuration.settings import get_settings
+    import httpx
+
+    settings = get_settings()
+    ml_url = (settings.ml_service_url or "").rstrip("/")
+    service = {"configured": bool(ml_url), "url": ml_url or None, "reachable": False, "health": None}
+    if ml_url:
+        try:
+            resp = httpx.get(f"{ml_url}/health", timeout=5.0)
+            service["reachable"] = resp.status_code == 200
+            service["health"] = resp.json() if resp.headers.get("content-type", "").startswith("application/json") else {"status_code": resp.status_code}
+        except Exception as exc:  # noqa: BLE001
+            service["health"] = {"error": str(exc)}
+    tables: dict[str, str] = {}
+    for table in ("ml_models", "ml_inferences", "mass_balances"):
+        try:
+            platform._db.select(  # noqa: SLF001 — diagnóstico operativo
+                table,
+                {"organization_id": ctx.actor.organization_id} if table != "ml_models" else None,
+                limit=1,
+                access_token=ctx.access_token,
+                admin=platform._admin(),  # noqa: SLF001
+            )
+            tables[table] = "ok"
+        except Exception as exc:  # noqa: BLE001
+            tables[table] = str(getattr(exc, "message", exc))
+    return {"service": service, "tables": tables}
 
 
 @api_router.get("/ml/models")

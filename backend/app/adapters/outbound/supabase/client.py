@@ -45,6 +45,31 @@ class SupabaseGateway:
             timeout=30.0,
         )
 
+    def _ensure_table_available(self, table: str, response: httpx.Response) -> None:
+        body: dict[str, Any] = {}
+        try:
+            parsed = response.json()
+            if isinstance(parsed, dict):
+                body = parsed
+        except Exception:
+            body = {}
+        message = str(body.get("message") or body.get("error") or "")
+        code = str(body.get("code") or "")
+        missing = (
+            response.status_code == 404
+            or code in {"PGRST205", "42P01"}
+            or "Could not find the table" in message
+            or f"'{table}'" in message and "does not exist" in message.lower()
+            or f"public.{table}" in message and "schema cache" in message.lower()
+        )
+        if missing:
+            raise NotFoundError(
+                f"La tabla '{table}' no está disponible en Supabase. "
+                "Ejecuta database/seeds/APPLY_FIX_BALANCE_ML_DEMO.sql en el SQL Editor."
+            )
+        if response.status_code >= 400:
+            response.raise_for_status()
+
     def sign_in(self, email: str, password: str) -> dict[str, Any]:
         response = httpx.post(
             f"{self._url}/auth/v1/token?grant_type=password",
@@ -169,11 +194,7 @@ class SupabaseGateway:
                 params=params,
                 headers={"Prefer": "count=exact"},
             )
-            if response.status_code == 404:
-                raise NotFoundError(
-                    f"La tabla '{table}' no está disponible en Supabase. Aplica la migración SQL correspondiente."
-                )
-            response.raise_for_status()
+            self._ensure_table_available(table, response)
             total = 0
             content_range = response.headers.get("content-range", "")
             if "/" in content_range:
@@ -213,7 +234,7 @@ class SupabaseGateway:
                 json=payload,
                 headers={"Prefer": "return=representation"},
             )
-            response.raise_for_status()
+            self._ensure_table_available(table, response)
             data = response.json()
             return data[0] if isinstance(data, list) else data
 
