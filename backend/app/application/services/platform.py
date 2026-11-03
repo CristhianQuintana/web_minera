@@ -397,8 +397,14 @@ class PlatformService:
         transports = self._related_rows(ctx, "transports", lot_id)
         receptions = self._related_rows(ctx, "receptions", lot_id)
         weighings = self._related_rows(ctx, "weighings", lot_id)
-        balances = self._related_rows(ctx, "mass_balances", lot_id, limit=5)
         audits = self._related_rows(ctx, "audit_log", lot_id)
+        balance = None
+        try:
+            if allows(ctx.actor.role, Permission.VIEW_BALANCE):
+                received = float(receptions[0]["received_quantity"]) if receptions else None
+                balance = self._balance_for_lot(ctx, lot, received, self._active_tolerance(ctx))
+        except Exception:
+            balance = None
         return {
             **lot,
             "evidences": evidences,
@@ -406,7 +412,7 @@ class PlatformService:
             "transports": transports,
             "receptions": receptions,
             "weighings": weighings,
-            "balance": balances[0] if balances else None,
+            "balance": balance,
             "audit": audits,
         }
 
@@ -603,47 +609,122 @@ class PlatformService:
         return row
 
     def _active_tolerance(self, ctx: AuthContext) -> dict[str, Any] | None:
-        items, _ = self._db.select(
-            "tolerance_rules",
-            {"organization_id": ctx.actor.organization_id, "rule_key": "mass_balance_percent", "is_active": True},
-            order="version.desc",
-            limit=1,
-            access_token=ctx.access_token,
-            admin=self._admin(),
-        )
-        return items[0] if items else None
+        try:
+            items, _ = self._db.select(
+                "tolerance_rules",
+                {
+                    "organization_id": ctx.actor.organization_id,
+                    "rule_key": "mass_balance_percent",
+                    "is_active": True,
+                },
+                order="version.desc",
+                limit=1,
+                access_token=ctx.access_token,
+                admin=self._admin(),
+            )
+            return items[0] if items else None
+        except Exception:
+            return None
 
-    def recalculate_balance(self, ctx: AuthContext, lot_id: str) -> dict[str, Any]:
-        ctx.require(Permission.VIEW_BALANCE)
-        lot = self.get_row(ctx, "lots", lot_id, Permission.VIEW_LOTS)
-        receptions, _ = self._db.select("receptions", {"lot_id": lot_id}, order="occurred_at.desc", limit=1, access_token=ctx.access_token, admin=self._admin())
-        received = receptions[0]["received_quantity"] if receptions else None
-        rule = self._active_tolerance(ctx)
-        tolerance = float(rule["value"]) if rule else 3.0
-        status, difference, percent = self._balance.calculate(float(lot["quantity"]), float(received) if received is not None else None, tolerance)
-        payload = {
+    def _balance_for_lot(
+        self,
+        ctx: AuthContext,
+        lot: dict[str, Any],
+        received: float | None,
+        rule: dict[str, Any] | None,
+    ) -> dict[str, Any]:
+        rule_dict = rule if isinstance(rule, dict) else {}
+        tolerance = float(rule_dict["value"]) if rule_dict.get("value") is not None else 3.0
+        status, difference, percent = self._balance.calculate(
+            float(lot["quantity"]),
+            float(received) if received is not None else None,
+            tolerance,
+        )
+        return {
+            "id": lot["id"],
             "organization_id": ctx.actor.organization_id,
-            "lot_id": lot_id,
+            "lot_id": lot["id"],
+            "lot_code": lot.get("code"),
+            "mineral": lot.get("mineral"),
             "origin_quantity": lot["quantity"],
             "received_quantity": received,
             "difference": difference,
             "difference_percent": percent,
             "tolerance_value": tolerance,
-            "tolerance_unit": rule["unit"] if rule else "percent",
-            "tolerance_rule_id": rule["id"] if rule else None,
-            "tolerance_version": rule["version"] if rule else None,
+            "tolerance_unit": rule_dict.get("unit") or "percent",
+            "tolerance_rule_id": rule_dict.get("id"),
+            "tolerance_version": rule_dict.get("version"),
             "status": status.value,
             "calculated_at": _now().isoformat(),
         }
-        row = self._db.upsert("mass_balances", payload, "lot_id", access_token=ctx.access_token, admin=self._admin())
-        if status.value == "review_required":
+
+    def list_balances(self, ctx: AuthContext, query: PageQuery) -> dict[str, Any]:
+        """Balance calculado en vivo desde lots + receptions (sin tabla mass_balances)."""
+        ctx.require(Permission.VIEW_BALANCE)
+        limit, offset, order = _page(query)
+        lots, total = self._db.select(
+            "lots",
+            {"organization_id": ctx.actor.organization_id},
+            search=(["code", "mineral"], query.q or ""),
+            order=order if query.sort in {"created_at", "code", "quantity"} else "created_at.desc",
+            limit=limit,
+            offset=offset,
+            access_token=ctx.access_token,
+            admin=self._admin(),
+        )
+        rule = self._active_tolerance(ctx)
+        latest_received: dict[str, float] = {}
+        if lots:
+            lot_ids = ",".join(str(lot["id"]) for lot in lots)
+            receptions, _ = self._db.select(
+                "receptions",
+                {"lot_id__in": lot_ids},
+                order="occurred_at.desc",
+                limit=max(limit * 5, 50),
+                access_token=ctx.access_token,
+                admin=self._admin(),
+            )
+            for reception in receptions:
+                lot_id = str(reception.get("lot_id") or "")
+                if lot_id and lot_id not in latest_received:
+                    latest_received[lot_id] = float(reception["received_quantity"])
+        items = [
+            self._balance_for_lot(ctx, lot, latest_received.get(str(lot["id"])), rule)
+            for lot in lots
+        ]
+        if query.status:
+            items = [item for item in items if item.get("status") == query.status]
+        return _envelope(items, total, query)
+
+    def get_balance(self, ctx: AuthContext, lot_id: str) -> dict[str, Any]:
+        ctx.require(Permission.VIEW_BALANCE)
+        lot = self.get_row(ctx, "lots", lot_id, Permission.VIEW_LOTS)
+        if str(lot.get("organization_id") or "") != str(ctx.actor.organization_id):
+            raise ForbiddenError("No tienes permisos para realizar esta acción.")
+        receptions, _ = self._db.select(
+            "receptions",
+            {"lot_id": lot_id},
+            order="occurred_at.desc",
+            limit=1,
+            access_token=ctx.access_token,
+            admin=self._admin(),
+        )
+        received = float(receptions[0]["received_quantity"]) if receptions else None
+        return self._balance_for_lot(ctx, lot, received, self._active_tolerance(ctx))
+
+    def recalculate_balance(self, ctx: AuthContext, lot_id: str) -> dict[str, Any]:
+        row = self.get_balance(ctx, lot_id)
+        if row.get("status") == "review_required":
+            percent = float(row.get("difference_percent") or 0)
+            tolerance = float(row.get("tolerance_value") or 3)
             self._ensure_alert(
                 ctx,
                 lot_id,
                 "mass_balance",
                 "high",
                 "Desviación de balance de masas",
-                f"La diferencia ({percent:.2f}%) supera la tolerancia {tolerance}% (versión {payload['tolerance_version']}).",
+                f"La diferencia ({percent:.2f}%) supera la tolerancia {tolerance}% "
+                f"(versión {row.get('tolerance_version')}).",
             )
         return row
 

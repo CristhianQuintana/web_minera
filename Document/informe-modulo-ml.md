@@ -32,12 +32,16 @@ En producción, `GET /api/v1/ml/inferences` y `GET /api/v1/ml/models` fallaban p
 3. Ajustes backend: filtro por org, persistencia enriquecida, cliente ML con `source`.
 4. UI ML: columnas legibles (lote/mineral/fuente).
 
+## Balance de masas
+
+**No usa tabla `mass_balances`.** El módulo Balance calcula en vivo desde `lots` + `receptions`.
+
 ## Orden de ejecución en Supabase
 
 ```text
-1) 0008_ensure_ml_inferences.sql
+1) Preferido: seeds/APPLY_FIX_ML_AND_DEMO.sql  (limpia DEMO + crea ML + 100 inferencias)
+   Alternativa: 0008_ensure_ml_inferences.sql + dataset_ml_inferences_100.sql
 2) (si no hay lotes) seeds/dataset_demo_220.sql
-3) seeds/dataset_ml_inferences_100.sql
 ```
 
 ## Validación esperada

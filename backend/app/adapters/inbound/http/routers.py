@@ -247,14 +247,17 @@ def mass_balance(
     platform: PlatformService = Depends(get_platform),
     query: PageQuery = Depends(_query),
 ):
-    return platform.list_table(
-        ctx,
-        "mass_balances",
-        Permission.VIEW_BALANCE,
-        query,
-        ["status"],
-        {"organization_id": ctx.actor.organization_id},
-    )
+    # Calculado en vivo desde lots + receptions (sin tabla mass_balances).
+    return platform.list_balances(ctx, query)
+
+
+@api_router.get("/mass-balance/{lot_id}")
+def mass_balance_detail(
+    lot_id: str,
+    ctx: AuthContext = Depends(get_context),
+    platform: PlatformService = Depends(get_platform),
+):
+    return platform.get_balance(ctx, lot_id)
 
 
 @api_router.post("/mass-balance/{lot_id}/recalculate")
@@ -324,7 +327,7 @@ def ml_status(ctx: AuthContext = Depends(get_context), platform: PlatformService
         except Exception as exc:  # noqa: BLE001
             service["health"] = {"error": str(exc)}
     tables: dict[str, str] = {}
-    for table in ("ml_models", "ml_inferences", "mass_balances"):
+    for table in ("ml_models", "ml_inferences"):
         try:
             platform._db.select(  # noqa: SLF001 — diagnóstico operativo
                 table,
@@ -336,6 +339,7 @@ def ml_status(ctx: AuthContext = Depends(get_context), platform: PlatformService
             tables[table] = "ok"
         except Exception as exc:  # noqa: BLE001
             tables[table] = str(getattr(exc, "message", exc))
+    tables["mass_balance"] = "computed_from_lots_and_receptions"
     return {"service": service, "tables": tables}
 
 

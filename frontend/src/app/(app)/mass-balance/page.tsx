@@ -14,15 +14,48 @@ export default function MassBalancePage() {
         description="Comparación entre cantidad de origen y cantidad recibida."
         queryKey="mass-balance"
         path="/api/v1/mass-balance"
-        emptyTitle="No hay balances calculados."
-        emptyDescription="El balance se genera al registrar una recepción."
+        emptyTitle="No hay lotes para balance."
+        emptyDescription="El balance se calcula automáticamente al comparar origen del lote con la recepción."
+        statuses={[
+          { value: "within_tolerance", label: "Dentro de tolerancia" },
+          { value: "review_required", label: "Requiere revisión" },
+          { value: "insufficient_data", label: "Datos insuficientes" },
+        ]}
         columns={[
-          { key: "lot_id", label: "Lote" },
-          { key: "origin_quantity", label: "Origen" },
-          { key: "received_quantity", label: "Recibida" },
-          { key: "difference", label: "Diferencia" },
-          { key: "tolerance_value", label: "Tolerancia" },
-          { key: "status", label: "Estado" },
+          {
+            key: "lot_code",
+            label: "Lote",
+            render: (row) => String(row.lot_code ?? row.lot_id ?? "—"),
+          },
+          {
+            key: "origin_quantity",
+            label: "Origen",
+            render: (row) => formatQuantity(Number(row.origin_quantity), "kg"),
+          },
+          {
+            key: "received_quantity",
+            label: "Recibida",
+            render: (row) =>
+              row.received_quantity == null ? "—" : formatQuantity(Number(row.received_quantity), "kg"),
+          },
+          {
+            key: "difference",
+            label: "Diferencia",
+            render: (row) =>
+              row.difference == null
+                ? "—"
+                : `${row.difference} (${row.difference_percent ?? "—"}%)`,
+          },
+          {
+            key: "tolerance_value",
+            label: "Tolerancia",
+            render: (row) => `${row.tolerance_value ?? "—"} ${row.tolerance_unit ?? ""}`.trim(),
+          },
+          {
+            key: "status",
+            label: "Estado",
+            render: (row) => labelOf(String(row.status)),
+          },
         ]}
         detailTitle="Detalle de balance"
         extraActions={(row, helpers) => (
@@ -43,10 +76,23 @@ export default function MassBalancePage() {
         )}
         renderDetail={(row) => (
           <div>
+            <Field label="Lote" value={String(row.lot_code ?? row.lot_id)} />
+            <Field label="Mineral" value={String(row.mineral ?? "—")} />
             <Field label="Cantidad de origen" value={formatQuantity(Number(row.origin_quantity), "kg")} />
-            <Field label="Cantidad recibida" value={formatQuantity(Number(row.received_quantity), "kg")} />
-            <Field label="Diferencia" value={row.difference != null ? `${row.difference} (${row.difference_percent}%)` : "—"} />
-            <Field label="Tolerancia" value={`${row.tolerance_value} ${row.tolerance_unit} · v${row.tolerance_version ?? "—"}`} />
+            <Field
+              label="Cantidad recibida"
+              value={row.received_quantity == null ? "—" : formatQuantity(Number(row.received_quantity), "kg")}
+            />
+            <Field
+              label="Diferencia"
+              value={
+                row.difference != null ? `${row.difference} (${row.difference_percent}%)` : "—"
+              }
+            />
+            <Field
+              label="Tolerancia"
+              value={`${row.tolerance_value} ${row.tolerance_unit} · v${row.tolerance_version ?? "—"}`}
+            />
             <Field label="Estado" value={labelOf(String(row.status))} />
           </div>
         )}
