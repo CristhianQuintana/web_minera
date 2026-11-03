@@ -1,0 +1,5 @@
+﻿# Evidencia RLS
+Estado: Parcial / No verificable en vivo
+Evidencia en repo: políticas SQL en database/migrations/*.sql
+Pruebas automatizadas de aislamiento org/rol contra Supabase prod: NO ejecutadas (falta credenciales de prueba multi-org en entorno de auditoría).
+Pruebas unitarias de permisos de dominio: sí (permissions / profile_status).

@@ -1,0 +1,1 @@
+﻿Axe Core/DevTools: no ejecutado. Bloqueo: requiere navegador autenticado contra entorno desplegado y extensión/CLI @axe-core/cli. No se declara WCAG AA completo.

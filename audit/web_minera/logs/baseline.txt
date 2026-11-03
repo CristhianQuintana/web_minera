@@ -1,0 +1,11 @@
+﻿# Baseline auditoría WEB_MINERA
+Fecha: 2026-11-03 11:11:38 -05:00
+Repo: https://github.com/CristhianQuintana/web_minera.git
+Rama: main
+Commit: d9aef31569bee06c9e55e010e0537a9bcf8593a5
+Mensaje: fix: balance de masas calculado sin tabla mass_balances
+Árbol de trabajo: limpio al inicio de auditoría (verificar git status)
+Node: v24.13.0
+npm: 11.19.1
+Python (venv backend): 3.11.9
+Instrucción: NO corregir defectos durante la auditoría; solo registrar.

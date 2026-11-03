@@ -1,0 +1,5 @@
+﻿frontend@0.1.0 C:\Users\USER\OneDrive\Documentos\Proyectos\web_minera\frontend
++-- next@15.5.4
++-- react@19.1.0
+`-- typescript@5.9.3
+

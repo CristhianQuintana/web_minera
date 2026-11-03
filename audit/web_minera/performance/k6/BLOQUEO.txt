@@ -1,0 +1,4 @@
+﻿# Bloqueo rendimiento k6
+Fecha: 2026-11-03
+Herramienta k6/JMeter: no instalada en el entorno de auditoría.
+Se adjunta script reproducible pendiente de ejecución.
