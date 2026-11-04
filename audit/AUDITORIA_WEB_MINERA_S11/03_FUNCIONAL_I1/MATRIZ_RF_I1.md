@@ -1,20 +1,21 @@
-# Matriz funcional Incremento 1 — S11
+# Matriz funcional Incremento 1 — S11 (actualizada complemento)
 
-Commit: `﻿3792632418da5e24b209680dc30ad7f3552a95e9` | Fecha: ﻿fecha_iso=2026-11-03T23:31:00-05:00
+Commit codigo: `3792632418da5e24b209680dc30ad7f3552a95e9` | Fecha complemento: 2026-11-03T23:50:00-05:00
 
-| RF | Estado S11 | Tipo de evidencia | Notas |
-|---|---|---|---|
-| RF-01 Autenticacion | **Parcial** | E2E negativo + redirect + probes prod 401 | Login valido/logout/expiracion: **No ejecutado** (sin E2E_EMAIL/PASSWORD) |
-| RF-02 Lotes UI->DB | **No ejecutado** | Solo codigo + unit schemas | Falta E2E autenticado create/consulta |
-| RF-03 Validacion FE+BE | **Parcial** | Vitest Zod + Pydantic BE | No E2E/request manipulado autenticado |
-| RF-04 Geografia/mapa | **Parcial** | UI muestra lat/lon en detalle | Mapa interactivo: no evidenciado; GPS captura N/A APP |
-| RF-05 Evidencias | **Parcial** | Decision B documentada; URL firmada en API | Flujo autenticado consulta/denegacion: No ejecutado |
-| RF-06 QR | **N/A** (escaneo fisico APP) / consulta web **Parcial** | qr_payload en lote | Generar/escanear QR web no demostrado |
-| RF-07 Lotes por rol/org | **No verificable** | Permisos dominio unit + RLS SQL | JWT multi-org vivo: No ejecutado |
-| RF-08 Sync web | **N/A** | Alcance APP_MINERA offline/sync | Justificado |
-| RF-09 Persistencia | **Parcial** | API/unit; sin E2E UI autenticado | Consistencia UI/API/DB no demostrada end-to-end |
-| RF-10 Control acceso | **Parcial** | PermissionGate + require(); probes 401 | Matriz rol E2E: No ejecutado |
-| RF-11 Detalle/timeline | **Parcial** | Codigo timeline FE + API | E2E autenticado No ejecutado |
+Fuente canónica ampliada: `../14_ENTREGA_COMPLEMENTARIA/01_MATRIZ_TRAZABILIDAD_CORREGIDA.md` y evidencias en `02_EVIDENCIAS_INDIVIDUALES_POR_RF.md`.
 
-**Cobertura funcional estricta Aprobado:** 0 / 11 aplicables (si RF-06/08 N/A y RF-06 consulta no cuenta como aplicable escaneo).
-Aplicables netos I1 (excl. N/A 06 escaneo, 08): RF-01..05,07,09,10,11 = 9 → Aprobados 0.
+| RF | Aplicable | Estado S11 | Unit | API | E2E ejecutado | No ejecutado / pendiente | Evidencia exacta (ejemplos) |
+|---|---|---|---|---|---|---|---|
+| RF-01 | Si | **Parcial** | — | 401 sin JWT; smoke login 200 | Negativos + redirect | Login OK, logout, expiracion | `13_EVIDENCIAS/reportes_herramientas/playwright_s11.txt`; `14_…/03_RF01_RF02_AUTENTICACION.md` |
+| RF-02 | Si | **No ejecutado** (funcional) | Vitest schemas | lots 401 (no valida RF-02) | — | Create/list/detail auth | `vitest_s11.txt`; smoke_prod |
+| RF-03 | Si | **Parcial** | Vitest+Pytest | — | — | E2E manipulado auth | vitest_s11.txt; pytest_s11.txt |
+| RF-04 | Si (coords); GPS N/A APP | **Parcial** | — | — | — | Mapa E2E | inspeccion codigo |
+| RF-05 | Si (Decision B) | **Parcial** | — | — | — | Consulta auth | `audit/web_minera/evidence/RF-05/DECISION_ALCANCE.md` |
+| RF-06 | **N/A** escaneo APP | N/A | — | — | — | — | Justificado APP_MINERA |
+| RF-07 | Si | **Pendiente / No verificable** | permisos unit | 401 sin JWT | — | RLS JWT org A/B | `05_SEGURIDAD_RLS/seguridad_probes_…txt`; `14_…/04_SEGURIDAD_RLS_PENDIENTE.md` |
+| RF-08 | **N/A** sync APP | N/A | — | — | — | — | Justificado |
+| RF-09 | Si | **Parcial** | pytest | — | — | E2E UI/API/DB | pytest_s11.txt |
+| RF-10 | Si | **Parcial** | — | 401 | redirect sin sesion | Matriz rol E2E | probes + playwright |
+| RF-11 | Si | **Parcial** | — | — | — | Timeline E2E auth | codigo FE |
+
+**Aprobados flujo completo:** 0 / 9 aplicables I1 (excl. N/A 06 y 08).

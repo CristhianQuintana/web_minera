@@ -1,0 +1,7 @@
+{
+  "route": "/activate-account",
+  "url": "http://127.0.0.1:3000/activate-account",
+  "timestamp": "2026-11-04T04:45:27.071Z",
+  "blockingCount": 0,
+  "violations": []
+}

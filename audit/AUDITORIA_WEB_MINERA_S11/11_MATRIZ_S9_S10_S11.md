@@ -1,1 +1,11 @@
-Ver CSV `11_MATRIZ_S9_S10_S11.csv` (compatible Excel). Insumos S9 formales incompletos en repo → marcados como antecedente/pendiente sin reconstruccion especulativa.
+# Matriz S9 / S10 / S11 — indice
+
+Commit codigo: `3792632418da5e24b209680dc30ad7f3552a95e9` | Complemento: 2026-11-03T23:50:00-05:00
+
+La matriz CSV canónica actualizada está en:
+- `11_MATRIZ_S9_S10_S11.csv`
+- `14_ENTREGA_COMPLEMENTARIA/01_MATRIZ_TRAZABILIDAD_CORREGIDA.csv`
+- Narrativa: `14_ENTREGA_COMPLEMENTARIA/01_MATRIZ_TRAZABILIDAD_CORREGIDA.md`
+
+GQM/S9: `14_ENTREGA_COMPLEMENTARIA/08_GQM_S9_TRAZABILIDAD.md`.
+Dictamen: **NO APTO**.

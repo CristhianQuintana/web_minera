@@ -1,0 +1,7 @@
+{
+  "route": "/login",
+  "url": "http://127.0.0.1:3000/login",
+  "timestamp": "2026-11-04T04:45:23.954Z",
+  "blockingCount": 0,
+  "violations": []
+}

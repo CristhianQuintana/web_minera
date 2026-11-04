@@ -1,7 +1,15 @@
-﻿Fecha: 2026-11-03
-Herramienta: @axe-core/playwright (suite local Playwright)
-Ruta ejecutada: /login
-Resultado: 0 violaciones critical/serious (AXE_VIOLATIONS [])
-Rutas NO ejecutadas por falta de sesion autenticada: dashboard, lots, detalle, evidencias, transporte, custodia/timeline
-Estado S11: Parcial (solo login)
-Evidencia: 13_EVIDENCIAS/reportes_herramientas/playwright_s11.txt
+Axe S11 — resumen (post-complemento 2026-11-03T23:50:00-05:00)
+Commit codigo: 3792632418da5e24b209680dc30ad7f3552a95e9
+
+Ejecutado:
+- /login — axe_login.json — blockingCount 0
+- /forgot-password — axe_forgot_password.json — blockingCount 0
+- /activate-account — axe_activate_account.json — blockingCount 0
+- /forbidden — axe_forbidden.json — blockingCount 0
+- ruta protegida sin sesion → login — ver axe_dashboard_AUTH_PENDIENTE.txt
+
+Log: audit/AUDITORIA_WEB_MINERA_S11/14_ENTREGA_COMPLEMENTARIA/axe/playwright_axe_complemento.txt
+Spec: frontend/tests/e2e/axe-public-views.spec.ts
+
+Pendiente:
+- Dashboard / lotes / custodia / timeline autenticados (requiere E2E_EMAIL/PASSWORD)

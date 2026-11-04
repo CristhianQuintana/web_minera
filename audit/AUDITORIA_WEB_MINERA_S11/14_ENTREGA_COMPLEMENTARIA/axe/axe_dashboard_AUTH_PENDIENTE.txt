@@ -1,0 +1,2 @@
+Dashboard autenticado: NO EJECUTADO — requiere E2E_EMAIL/E2E_PASSWORD.
+Solo se verifico redirect a /login sin sesion.

@@ -1,0 +1,7 @@
+{
+  "route": "/forbidden",
+  "url": "http://127.0.0.1:3000/forbidden",
+  "timestamp": "2026-11-04T04:45:28.523Z",
+  "blockingCount": 0,
+  "violations": []
+}

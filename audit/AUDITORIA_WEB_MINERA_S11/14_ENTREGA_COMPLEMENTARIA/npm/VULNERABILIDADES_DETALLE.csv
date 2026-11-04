@@ -1,0 +1,45 @@
+package,severity,isDirect,range,fixAvailable,advisory_id,advisory_url,title,advisory_severity,advisory_range
+tinypool,critical,False,<=2.1.1,"{'name': 'vitest', 'version': '3.2.7', 'isSemVerMajor': False}",GHSA-5gmw-xhrv-c9v3,https://github.com/advisories/GHSA-5gmw-xhrv-c9v3,Tinypool: Prototype Pollution gadget in worker options leads to Remote Code Execution,critical,<=2.1.0
+tinypool,critical,False,<=2.1.1,"{'name': 'vitest', 'version': '3.2.7', 'isSemVerMajor': False}",GHSA-85c8-ppgw-ccpr,https://github.com/advisories/GHSA-85c8-ppgw-ccpr,Tinypool: Prototype Pollution Gadget to RCE in run() options,critical,<2.1.2
+vitest,critical,True,<=4.1.10,"{'name': 'vitest', 'version': '3.2.7', 'isSemVerMajor': False}",@vitest/mocker,,@vitest/mocker,critical,
+vitest,critical,True,<=4.1.10,"{'name': 'vitest', 'version': '3.2.7', 'isSemVerMajor': False}",GHSA-5xrq-8626-4rwp,https://github.com/advisories/GHSA-5xrq-8626-4rwp,"When Vitest UI server is listening, arbitrary file can be read and executed",critical,<3.2.6
+vitest,critical,True,<=4.1.10,"{'name': 'vitest', 'version': '3.2.7', 'isSemVerMajor': False}",GHSA-82fw-gwwq-j7x9,https://github.com/advisories/GHSA-82fw-gwwq-j7x9,Vitest: Path Traversal / Arbitrary File Read via @vitest/mocker Redirect Mock,moderate,>=2.1.0 <4.1.11
+vitest,critical,True,<=4.1.10,"{'name': 'vitest', 'version': '3.2.7', 'isSemVerMajor': False}",tinypool,,tinypool,critical,
+postcss,high,False,<=8.5.22,"{'name': 'next', 'version': '16.4.5', 'isSemVerMajor': True}",GHSA-qx2v-qp2m-jg93,https://github.com/advisories/GHSA-qx2v-qp2m-jg93,PostCSS has XSS via Unescaped </style> in its CSS Stringify Output,moderate,<8.5.10
+postcss,high,False,<=8.5.22,"{'name': 'next', 'version': '16.4.5', 'isSemVerMajor': True}",GHSA-6g55-p6wh-862q,https://github.com/advisories/GHSA-6g55-p6wh-862q,PostCSS: Arbitrary file read and information disclosure via attacker-controlled sourceMappingURL in CSS comments,high,<=8.5.11
+postcss,high,False,<=8.5.22,"{'name': 'next', 'version': '16.4.5', 'isSemVerMajor': True}",GHSA-fxqj-rqcc-2cmp,https://github.com/advisories/GHSA-fxqj-rqcc-2cmp,PostCSS: incomplete fix of GHSA-6g55-p6wh-862q — attacker-controlled sourceMappingURL reads arbitrary .map files when `from` is unset,moderate,<=8.5.22
+postcss,high,False,<=8.5.22,"{'name': 'next', 'version': '16.4.5', 'isSemVerMajor': True}",GHSA-r28c-9q8g-f849,https://github.com/advisories/GHSA-r28c-9q8g-f849,PostCSS: Path Traversal in Previous Source Map Auto-Loading (sourceMappingURL) leads to Arbitrary .map File Disclosure,high,<=8.5.17
+zod,high,True,<4.6.6,"{'name': 'zod', 'version': '4.6.7', 'isSemVerMajor': True}",GHSA-mrhx-c7xc-m3w5,https://github.com/advisories/GHSA-mrhx-c7xc-m3w5,Zod can exhaust memory while validating oversized constrained collections,high,<4.6.6
+@eslint-community/eslint-utils,moderate,False,*,"{'name': 'eslint', 'version': '4.0.0', 'isSemVerMajor': True}",eslint,,eslint,moderate,
+@eslint/config-array,moderate,False,*,"{'name': 'eslint', 'version': '4.0.0', 'isSemVerMajor': True}",minimatch,,minimatch,moderate,
+@eslint/eslintrc,moderate,True,0.0.1 || >=0.1.1,"{'name': '@eslint/eslintrc', 'version': '0.1.0', 'isSemVerMajor': True}",minimatch,,minimatch,moderate,
+@typescript-eslint/eslint-plugin,moderate,False,*,"{'name': 'eslint-config-next', 'version': '12.0.4', 'isSemVerMajor': True}",@typescript-eslint/parser,,@typescript-eslint/parser,moderate,
+@typescript-eslint/eslint-plugin,moderate,False,*,"{'name': 'eslint-config-next', 'version': '12.0.4', 'isSemVerMajor': True}",@typescript-eslint/type-utils,,@typescript-eslint/type-utils,moderate,
+@typescript-eslint/eslint-plugin,moderate,False,*,"{'name': 'eslint-config-next', 'version': '12.0.4', 'isSemVerMajor': True}",@typescript-eslint/utils,,@typescript-eslint/utils,moderate,
+@typescript-eslint/eslint-plugin,moderate,False,*,"{'name': 'eslint-config-next', 'version': '12.0.4', 'isSemVerMajor': True}",eslint,,eslint,moderate,
+@typescript-eslint/parser,moderate,False,*,"{'name': 'eslint-config-next', 'version': '12.0.4', 'isSemVerMajor': True}",@typescript-eslint/typescript-estree,,@typescript-eslint/typescript-estree,moderate,
+@typescript-eslint/parser,moderate,False,*,"{'name': 'eslint-config-next', 'version': '12.0.4', 'isSemVerMajor': True}",eslint,,eslint,moderate,
+@typescript-eslint/type-utils,moderate,False,>=5.9.2-alpha.0,"{'name': 'eslint-config-next', 'version': '12.0.4', 'isSemVerMajor': True}",@typescript-eslint/typescript-estree,,@typescript-eslint/typescript-estree,moderate,
+@typescript-eslint/type-utils,moderate,False,>=5.9.2-alpha.0,"{'name': 'eslint-config-next', 'version': '12.0.4', 'isSemVerMajor': True}",@typescript-eslint/utils,,@typescript-eslint/utils,moderate,
+@typescript-eslint/type-utils,moderate,False,>=5.9.2-alpha.0,"{'name': 'eslint-config-next', 'version': '12.0.4', 'isSemVerMajor': True}",eslint,,eslint,moderate,
+@typescript-eslint/typescript-estree,moderate,False,>=6.16.0,"{'name': 'eslint-config-next', 'version': '12.0.4', 'isSemVerMajor': True}",minimatch,,minimatch,moderate,
+@typescript-eslint/utils,moderate,False,*,"{'name': 'eslint-config-next', 'version': '12.0.4', 'isSemVerMajor': True}",@eslint-community/eslint-utils,,@eslint-community/eslint-utils,moderate,
+@typescript-eslint/utils,moderate,False,*,"{'name': 'eslint-config-next', 'version': '12.0.4', 'isSemVerMajor': True}",@typescript-eslint/typescript-estree,,@typescript-eslint/typescript-estree,moderate,
+@typescript-eslint/utils,moderate,False,*,"{'name': 'eslint-config-next', 'version': '12.0.4', 'isSemVerMajor': True}",eslint,,eslint,moderate,
+@vitest/mocker,moderate,False,<=4.1.11,"{'name': 'vitest', 'version': '3.2.7', 'isSemVerMajor': False}",GHSA-82fw-gwwq-j7x9,https://github.com/advisories/GHSA-82fw-gwwq-j7x9,Vitest: Path Traversal / Arbitrary File Read via @vitest/mocker Redirect Mock,moderate,>=2.1.0 <4.1.11
+@vitest/mocker,moderate,False,<=4.1.11,"{'name': 'vitest', 'version': '3.2.7', 'isSemVerMajor': False}",GHSA-qxg6-89mg-rqv8,https://github.com/advisories/GHSA-qxg6-89mg-rqv8,Vitest: Code injection via unauthenticated manual mock registration,moderate,>=2.1.0-beta.7 <4.1.12
+eslint,moderate,True,0.7.1 - 2.0.0-rc.1 || >=4.1.0,"{'name': 'eslint', 'version': '4.0.0', 'isSemVerMajor': True}",@eslint-community/eslint-utils,,@eslint-community/eslint-utils,moderate,
+eslint,moderate,True,0.7.1 - 2.0.0-rc.1 || >=4.1.0,"{'name': 'eslint', 'version': '4.0.0', 'isSemVerMajor': True}",@eslint/config-array,,@eslint/config-array,moderate,
+eslint,moderate,True,0.7.1 - 2.0.0-rc.1 || >=4.1.0,"{'name': 'eslint', 'version': '4.0.0', 'isSemVerMajor': True}",@eslint/eslintrc,,@eslint/eslintrc,moderate,
+eslint,moderate,True,0.7.1 - 2.0.0-rc.1 || >=4.1.0,"{'name': 'eslint', 'version': '4.0.0', 'isSemVerMajor': True}",minimatch,,minimatch,moderate,
+eslint-config-next,moderate,True,>=10.2.1-canary.2,"{'name': 'eslint-config-next', 'version': '12.0.4', 'isSemVerMajor': True}",@typescript-eslint/eslint-plugin,,@typescript-eslint/eslint-plugin,moderate,
+eslint-config-next,moderate,True,>=10.2.1-canary.2,"{'name': 'eslint-config-next', 'version': '12.0.4', 'isSemVerMajor': True}",@typescript-eslint/parser,,@typescript-eslint/parser,moderate,
+eslint-config-next,moderate,True,>=10.2.1-canary.2,"{'name': 'eslint-config-next', 'version': '12.0.4', 'isSemVerMajor': True}",eslint,,eslint,moderate,
+eslint-config-next,moderate,True,>=10.2.1-canary.2,"{'name': 'eslint-config-next', 'version': '12.0.4', 'isSemVerMajor': True}",eslint-plugin-import,,eslint-plugin-import,moderate,
+eslint-config-next,moderate,True,>=10.2.1-canary.2,"{'name': 'eslint-config-next', 'version': '12.0.4', 'isSemVerMajor': True}",eslint-plugin-jsx-a11y,,eslint-plugin-jsx-a11y,moderate,
+eslint-config-next,moderate,True,>=10.2.1-canary.2,"{'name': 'eslint-config-next', 'version': '12.0.4', 'isSemVerMajor': True}",eslint-plugin-react,,eslint-plugin-react,moderate,
+eslint-plugin-import,moderate,False,>=1.15.0,"{'name': 'eslint-config-next', 'version': '12.0.4', 'isSemVerMajor': True}",minimatch,,minimatch,moderate,
+eslint-plugin-jsx-a11y,moderate,False,>=6.5.0,"{'name': 'eslint-config-next', 'version': '12.0.4', 'isSemVerMajor': True}",minimatch,,minimatch,moderate,
+eslint-plugin-react,moderate,False,>=7.23.0,"{'name': 'eslint-config-next', 'version': '12.0.4', 'isSemVerMajor': True}",minimatch,,minimatch,moderate,
+minimatch,moderate,False,<11.0.1,"{'name': '@eslint/eslintrc', 'version': '0.1.0', 'isSemVerMajor': True}",GHSA-g3hv-75wg-m249,https://github.com/advisories/GHSA-g3hv-75wg-m249,minimatch has potential denial of service via globparts amplification,moderate,<11.0.1
+next,moderate,True,9.3.4-canary.0 - 16.3.0-preview.10,"{'name': 'next', 'version': '16.4.5', 'isSemVerMajor': True}",postcss,,postcss,moderate,

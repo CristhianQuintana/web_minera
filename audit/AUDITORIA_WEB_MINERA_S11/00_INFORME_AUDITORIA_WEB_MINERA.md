@@ -3,49 +3,54 @@
 | Campo | Valor |
 |---|---|
 | Fecha emision solicitud | 2026-11-03 |
-| Fecha ejecucion | fecha_iso=2026-11-03T23:31:00-05:00 |
+| Fecha ejecucion S11 | fecha_iso=2026-11-03T23:31:00-05:00 |
+| Fecha entrega complementaria | 2026-11-03T23:50:00-05:00 |
 | Repo | https://github.com/CristhianQuintana/web_minera |
 | Rama | main |
-| Commit auditado | `3792632418da5e24b209680dc30ad7f3552a95e9` |
+| Commit auditado (código) | `3792632418da5e24b209680dc30ad7f3552a95e9` |
 | Antecedente remediacion | `ad30938...` (no es HEAD) |
+| Paquete S11 original | `816a5f5...` |
 | Acta PMV2 previa | Antecedente; **no sustituye** este dictamen |
 | Entorno verificado | Local (suites) + Produccion Render (smoke) |
+| Complemento | `14_ENTREGA_COMPLEMENTARIA/` |
 
 ---
 
 ## 1. Resumen ejecutivo y dictamen
 
-### Dictamen S11 (nuevo)
+### Dictamen S11 (vigente tras complemento)
 **NO APTO para declarar cierre funcional/productivo completo.**  
-**Verificacion parcial confirmada** (suites automaticas, smoke produccion basico, arquitectura dominio limpio, pip-audit 0).
+**Verificacion parcial confirmada** (suites automaticas, smoke produccion basico, arquitectura dominio limpio, pip-audit 0, Axe vistas publicas).
 
 | Dimension de aptitud | Dictamen |
 |---|---|
-| Apto para documentacion tecnica | **Parcial / Si** (paquete S11 generado con limitaciones) |
+| Apto para documentacion tecnica | **Parcial / Si** (paquete S11 + complemento) |
 | Apto funcionalmente (RF UI autenticados) | **No** (0 RF con E2E autenticado Aprobado) |
 | Apto tecnicamente (unit/integration/CI local) | **Parcial / Si** (52 pytest, 22 vitest, isolation OK) |
-| Apto para produccion | **No** (RLS JWT vivo No verificable; commit deploy exacto NV; k6 negocio NV) |
+| Apto para produccion | **No** (RLS JWT vivo pendiente; commit deploy exacto NV; k6 negocio NV; uptime/MTTR no medidos) |
 | Apto con riesgos formalmente aceptados | **No emitido aqui** — requiere autoridad; no se hereda del acta PMV2 |
 
 ### Hallazgos bloqueantes abiertos
-1. E2E autenticado omitido (S11-H-001 / WEB-AUD-005)
-2. RLS multi-org JWT no ejecutado (S11-H-002 / WEB-AUD-012)
-3. npm critical/high residuales (S11-H-006)
-4. k6/Axe/uptime incompletos (S11-H-003/004/005)
+1. E2E autenticado omitido (S11-H-001 / WEB-AUD-005) — RF-01 login OK / RF-02 pendientes
+2. RLS multi-org JWT no ejecutado (S11-H-002 / WEB-AUD-012) — **Pendiente**
+3. npm critical/high residuales (S11-H-006) — detalle en `14_…/npm/`
+4. Axe autenticado / k6 negocio / uptime (S11-H-003/004/005) — parcial publico Axe; resto pendiente
+5. SHA Render no verificable (S11-H-007)
 
 ---
 
 ## 2. Alcance y exclusiones
-I1+I2 RF web aplicables; N/A: RF-06 escaneo, RF-08 sync, RF-09? (persistencia web SI aplica parcialmente — en matriz RF-09 Parcial), RF-10 es control acceso web. RF-I2-03 N/A.
-ML heuristico; no ML validado.
+Universo RF corregido en `14_ENTREGA_COMPLEMENTARIA/01_MATRIZ_TRAZABILIDAD_CORREGIDA.md`:
+- **Aplicables WEB:** 12 (RF-01..05,07,09,10,11 + I2-01,02,04)
+- **N/A APP:** RF-06, RF-08, RF-I2-03
+- ML heuristico; no ML validado
 
 ---
 
 ## 3. Baseline y entorno
-Ver carpeta `01_BASELINE/`.
-- Node/npm, Python/FastAPI, Next/React/TS en archivos de versiones
-- Config keys: SET/EMPTY sin secretos
-- Prod URLs verificadas: web-minera-frontend/backend.onrender.com
+Ver carpeta `01_BASELINE/` y `14_ENTREGA_COMPLEMENTARIA/BASELINE_CONSERVADO.txt`.
+- Commit de codigo auditado **conservado**: `3792632418da5e24b209680dc30ad7f3552a95e9`
+- Prod URLs: web-minera-frontend/backend.onrender.com
 
 ---
 
@@ -55,8 +60,12 @@ Ver `02_ARQUITECTURA/`. Contaminacion dominio BE **0%** (0/9). Isolation BE/FE p
 ---
 
 ## 5. Resultado por RF
-Ver `03_FUNCIONAL_I1/` y `04_FUNCIONAL_I2/`.
-**Aprobados flujo completo UI autenticado: 0.**
+Ver matrices I1/I2 + **complemento**:
+- `14_ENTREGA_COMPLEMENTARIA/01_MATRIZ_TRAZABILIDAD_CORREGIDA.md`
+- `14_ENTREGA_COMPLEMENTARIA/02_EVIDENCIAS_INDIVIDUALES_POR_RF.md`
+- `14_ENTREGA_COMPLEMENTARIA/03_RF01_RF02_AUTENTICACION.md`
+
+**Aprobados flujo completo UI autenticado: 0 / 12.**
 
 ---
 
@@ -65,39 +74,45 @@ Ver `03_FUNCIONAL_I1/` y `04_FUNCIONAL_I2/`.
 |---|---|
 | Pytest | 52 passed |
 | Vitest | 22 passed |
-| Playwright | 5 passed / 2 skipped |
+| Playwright (S11 inicial) | 5 passed / 2 skipped |
+| Playwright Axe complemento | 5 passed (login, forgot, activate, forbidden, redirect) |
 | Isolation BE | 5 passed |
 | Domain AST | 0 contamination |
-| Prod smoke | health 200, docs 404, login 200, lots 401 |
+| Prod smoke | health 200, docs 404, login page 200, lots 401 |
 | pip-audit | 0 |
-| npm audit | 20 (2c/2h/16m) |
-| k6 | /health only (ver limitaciones) |
-| Axe | login only |
+| npm audit | 20 (2c/2h/16m) — detalle CSV/MD en complemento |
+| k6 | **/health only** = prueba de **infraestructura**, no rendimiento de negocio |
+| Axe | vistas **publicas** OK; autenticadas **pendiente** |
 
 ---
 
 ## 7. Seguridad / JWT / RLS
-Probes sin JWT usuario: 401 OK. RLS multi-org: **No ejecutado**. No se uso service_role como usuario final.
+Probes sin JWT usuario: 401 OK.  
+**RLS multi-org con JWT de dos organizaciones: PENDIENTE** — ver `14_ENTREGA_COMPLEMENTARIA/04_SEGURIDAD_RLS_PENDIENTE.md`.  
+No se uso service_role como usuario final.
 
 ---
 
 ## 8. Dependencias / SAST / secretos
-pip limpio. npm 20 vulns. Semgrep/Gitleaks: No ejecutado.
+pip limpio. npm 20 vulns documentadas con GHSA/CVE y plan (`14_…/npm/`). Semgrep/Gitleaks: No ejecutado.
 
 ---
 
 ## 9. Accesibilidad
-Axe login limpio; demas vistas: No ejecutado.
+Axe ejecutado en `/login`, `/forgot-password`, `/activate-account`, `/forbidden` + redirect sin sesion.  
+Dashboard/lotes autenticados: **No ejecutado**. Ver `14_…/05_ACCESIBILIDAD_COMPLEMENTO.md`.
 
 ---
 
 ## 10. Rendimiento / confiabilidad
-k6 health prod ejecutado (ver stdout). Negocio/500 VU: No. Uptime/MTTR: No medido.
+- k6 `/health`: evidencia de **infra** únicamente (`08_RENDIMIENTO_K6/`, `14_…/06_RENDIMIENTO_PLAN_CARGA.md`).
+- Carga de negocio / 500 VU: **plan pendiente, no ejecutado**.
+- **Uptime y MTTR: no medidos** — declaracion expresa en `14_…/07_CONFIABILIDAD_UPTIME_MTTR.md`.
 
 ---
 
 ## 11. Despliegue
-Smoke prod OK basico. SHA desplegado exacto: No verificable.
+Smoke prod OK basico. Relacion commit `3792632418da5e24b209680dc30ad7f3552a95e9` ↔ artefacto Render: **No verificable** (`14_…/09_DESPLIEGUE_SHA_RENDER.md`).
 
 ---
 
@@ -107,12 +122,13 @@ Heuristico + fallback. No MAE/RMSE/R2.
 ---
 
 ## 13. GQM / AS-IS
-Ver `10_GQM_AS_IS/`. M2.1 = 0% estricto. M3.x No medido sin insumos S9 completos.
+Documentos S9 referenciados en `14_…/08_GQM_S9_TRAZABILIDAD.md`.  
+M1.1 medido 0%. M2.1 = 0% estricto. **M3.x No medido** (sin insumos AS-IS revalidados; no reconstruido por suposicion).
 
 ---
 
 ## 14. Trazabilidad S9/S10/S11
-Ver `11_MATRIZ_S9_S10_S11.csv`. Documentos S9 formales incompletos → no reconstruidos por suposicion.
+Ver `11_MATRIZ_S9_S10_S11.csv` (actualizada al complemento) y `14_ENTREGA_COMPLEMENTARIA/01_MATRIZ_TRAZABILIDAD_CORREGIDA.*`.
 
 ---
 
@@ -122,28 +138,28 @@ Ver `12_HALLAZGOS_RIESGOS/HALLAZGOS_S11.md`.
 ---
 
 ## 16. Pruebas no ejecutadas / limitaciones
-E2E auth, RLS JWT dual-org, Axe auth, k6 negocio, 500 VU, Semgrep, Gitleaks, uptime, SHA Render, Storage cross-org.
+E2E auth (login OK, logout, RF-02+), RLS JWT dual-org, Axe auth, k6 negocio, 500 VU, Semgrep, Gitleaks, uptime/MTTR, SHA Render, Storage cross-org.
 
 ---
 
 ## 17. Conclusion
-Esta auditoria S11 **confirma** mejoras tecnicas locales/prod basicas respecto al baseline d9aef31, pero **no confirma** el cierre funcional de los 11 RF ni la seguridad multi-tenant en vivo. El acta PMV2 previa no se reutiliza como dictamen.
+El complemento **fortalece la trazabilidad documental** del expediente S11 sin alterar el dictamen: **NO APTO** para cierre funcional/productivo. No se aprueban RF sin evidencia funcional completa.
 
 ## 18. Declaracion del desarrollador / ejecutor
 
 | Confirmacion | Respuesta |
 |---|---|
-| Repo/rama/commit auditados confirmados | **Si** (`3792632418da5e24b209680dc30ad7f3552a95e9`) |
+| Repo/rama/commit codigo auditados confirmados | **Si** (`3792632418da5e24b209680dc30ad7f3552a95e9`) |
 | Entorno desplegado corresponde al commit indicado | **No verificable** |
-| Pruebas ejecutadas realmente | **Si** (las listadas) |
+| Pruebas ejecutadas realmente | **Si** (las listadas; complemento Axe publico incluido) |
 | Omitidas no declaradas aprobadas | **Si** |
-| RLS con JWT reales o declarado pendiente | **Declarado pendiente/No verificable** |
-| Reportes seguridad del lockfile auditado | **Si** (npm/pip S11) |
+| RLS con JWT reales o declarado pendiente | **Declarado pendiente** |
+| npm 20 vulns detalladas | **Si** (`14_…/npm/`) |
 | Evidencias sanitizadas | **Si** |
 | Limitaciones y riesgos declarados | **Si** |
-| Ruta entrega | `audit/AUDITORIA_WEB_MINERA_S11/` |
+| Ruta entrega | `audit/AUDITORIA_WEB_MINERA_S11/` (+ `14_ENTREGA_COMPLEMENTARIA/`) |
 | Nombre/rol | Agente auditor tecnico (Cursor) / apoyo Dev WEB |
-| Fecha | fecha_iso=2026-11-03T23:31:00-05:00 |
+| Fecha complemento | 2026-11-03T23:50:00-05:00 |
 
-Firma ejecutor tecnico: emitido electronicamente con este commit de evidencias.
+Firma ejecutor tecnico: emitido electronicamente con el commit de evidencias complementarias.  
 Firma QA independiente: ________________
