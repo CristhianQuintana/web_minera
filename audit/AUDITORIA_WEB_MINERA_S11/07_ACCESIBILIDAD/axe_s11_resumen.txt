@@ -1,0 +1,7 @@
+﻿Fecha: 2026-11-03
+Herramienta: @axe-core/playwright (suite local Playwright)
+Ruta ejecutada: /login
+Resultado: 0 violaciones critical/serious (AXE_VIOLATIONS [])
+Rutas NO ejecutadas por falta de sesion autenticada: dashboard, lots, detalle, evidencias, transporte, custodia/timeline
+Estado S11: Parcial (solo login)
+Evidencia: 13_EVIDENCIAS/reportes_herramientas/playwright_s11.txt

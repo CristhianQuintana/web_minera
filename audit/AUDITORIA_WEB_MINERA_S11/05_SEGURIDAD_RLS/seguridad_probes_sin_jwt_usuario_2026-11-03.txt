@@ -1,0 +1,8 @@
+﻿fecha=2026-11-03T23:33:33.9143535-05:00
+backend=https://web-minera-backend.onrender.com
+nota=sin JWT de usuario final; no se usa service_role
+GET /lots no-auth -> 401
+POST login demo-like -> 401
+GET /lots invalid-jwt -> 401
+RLS multi-org JWT reales: NO EJECUTADO (faltan E2E_EMAIL/PASSWORD y usuarios org A/B)
+E2E autenticado: NO EJECUTADO (secretos ausentes en entorno auditor)

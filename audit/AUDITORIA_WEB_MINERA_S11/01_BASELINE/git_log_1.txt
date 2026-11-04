@@ -1,0 +1,11 @@
+﻿commit 3792632418da5e24b209680dc30ad7f3552a95e9
+Author:     Cristhian Quintana <71877361@continental.edu.pe>
+AuthorDate: Tue Nov 3 23:21:14 2026 -0500
+Commit:     Cristhian Quintana <71877361@continental.edu.pe>
+CommitDate: Tue Nov 3 23:21:14 2026 -0500
+
+    docs: entrega final PMV2 — informe maestro y paquete Document
+    
+    Consolida auditoria, acta, riesgos, FURPS+, pruebas y anexos en INFORME_ENTREGA_FINAL y carpeta Document lista para presentar.
+    
+    Co-authored-by: Cursor <cursoragent@cursor.com>

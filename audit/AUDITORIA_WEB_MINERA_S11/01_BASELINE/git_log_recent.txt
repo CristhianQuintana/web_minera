@@ -1,0 +1,10 @@
+﻿3792632 docs: entrega final PMV2 — informe maestro y paquete Document
+bca96c2 docs: cierre PMV2 WEB con riesgos aceptados e informes
+ad30938 fix: avance PMV2 — deps Python limpias, timeline, transport_events y validacion
+61c665f docs: auditoría integral WEB_MINERA 2026-11-03
+d9aef31 fix: balance de masas calculado sin tabla mass_balances
+b4cacf4 fix: balance/ML requieren tablas en Supabase y limpiar DEMO en pesajes
+6ae4549 fix: tolerar tablas relacionadas ausentes al cargar detalle de lote
+e36df07 fix: eliminar etiquetas DEMO visibles del dataset operativo
+1e98fdc feat: completar módulo ML con ml_inferences, seed y aislamiento por org
+bd3d71d docs: evidencia de login real exitoso en Render tras el fix

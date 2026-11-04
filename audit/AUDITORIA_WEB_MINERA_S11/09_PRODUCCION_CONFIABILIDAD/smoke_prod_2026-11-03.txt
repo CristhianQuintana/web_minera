@@ -1,0 +1,8 @@
+﻿fecha=2026-11-03T23:30:29.0309120-05:00
+frontend=https://web-minera-frontend.onrender.com
+backend=https://web-minera-backend.onrender.com
+https://web-minera-backend.onrender.com/health -> status=200 len=15
+https://web-minera-backend.onrender.com/docs -> status=404 error=Error en el servidor remoto: (404) No se encontró.
+https://web-minera-backend.onrender.com/openapi.json -> status=404 error=Error en el servidor remoto: (404) No se encontró.
+https://web-minera-backend.onrender.com/redoc -> status=404 error=Error en el servidor remoto: (404) No se encontró.
+https://web-minera-frontend.onrender.com/login -> status=200 len=9924

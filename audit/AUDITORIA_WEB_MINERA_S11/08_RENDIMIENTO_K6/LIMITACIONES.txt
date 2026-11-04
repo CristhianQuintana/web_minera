@@ -1,0 +1,4 @@
+﻿LIMITACION S11: k6 ejecutado solo contra GET /health en produccion.
+No se probo autenticacion/lotes/custodia/transporte/timeline bajo carga.
+Perfil 500 VU: NO EJECUTADO.
+Endpoints de negocio: NO EJECUTADO (falta TOKEN).
