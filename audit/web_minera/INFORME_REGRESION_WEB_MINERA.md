@@ -12,3 +12,9 @@ Fecha: 2026-11-03
 | axe login | 0 critical/serious |
 
 SHA candidato: ver git HEAD al emitir acta.
+
+## Regresion final pre-entrega (2026-11-03 23:21)
+- Pytest: 52 passed
+- Vitest/typecheck: ejecutados en corrida de cierre (ver terminal)
+- Paquete Document/ sincronizado con audit/web_minera
+- Informe maestro: INFORME_ENTREGA_FINAL_PMV2_WEB_MINERA.md

@@ -1,0 +1,55 @@
+# Evidencia RLS estatica — migraciones versionadas
+Fecha: 2026-11-03
+Alcance: politicas declaradas en database/migrations/*.sql
+Conteo create policy: 48
+
+0001_init.sql:188: create policy profiles_select on public.profiles
+0001_init.sql:191: create policy organizations_select on public.organizations
+0001_init.sql:194: create policy mining_operations_select on public.mining_operations
+0001_init.sql:197: create policy lots_select on public.lots
+0001_init.sql:200: create policy lots_insert on public.lots
+0001_init.sql:207: create policy lots_update on public.lots
+0001_init.sql:213: create policy lot_events_select on public.lot_events
+0001_init.sql:221: create policy lot_events_insert on public.lot_events
+0001_init.sql:230: create policy transfers_select on public.custody_transfers
+0001_init.sql:238: create policy transfers_insert on public.custody_transfers
+0001_init.sql:247: create policy transports_select on public.transports
+0001_init.sql:255: create policy transports_insert on public.transports
+0001_init.sql:264: create policy transports_update on public.transports
+0001_init.sql:273: create policy transport_events_select on public.transport_events
+0001_init.sql:283: create policy transport_events_insert on public.transport_events
+0001_init.sql:294: create policy evidences_select on public.evidences
+0001_init.sql:302: create policy evidences_insert on public.evidences
+0001_init.sql:311: create policy audit_select on public.audit_log
+0001_init.sql:320: create policy evidencias_select on storage.objects
+0001_init.sql:326: create policy evidencias_insert on storage.objects
+0005_roles_receptions.sql:72: create policy transfers_insert on public.custody_transfers
+0005_roles_receptions.sql:82: create policy transports_select on public.transports
+0005_roles_receptions.sql:102: create policy transports_insert on public.transports
+0005_roles_receptions.sql:112: create policy transports_update on public.transports
+0005_roles_receptions.sql:125: create policy transport_events_insert on public.transport_events
+0005_roles_receptions.sql:143: create policy receptions_select on public.receptions
+0005_roles_receptions.sql:152: create policy receptions_insert on public.receptions
+0005_roles_receptions.sql:163: create policy weighings_select on public.weighings
+0005_roles_receptions.sql:172: create policy weighings_insert on public.weighings
+0006_web_platform.sql:284: create policy invitations_admin on public.invitations
+0006_web_platform.sql:295: create policy tolerance_select on public.tolerance_rules
+0006_web_platform.sql:299: create policy tolerance_admin on public.tolerance_rules
+0006_web_platform.sql:306: create policy mass_balances_select on public.mass_balances
+0006_web_platform.sql:310: create policy mass_balances_write on public.mass_balances
+0006_web_platform.sql:318: create policy alerts_select on public.alerts
+0006_web_platform.sql:322: create policy alerts_write on public.alerts
+0006_web_platform.sql:330: create policy alert_reviews_select on public.alert_reviews
+0006_web_platform.sql:339: create policy alert_reviews_insert on public.alert_reviews
+0006_web_platform.sql:349: create policy ml_models_select on public.ml_models
+0006_web_platform.sql:353: create policy ml_inferences_select on public.ml_inferences
+0006_web_platform.sql:357: create policy ml_inferences_insert on public.ml_inferences
+0006_web_platform.sql:366: create policy notifications_own on public.notifications
+0006_web_platform.sql:371: create policy settings_select on public.organization_settings
+0006_web_platform.sql:375: create policy settings_admin on public.organization_settings
+0007_profiles_update_own.sql:12: create policy profiles_update_own on public.profiles
+0008_ensure_ml_inferences.sql:79: create policy ml_models_select on public.ml_models
+0008_ensure_ml_inferences.sql:83: create policy ml_inferences_select on public.ml_inferences
+0008_ensure_ml_inferences.sql:87: create policy ml_inferences_insert on public.ml_inferences
+
+Nota: evidencia de existencia de politicas en repo. Prueba JWT multi-org en vivo permanece en riesgos aceptados (WEB-AUD-012).

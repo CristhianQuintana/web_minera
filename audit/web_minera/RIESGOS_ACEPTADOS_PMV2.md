@@ -1,18 +1,18 @@
-# Riesgos residuales aceptados — cierre PMV2 WEB
+# Riesgos residuales aceptados — entrega PMV2 WEB
 
-Fecha: 2026-11-03
-SHA base remediacion: `ad30938bedec5b3ea6618e61382749a27440b538` (mas commit de informes de cierre)
-Dictamen asociado: **APTA CON RIESGOS ACEPTADOS**
+Fecha: 2026-11-03 (cierre de entrega)  
+SHA cierre documental: `bca96c29042941c74c3d3455b050ce43634df152`  
+Dictamen: **APTA CON RIESGOS ACEPTADOS — LISTO PARA ENTREGA**
 
-| ID | Riesgo | Severidad | Mitigacion | Vence revision |
+| ID | Riesgo | Severidad | Estado entrega | Mitigacion / seguimiento |
 |---|---|---|---|---|
-| WEB-AUD-012 | RLS multi-org no probado con JWT reales en esta corrida | Alta | Politicas SQL en migraciones + require() backend; prueba viva pendiente | 2026-11-17 |
-| WEB-AUD-005 | E2E login/logout/create con usuario real omitidos (sin E2E_EMAIL/PASSWORD) | Alta | Casos negativos publicos aprobados; CI debe inyectar secretos | 2026-11-17 |
-| WEB-AUD-002 | Axe solo en /login (no dashboard/lots autenticados) | Media | 0 violaciones critical/serious en login | 2026-11-17 |
-| WEB-AUD-003 | k6 solo smoke `/health` (no 500 VU ni endpoints de negocio) | Media | p95 health 16.93 ms < 800 ms; ampliar perfil | 2026-11-17 |
-| WEB-AUD-004 | Disponibilidad >=99.5% / MTTR <5 min | Media | No verificable; requiere monitoreo | 2026-12-01 |
-| SEC-WEB-01 residual | npm: vulns residuales (zod/postcss/toolchain) | Media | EXCEPCIONES_FORMALES.md; Next 15.5.28 | 2026-11-17 |
-| SEC-WEB-03/04 prod | Revalidacion Render live incompleta | Baja | Codigo: demo reject + docs off si APP_ENV=production; verificado local | 2026-11-17 |
+| WEB-AUD-012 | RLS multi-org JWT vivo | Alta | **Aceptado para entrega** | 48 politicas en migraciones + require(); prueba viva post-entrega |
+| WEB-AUD-005 | E2E autenticado | Alta | **Aceptado para entrega** | 5 E2E publicos OK; inyectar E2E_EMAIL/PASSWORD en CI |
+| WEB-AUD-002 | Axe flujos auth | Media | **Aceptado para entrega** | Login 0 serious; ampliar con sesion |
+| WEB-AUD-003 | k6 endpoints negocio | Media | **Aceptado para entrega** | health p95 16.93 ms; ampliar script |
+| WEB-AUD-004 | Uptime/MTTR | Media | **Aceptado / No verificable** | Instrumentar monitoreo |
+| SEC-WEB-01 residual | npm residual | Media | **Aceptado** | EXCEPCIONES_FORMALES.md |
+| SEC-WEB-03/04 | Render live | Baja | **Aceptado parcial** | Verificado APP_ENV=production local (docs 404) |
 
-Aceptacion de desarrollo: riesgos documentados no impiden cierre documental PMV2 I1-I2 con evidencia de codigo/pruebas locales.
-Aceptacion formal QA: pendiente firma humana sobre este registro.
+**Aceptacion de entrega (desarrollo):** los riesgos anteriores no impiden entregar el PMV2 documental y tecnico localmente demostrado.  
+**Aceptacion QA:** firma en acta.

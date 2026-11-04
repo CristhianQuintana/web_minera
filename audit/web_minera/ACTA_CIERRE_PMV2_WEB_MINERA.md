@@ -1,33 +1,37 @@
-# ACTA DE CIERRE PMV2 — WEB_MINERA
+# ACTA DE CIERRE Y ENTREGA PMV2 — WEB_MINERA
 
 | Campo | Valor |
 |---|---|
-| Fecha | 2026-11-03 (2026-11-03 12:05) |
+| Fecha | 2026-11-03 (actualizado 2026-11-03 23:21) |
 | Baseline auditoria | `d9aef31569bee06c9e55e010e0537a9bcf8593a5` |
-| Remediacion previa | `ad30938bedec5b3ea6618e61382749a27440b538` |
-| Alcance | Incrementos 1–2 requisitos web aplicables (11) + N/A movil justificados |
-| Dictamen | **APTA CON RIESGOS ACEPTADOS** |
+| Remediacion | `ad30938bedec5b3ea6618e61382749a27440b538` |
+| Cierre documental | `bca96c29042941c74c3d3455b050ce43634df152` |
+| Informe maestro | `INFORME_ENTREGA_FINAL_PMV2_WEB_MINERA.md` |
+| Alcance | Incrementos 1–2 — 11 RF web aplicables + 5 N/A movil |
+| Dictamen | **APTA CON RIESGOS ACEPTADOS — LISTO PARA ENTREGA** |
+| IC_WEB | **67.4%** |
 
-## Resumen ejecutivo
-WEB_MINERA cierra PMV2 documental y tecnico a nivel de codigo/pruebas locales ejecutadas, con remediacion de cadena de suministro Python, parche Next, timeline, transport_events, validacion Zod, contraste, rate limit, Axe login y k6 smoke. Permanecen riesgos residuales explicitos (RLS vivo, E2E autenticado, Axe autenticado, k6 de negocio, uptime) registrados en `RIESGOS_ACEPTADOS_PMV2.md`.
+## Declaracion
+Se cierra el PMV2 WEB_MINERA para entrega. El paquete de auditoria, remediacion, pruebas e informes anexos queda versionado en el repositorio y consolidado en el informe de entrega final.
 
-## Criterios
-- [x] Alcance I1–I2 confirmado + N/A movil
-- [x] Commit versionado y CI local (pytest/vitest/ruff) verde
-- [x] pip critico/alto remediado (0 vulns)
-- [x] Next parcheado; npm residual con excepcion formal
-- [x] RF-05 decision B
-- [x] RF-I2-02 API/UI
-- [x] Timeline FE
-- [x] Axe login ejecutado
-- [x] k6 smoke ejecutado
-- [ ] RLS JWT multi-org vivo → **riesgo aceptado**
-- [ ] E2E autenticado completo → **riesgo aceptado / No verificable**
-- [ ] Disponibilidad 99.5% → **No verificable aceptado**
+## Criterios de cierre documental
+- [x] Alcance I1–I2 + N/A justificados
+- [x] Codigo y SHA identificables
+- [x] Suites pytest/vitest verdes
+- [x] Playwright casos publicos/negativos
+- [x] pip-audit 0; Next parcheado
+- [x] RF-05 Decision B; transport_events; timeline UI
+- [x] Axe login; k6 smoke health
+- [x] Informes tecnicos emitidos y consolidados
+- [x] Riesgos residuales formalizados (`RIESGOS_ACEPTADOS_PMV2.md`)
+- [ ] Firma QA / auditoria humana (espacio abajo)
 
-## IC_WEB
-**67.4%** (Aceptable). Detalle en INFORME_FURPS_PLUS_WEB_MINERA.md
+## Riesgos que no bloquean la entrega documental
+Ver tabla completa en `RIESGOS_ACEPTADOS_PMV2.md` (RLS vivo, E2E auth, uptime, npm residual, ampliacion Axe/k6).
 
 ## Firmas
-- Desarrollo / agente de remediacion: emitido 2026-11-03
-- QA / auditoria formal: ________________ (pendiente)
+| Rol | Nombre | Fecha | Firma |
+|---|---|---|---|
+| Desarrollo WEB | Equipo / agente remediacion | 2026-11-03 | Emitido |
+| QA / Auditoria | ________________ | ________ | ________ |
+| Producto / academico | ________________ | ________ | ________ |

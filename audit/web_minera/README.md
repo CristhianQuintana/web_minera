@@ -1,31 +1,14 @@
-# Paquete de cierre PMV2 — WEB_MINERA
+# Paquete PMV2 WEB_MINERA — LISTO PARA ENTREGA
 
 **Dictamen:** APTA CON RIESGOS ACEPTADOS  
 **Fecha:** 2026-11-03  
-**Baseline auditoria:** d9aef31569bee06c9e55e010e0537a9bcf8593a5  
-**IC_WEB:** 67.4 % (conservador; ver INFORME_FURPS_PLUS_WEB_MINERA.md)
+**IC_WEB:** 67.4%  
+**Informe maestro:** [INFORME_ENTREGA_FINAL_PMV2_WEB_MINERA.md](./INFORME_ENTREGA_FINAL_PMV2_WEB_MINERA.md)
 
-## Informes
-- ACTA_CIERRE_PMV2_WEB_MINERA.md
-- RIESGOS_ACEPTADOS_PMV2.md
-- PLAN_CIERRE_PMV2_WEB_MINERA.md
-- INFORME_AUDITORIA_WEB_MINERA.md (+ addendum)
-- INFORME_FURPS_PLUS_WEB_MINERA.md
-- INFORME_PRUEBAS_FUNCIONALES_WEB_MINERA.md
-- INFORME_SEGURIDAD_WEB_MINERA.md
-- INFORME_ACCESIBILIDAD_WEB_MINERA.md
-- INFORME_RENDIMIENTO_WEB_MINERA.md
-- INFORME_CONFIABILIDAD_WEB_MINERA.md
-- INFORME_ARQUITECTURA_WEB_MINERA.md
-- INFORME_BASE_DATOS_SUPABASE_WEB_MINERA.md
-- INFORME_CI_CD_DESPLIEGUE_WEB_MINERA.md
-- INFORME_ML_WEB_MINERA.md
-- INFORME_REGRESION_WEB_MINERA.md
-- MATRIZ_TRAZABILIDAD_WEB_MINERA.md / .csv
-- AUDIT_WEB_MINERA_HALLAZGOS.md
+## Como entregar
+1. Leer el informe maestro de entrega.
+2. Adjuntar acta + riesgos aceptados + matriz.
+3. Anexar informes FURPS+, pruebas, seguridad, a11y, rendimiento, regresion.
+4. Evidencias en `test-reports/`, `security/`, `accessibility/`, `performance/`.
 
-## Evidencias clave
-- test-reports/ (pytest, vitest, playwright)
-- accessibility/axe/AXE-login_2026-11-03.txt
-- performance/k6/k6-smoke-stdout.txt
-- security/dependencies/ (pip limpio, npm residual, excepciones)
+Copia espejo para carpeta academica: `Document/INFORME_ENTREGA_FINAL_PMV2_WEB_MINERA.md` y anexos.
