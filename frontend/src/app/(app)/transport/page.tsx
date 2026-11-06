@@ -17,7 +17,7 @@ type TransportEvent = {
   is_incident?: boolean;
 };
 
-function TransportEventsPanel({ transportId, canRegister }: { transportId: string; canRegister: boolean }) {
+function TransportEventsPanel({ transportId, canRegister }: Readonly<{ transportId: string; canRegister: boolean }>) {
   const [open, setOpen] = useState(false);
   const events = useDetail<{ items: TransportEvent[] }>(
     "transport-events",

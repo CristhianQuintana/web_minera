@@ -37,6 +37,20 @@ from app.domain.services import DeviationCalculator, MassBalanceCalculator
 from app.domain.value_objects import Permission, UserRole, allows
 from app.ports.outbound.gateway import AppConfigPort, DataGatewayPort
 from app.ports.outbound.repositories import EmailPort, MLInferencePort
+from app.application.messages import (
+    HREF_ALERTS,
+    HREF_CUSTODY,
+    HREF_LOTS,
+    HREF_RECEPTIONS,
+    HREF_TRANSPORT,
+    MSG_BAD_CREDENTIALS,
+    MSG_FORBIDDEN,
+    MSG_ORG_INVALID,
+    MSG_SESSION_EXPIRED,
+    ORDER_OCCURRED_AT_ASC,
+    ORDER_OCCURRED_AT_DESC,
+    ORDER_VERSION_DESC,
+)
 
 # Organización piloto del bootstrap (UUID estable de migraciones). No es demo-org.
 PILOTO_ORG_ID = "e857fa80-1678-4b27-b80f-c38f471a8931"
@@ -124,6 +138,43 @@ class PlatformService:
                 pass
         return merged
 
+
+    def _apply_profile_patch(
+        self,
+        profile: dict[str, Any],
+        patch: dict[str, Any],
+        access_token: str,
+        prefer_admin: bool,
+    ) -> dict[str, Any]:
+        merged = dict(profile)
+        merged.update(patch)
+        try:
+            if prefer_admin and self._admin():
+                patched = self._db.update("profiles", profile["id"], patch, admin=True)
+            else:
+                patched = self._db.update(
+                    "profiles",
+                    profile["id"],
+                    patch,
+                    access_token=access_token,
+                )
+            if isinstance(patched, dict) and patched:
+                merged.update(patched)
+        except Exception:
+            pass
+        return merged
+
+    def _ensure_piloto_org_exists(self) -> None:
+        if not self._admin():
+            return
+        existing = self._db.get("organizations", PILOTO_ORG_ID, admin=True)
+        if not existing:
+            self._db.insert(
+                "organizations",
+                {"id": PILOTO_ORG_ID, "name": PILOTO_ORG_NAME},
+                admin=True,
+            )
+
     def _ensure_profile_organization(
         self,
         profile: dict[str, Any],
@@ -136,41 +187,18 @@ class PlatformService:
         if not auth_user.get("email_confirmed_at") or auth_user.get("banned_until"):
             return profile
 
-        merged = dict(profile)
-        merged["organization_id"] = PILOTO_ORG_ID
-        merged["status"] = "active"
-        if not merged.get("invitation_status") or merged.get("invitation_status") == "pending":
-            merged["invitation_status"] = "active"
-
+        invitation = profile.get("invitation_status")
+        invitation_status = "active" if (not invitation or invitation == "pending") else invitation
         patch = {
             "organization_id": PILOTO_ORG_ID,
             "status": "active",
-            "invitation_status": merged["invitation_status"],
+            "invitation_status": invitation_status,
             "updated_at": _now().isoformat(),
         }
-        try:
-            if self._admin():
-                existing = self._db.get("organizations", PILOTO_ORG_ID, admin=True)
-                if not existing:
-                    self._db.insert(
-                        "organizations",
-                        {"id": PILOTO_ORG_ID, "name": PILOTO_ORG_NAME},
-                        admin=True,
-                    )
-                patched = self._db.update("profiles", profile["id"], patch, admin=True)
-            else:
-                patched = self._db.update(
-                    "profiles",
-                    profile["id"],
-                    patch,
-                    access_token=access_token,
-                )
-            if isinstance(patched, dict) and patched:
-                merged.update(patched)
-                if not merged.get("organization_id"):
-                    merged["organization_id"] = PILOTO_ORG_ID
-        except Exception:
-            pass
+        self._ensure_piloto_org_exists()
+        merged = self._apply_profile_patch(profile, patch, access_token, prefer_admin=True)
+        if not merged.get("organization_id"):
+            merged["organization_id"] = PILOTO_ORG_ID
         return merged
 
 
@@ -196,16 +224,16 @@ class PlatformService:
         user_id = user.get("id") or ""
         access_token = session.get("access_token") or ""
         if not user_id:
-            raise UnauthorizedError("El correo o la contraseña no son correctos.")
+            raise UnauthorizedError(MSG_BAD_CREDENTIALS)
         if not access_token or access_token.startswith("demo-"):
-            raise UnauthorizedError("El correo o la contraseña no son correctos.")
+            raise UnauthorizedError(MSG_BAD_CREDENTIALS)
         profile = None
         if self._admin():
             profile = self._db.get("profiles", user_id, admin=True)
         if not profile:
             profile = self._db.get("profiles", user_id, access_token=access_token)
         if not profile:
-            raise UnauthorizedError("El correo o la contraseña no son correctos.")
+            raise UnauthorizedError(MSG_BAD_CREDENTIALS)
         # Si Auth confirmó al usuario y no está baneado, pero profiles.status quedó
         # inconsistente (p. ej. inactive con invitation activa), alinear el perfil.
         # No rehabilita cuentas con invitation_status inactive/expired (baja explícita).
@@ -215,7 +243,7 @@ class PlatformService:
         normalized = normalize_profile_row(profile, command.email.strip())
         actor = self._db.map_actor(normalized, command.email.strip())
         if not actor.organization_id or actor.organization_id in {"demo-org", "demo-local-cristhian"}:
-            raise UnauthorizedError("Tu cuenta no tiene una organización válida asignada.")
+            raise UnauthorizedError(MSG_ORG_INVALID)
         try:
             self._db.update(
                 "profiles",
@@ -257,20 +285,20 @@ class PlatformService:
 
     def resolve_context(self, access_token: str) -> AuthContext:
         if not access_token or access_token.startswith("demo-"):
-            raise UnauthorizedError("Tu sesión ha expirado. Vuelve a iniciar sesión.")
+            raise UnauthorizedError(MSG_SESSION_EXPIRED)
         user = self._db.get_user(access_token)
         if not user or not user.get("id"):
-            raise UnauthorizedError("Tu sesión ha expirado. Vuelve a iniciar sesión.")
+            raise UnauthorizedError(MSG_SESSION_EXPIRED)
         profile = self._db.get("profiles", user["id"], access_token=access_token, admin=self._admin())
         if not profile:
-            raise UnauthorizedError("Tu sesión ha expirado. Vuelve a iniciar sesión.")
+            raise UnauthorizedError(MSG_SESSION_EXPIRED)
         profile = self._reconcile_confirmed_profile(profile, user, access_token)
         assert_profile_can_login(profile)
         profile = self._ensure_profile_organization(profile, user, access_token)
         email = user.get("email") or profile.get("email") or ""
         actor = self._db.map_actor(normalize_profile_row(profile, email), email)
         if not actor.organization_id or actor.organization_id in {"demo-org", "demo-local-cristhian"}:
-            raise UnauthorizedError("Tu cuenta no tiene una organización válida asignada.")
+            raise UnauthorizedError(MSG_ORG_INVALID)
         return AuthContext(actor=actor, access_token=access_token)
 
     def forgot_password(self, email: str) -> dict[str, str]:
@@ -281,11 +309,11 @@ class PlatformService:
 
     def refresh(self, refresh_token: str) -> dict[str, Any]:
         if not refresh_token or refresh_token.startswith("demo-"):
-            raise UnauthorizedError("Tu sesión ha expirado. Vuelve a iniciar sesión.")
+            raise UnauthorizedError(MSG_SESSION_EXPIRED)
         session = self._db.refresh(refresh_token)
         access_token = session.get("access_token") or ""
         if not access_token or access_token.startswith("demo-"):
-            raise UnauthorizedError("Tu sesión ha expirado. Vuelve a iniciar sesión.")
+            raise UnauthorizedError(MSG_SESSION_EXPIRED)
         return session
 
     def logout(self, access_token: str) -> None:
@@ -293,12 +321,59 @@ class PlatformService:
             return
         self._db.sign_out(access_token)
 
+
+    @staticmethod
+    def _card(key: str, label: str, value: int, href: str) -> dict[str, Any]:
+        return {"key": key, "label": label, "value": value, "href": href}
+
+    def _dashboard_cards(self, role: UserRole, totals: dict[str, int]) -> list[dict[str, Any]]:
+        lots = totals["lots"]
+        transfers = totals["transfers"]
+        receptions = totals["receptions"]
+        alerts = totals["alerts"]
+        transports = totals["transports"]
+        by_role: dict[UserRole, list[dict[str, Any]]] = {
+            UserRole.AUDITOR: [
+                self._card("alerts", "Alertas abiertas", alerts, HREF_ALERTS),
+                self._card("lots", "Lotes", lots, HREF_LOTS),
+                self._card("receptions", "Recepciones", receptions, HREF_RECEPTIONS),
+                self._card("transfers", "Transferencias", transfers, HREF_CUSTODY),
+            ],
+            UserRole.PRODUCER: [
+                self._card("lots", "Mis lotes", lots, HREF_LOTS),
+                self._card("transfers", "Custodias", transfers, HREF_CUSTODY),
+                self._card("alerts", "Alertas", alerts, HREF_ALERTS),
+                self._card("transports", "Transportes", transports, HREF_TRANSPORT),
+            ],
+            UserRole.CARRIER: [
+                self._card("transports", "Transportes", transports, HREF_TRANSPORT),
+                self._card("lots", "Lotes", lots, HREF_LOTS),
+                self._card("transfers", "Custodias", transfers, HREF_CUSTODY),
+                self._card("alerts", "Alertas", alerts, HREF_ALERTS),
+            ],
+            UserRole.RECEIVER: [
+                self._card("receptions", "Recepciones", receptions, HREF_RECEPTIONS),
+                self._card("alerts", "Alertas", alerts, HREF_ALERTS),
+                self._card("lots", "Lotes", lots, HREF_LOTS),
+                self._card("transfers", "Transferencias", transfers, HREF_CUSTODY),
+            ],
+        }
+        return by_role.get(
+            role,
+            [
+                self._card("lots", "Lotes", lots, HREF_LOTS),
+                self._card("transfers", "Transferencias", transfers, HREF_CUSTODY),
+                self._card("receptions", "Recepciones", receptions, HREF_RECEPTIONS),
+                self._card("alerts", "Alertas abiertas", alerts, HREF_ALERTS),
+            ],
+        )
+
     def dashboard(self, ctx: AuthContext) -> dict[str, Any]:
         org = ctx.actor.organization_id
         token = ctx.access_token
         lots, lots_total = self._db.select("lots", {"organization_id": org}, limit=5, access_token=token, admin=self._admin())
-        transfers, transfers_total = self._db.select("custody_transfers", limit=1, access_token=token, admin=self._admin())
-        receptions, receptions_total = self._db.select("receptions", limit=1, access_token=token, admin=self._admin())
+        _, transfers_total = self._db.select("custody_transfers", limit=1, access_token=token, admin=self._admin())
+        _, receptions_total = self._db.select("receptions", limit=1, access_token=token, admin=self._admin())
         alerts, alerts_total = self._db.select(
             "alerts",
             {"organization_id": org, "status__in": "new,in_review"},
@@ -307,43 +382,14 @@ class PlatformService:
             admin=self._admin(),
         )
         transports, transports_total = self._db.select("transports", limit=5, access_token=token, admin=self._admin())
-        role = ctx.actor.role.canonical
-        cards: list[dict[str, Any]]
-        if role == UserRole.AUDITOR:
-            cards = [
-                {"key": "alerts", "label": "Alertas abiertas", "value": alerts_total, "href": "/alerts"},
-                {"key": "lots", "label": "Lotes", "value": lots_total, "href": "/lots"},
-                {"key": "receptions", "label": "Recepciones", "value": receptions_total, "href": "/receptions"},
-                {"key": "transfers", "label": "Transferencias", "value": transfers_total, "href": "/custody"},
-            ]
-        elif role == UserRole.PRODUCER:
-            cards = [
-                {"key": "lots", "label": "Mis lotes", "value": lots_total, "href": "/lots"},
-                {"key": "transfers", "label": "Custodias", "value": transfers_total, "href": "/custody"},
-                {"key": "alerts", "label": "Alertas", "value": alerts_total, "href": "/alerts"},
-                {"key": "transports", "label": "Transportes", "value": transports_total, "href": "/transport"},
-            ]
-        elif role == UserRole.CARRIER:
-            cards = [
-                {"key": "transports", "label": "Transportes", "value": transports_total, "href": "/transport"},
-                {"key": "lots", "label": "Lotes", "value": lots_total, "href": "/lots"},
-                {"key": "transfers", "label": "Custodias", "value": transfers_total, "href": "/custody"},
-                {"key": "alerts", "label": "Alertas", "value": alerts_total, "href": "/alerts"},
-            ]
-        elif role == UserRole.RECEIVER:
-            cards = [
-                {"key": "receptions", "label": "Recepciones", "value": receptions_total, "href": "/receptions"},
-                {"key": "alerts", "label": "Alertas", "value": alerts_total, "href": "/alerts"},
-                {"key": "lots", "label": "Lotes", "value": lots_total, "href": "/lots"},
-                {"key": "transfers", "label": "Transferencias", "value": transfers_total, "href": "/custody"},
-            ]
-        else:
-            cards = [
-                {"key": "lots", "label": "Lotes", "value": lots_total, "href": "/lots"},
-                {"key": "transfers", "label": "Transferencias", "value": transfers_total, "href": "/custody"},
-                {"key": "receptions", "label": "Recepciones", "value": receptions_total, "href": "/receptions"},
-                {"key": "alerts", "label": "Alertas abiertas", "value": alerts_total, "href": "/alerts"},
-            ]
+        totals = {
+            "lots": lots_total,
+            "transfers": transfers_total,
+            "receptions": receptions_total,
+            "alerts": alerts_total,
+            "transports": transports_total,
+        }
+        cards = self._dashboard_cards(ctx.actor.role.canonical, totals)
         return {
             "role": ctx.actor.role.value,
             "cards": cards,
@@ -390,7 +436,7 @@ class PlatformService:
         if not lot:
             raise NotFoundError("El lote no existe.")
         if str(lot.get("organization_id") or "") != str(ctx.actor.organization_id):
-            raise ForbiddenError("No tienes permisos para realizar esta acción.")
+            raise ForbiddenError(MSG_FORBIDDEN)
         evidences = self._related_rows(ctx, "evidences", lot_id)
         transfers = self._related_rows(ctx, "custody_transfers", lot_id)
         transports = self._related_rows(ctx, "transports", lot_id)
@@ -421,7 +467,7 @@ class PlatformService:
         events, _ = self._db.select(
             "lot_events",
             {"lot_id": lot_id},
-            order="occurred_at.asc",
+            order=ORDER_OCCURRED_AT_ASC,
             limit=200,
             access_token=ctx.access_token,
             admin=self._admin(),
@@ -516,7 +562,7 @@ class PlatformService:
         ctx.require(Permission.TRANSFER_CUSTODY)
         lot = self.get_row(ctx, "lots", command.lot_id, Permission.VIEW_LOTS)
         if str(lot.get("organization_id") or "") != str(ctx.actor.organization_id):
-            raise ForbiddenError("No tienes permisos para realizar esta acción.")
+            raise ForbiddenError(MSG_FORBIDDEN)
         CustodyTransferRules.validate(command.origin, command.destination, command.quantity, lot.get("status", ""))
         row = self._db.insert(
             "custody_transfers",
@@ -543,7 +589,7 @@ class PlatformService:
         ctx.require(Permission.REGISTER_TRANSPORT)
         lot = self.get_row(ctx, "lots", command.lot_id, Permission.VIEW_LOTS)
         if str(lot.get("organization_id") or "") != str(ctx.actor.organization_id):
-            raise ForbiddenError("No tienes permisos para realizar esta acción.")
+            raise ForbiddenError(MSG_FORBIDDEN)
         row = self._db.insert(
             "transports",
             {
@@ -584,11 +630,11 @@ class PlatformService:
         transport = self.get_row(ctx, "transports", transport_id, Permission.VIEW_TRANSPORT)
         lot = self.get_row(ctx, "lots", str(transport["lot_id"]), Permission.VIEW_LOTS)
         if str(lot.get("organization_id") or "") != str(ctx.actor.organization_id):
-            raise ForbiddenError("No tienes permisos para realizar esta acción.")
+            raise ForbiddenError(MSG_FORBIDDEN)
         items, _ = self._db.select(
             "transport_events",
             {"transport_id": transport_id},
-            order="occurred_at.asc",
+            order=ORDER_OCCURRED_AT_ASC,
             limit=200,
             access_token=ctx.access_token,
             admin=self._admin(),
@@ -602,7 +648,7 @@ class PlatformService:
         transport = self.get_row(ctx, "transports", transport_id, Permission.VIEW_TRANSPORT)
         lot = self.get_row(ctx, "lots", str(transport["lot_id"]), Permission.VIEW_LOTS)
         if str(lot.get("organization_id") or "") != str(ctx.actor.organization_id):
-            raise ForbiddenError("No tienes permisos para realizar esta acción.")
+            raise ForbiddenError(MSG_FORBIDDEN)
         occurred = command.occurred_at or _now().isoformat()
         row = self._db.insert(
             "transport_events",
@@ -692,7 +738,7 @@ class PlatformService:
                     "rule_key": "mass_balance_percent",
                     "is_active": True,
                 },
-                order="version.desc",
+                order=ORDER_VERSION_DESC,
                 limit=1,
                 access_token=ctx.access_token,
                 admin=self._admin(),
@@ -754,7 +800,7 @@ class PlatformService:
             receptions, _ = self._db.select(
                 "receptions",
                 {"lot_id__in": lot_ids},
-                order="occurred_at.desc",
+                order=ORDER_OCCURRED_AT_DESC,
                 limit=max(limit * 5, 50),
                 access_token=ctx.access_token,
                 admin=self._admin(),
@@ -775,11 +821,11 @@ class PlatformService:
         ctx.require(Permission.VIEW_BALANCE)
         lot = self.get_row(ctx, "lots", lot_id, Permission.VIEW_LOTS)
         if str(lot.get("organization_id") or "") != str(ctx.actor.organization_id):
-            raise ForbiddenError("No tienes permisos para realizar esta acción.")
+            raise ForbiddenError(MSG_FORBIDDEN)
         receptions, _ = self._db.select(
             "receptions",
             {"lot_id": lot_id},
-            order="occurred_at.desc",
+            order=ORDER_OCCURRED_AT_DESC,
             limit=1,
             access_token=ctx.access_token,
             admin=self._admin(),
@@ -1010,7 +1056,7 @@ class PlatformService:
         tolerances, _ = self._db.select(
             "tolerance_rules",
             {"organization_id": ctx.actor.organization_id},
-            order="version.desc",
+            order=ORDER_VERSION_DESC,
             limit=20,
             access_token=ctx.access_token,
             admin=self._admin(),
@@ -1041,7 +1087,7 @@ class PlatformService:
         current, _ = self._db.select(
             "tolerance_rules",
             {"organization_id": ctx.actor.organization_id, "rule_key": command.rule_key},
-            order="version.desc",
+            order=ORDER_VERSION_DESC,
             limit=1,
             access_token=ctx.access_token,
             admin=True,
@@ -1075,12 +1121,12 @@ class PlatformService:
         ctx.require(Permission.ESTIMATE_ML)
         lot = self.get_row(ctx, "lots", lot_id, Permission.VIEW_LOTS)
         if str(lot.get("organization_id") or "") != str(ctx.actor.organization_id):
-            raise ForbiddenError("No tienes permisos para realizar esta acción.")
+            raise ForbiddenError(MSG_FORBIDDEN)
         receptions, _ = self._db.select(
             "receptions",
             {"lot_id": lot_id},
             limit=1,
-            order="occurred_at.desc",
+            order=ORDER_OCCURRED_AT_DESC,
             access_token=ctx.access_token,
             admin=self._admin(),
         )
@@ -1143,7 +1189,7 @@ class PlatformService:
 
     def search(self, ctx: AuthContext, term: str) -> dict[str, Any]:
         if not allows(ctx.actor.role, Permission.VIEW_LOTS):
-            raise ForbiddenError("No tienes permisos para realizar esta acción.")
+            raise ForbiddenError(MSG_FORBIDDEN)
         lots, _ = self._db.select(
             "lots",
             {"organization_id": ctx.actor.organization_id},

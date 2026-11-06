@@ -395,9 +395,10 @@ def ml_inferences(
 def ml_inference_detail(record_id: str, ctx: AuthContext = Depends(get_context), platform: PlatformService = Depends(get_platform)):
     row = platform.get_row(ctx, "ml_inferences", record_id, Permission.VIEW_ML)
     if str(row.get("organization_id") or "") != str(ctx.actor.organization_id):
+        from app.application.messages import MSG_FORBIDDEN
         from app.domain.exceptions import ForbiddenError
 
-        raise ForbiddenError("No tienes permisos para realizar esta acción.")
+        raise ForbiddenError(MSG_FORBIDDEN)
     return row
 
 

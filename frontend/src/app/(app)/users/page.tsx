@@ -64,13 +64,21 @@ export default function UsersPage() {
   );
 }
 
+
+function userActionLabel(loading: boolean, confirm: "activate" | "deactivate" | null): string {
+  if (loading && confirm === "deactivate") return "Desactivando...";
+  if (loading) return "Activando...";
+  if (confirm === "deactivate") return "Desactivar";
+  return "Activar";
+}
+
 function UserActions({
   row,
   helpers,
-}: {
+}: Readonly<{
   row: Record<string, unknown>;
   helpers: { refresh: () => void; push: (text: string, tone?: "success" | "error") => void };
-}) {
+}>) {
   const [confirm, setConfirm] = useState<"activate" | "deactivate" | null>(null);
   const [loading, setLoading] = useState(false);
   const active = row.status === "active" && row.invitation_status !== "inactive";
@@ -119,7 +127,7 @@ function UserActions({
               )
             }
           >
-            {loading ? (confirm === "deactivate" ? "Desactivando..." : "Activando...") : confirm === "deactivate" ? "Desactivar" : "Activar"}
+            {userActionLabel(loading, confirm)}
           </Button>
         </div>
       </Modal>

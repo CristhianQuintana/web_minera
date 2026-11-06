@@ -74,8 +74,7 @@ def test_domain_has_no_framework_or_adapter_imports() -> None:
 
 def test_application_has_no_adapter_or_framework_imports() -> None:
     # AuthContext vive en application; platform no debe importar adapters.
-    files = [f for f in _python_files("application") if "auth_context" not in f.name or True]
-    _assert_no_forbidden(files, FORBIDDEN_IN_APPLICATION, "application")
+    _assert_no_forbidden(_python_files("application"), FORBIDDEN_IN_APPLICATION, "application")
 
 
 def test_ports_have_no_adapter_or_framework_imports() -> None:

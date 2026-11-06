@@ -31,7 +31,6 @@ interface ResourcePageProps {
   createPath?: string;
   detailTitle: string;
   renderDetail?: (row: Record<string, unknown>) => ReactNode;
-  reviewPath?: (id: string) => string;
   canCreate?: boolean;
   canExport?: boolean;
   extraActions?: (row: Record<string, unknown>, helpers: { refresh: () => void; push: (text: string, tone?: "success" | "error") => void }) => ReactNode;
@@ -55,7 +54,7 @@ export function ResourcePage({
   canCreate,
   canExport,
   extraActions,
-}: ResourcePageProps) {
+}: Readonly<ResourcePageProps>) {
   const [page, setPage] = useState(1);
   const [q, setQ] = useState("");
   const [debounced, setDebounced] = useState("");
@@ -180,51 +179,21 @@ export function ResourcePage({
       )}
 
       <div className="overflow-hidden rounded-2xl border border-border bg-white">
-        {list.isLoading ? (
-          <div className="space-y-2 p-4">
-            <Skeleton className="h-10" />
-            <Skeleton className="h-10" />
-            <Skeleton className="h-10" />
-          </div>
-        ) : list.isError ? (
-          <ErrorState message="No pudimos cargar esta información." onRetry={() => list.refetch()} />
-        ) : items.length === 0 ? (
-          <EmptyState title={emptyTitle} description={emptyDescription} />
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full text-left text-sm">
-              <thead className="bg-slate-50 text-muted">
-                <tr>
-                  {columns.map((column) => (
-                    <th key={column.key} className="px-4 py-3 font-medium">
-                      {column.label}
-                    </th>
-                  ))}
-                  <th className="px-4 py-3 font-medium">Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {items.map((row) => (
-                  <tr key={String(row.id)} className="border-t border-border hover:bg-slate-50">
-                    {columns.map((column) => (
-                      <td key={column.key} className="px-4 py-3">
-                        {cell(row, column)}
-                      </td>
-                    ))}
-                    <td className="px-4 py-3">
-                      <div className="flex flex-wrap gap-2">
-                        <Button variant="ghost" onClick={() => setSelectedId(String(row.id))}>
-                          Detalle
-                        </Button>
-                        {extraActions?.(row, { refresh: () => list.refetch(), push })}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+        <ResourceTableBody
+          loading={list.isLoading}
+          error={list.isError}
+          empty={!items.length}
+          emptyTitle={emptyTitle}
+          emptyDescription={emptyDescription}
+          onRetry={() => list.refetch()}
+          columns={columns}
+          items={items}
+          cell={cell}
+          onOpen={(id) => setSelectedId(id)}
+          extraActions={extraActions}
+          refresh={() => list.refetch()}
+          push={push}
+        />
         <div className="flex items-center justify-between border-t border-border px-4 py-3 text-sm text-muted">
           <span>
             {from}–{to} de {total}
@@ -251,20 +220,13 @@ export function ResourcePage({
               </button>
             </div>
             <div className="flex-1 overflow-auto p-5">
-              {detail.isLoading ? (
-                <div className="space-y-3">
-                  <Skeleton className="h-8" />
-                  <Skeleton className="h-32" />
-                </div>
-              ) : detail.isError ? (
-                <ErrorState message="No pudimos cargar el detalle." onRetry={() => detail.refetch()} />
-              ) : selected ? (
-                renderDetail ? (
-                  renderDetail(selected)
-                ) : (
-                  <pre className="whitespace-pre-wrap text-sm">{JSON.stringify(selected, null, 2)}</pre>
-                )
-              ) : null}
+              <ResourceDetailBody
+                loading={detail.isLoading}
+                error={detail.isError}
+                selected={selected}
+                renderDetail={renderDetail}
+                onRetry={() => detail.refetch()}
+              />
             </div>
           </aside>
         </div>
@@ -327,7 +289,118 @@ export function ResourcePage({
   );
 }
 
-export function Field({ label, value }: { label: string; value?: ReactNode }) {
+
+function ResourceTableBody({
+  loading,
+  error,
+  empty,
+  emptyTitle,
+  emptyDescription,
+  onRetry,
+  columns,
+  items,
+  cell,
+  onOpen,
+  extraActions,
+  refresh,
+  push,
+}: Readonly<{
+  loading: boolean;
+  error: boolean;
+  empty: boolean;
+  emptyTitle: string;
+  emptyDescription: string;
+  onRetry: () => void;
+  columns: Column[];
+  items: Record<string, unknown>[];
+  cell: (row: Record<string, unknown>, column: Column) => ReactNode;
+  onOpen: (id: string) => void;
+  extraActions?: ResourcePageProps["extraActions"];
+  refresh: () => void;
+  push: (text: string, tone?: "success" | "error") => void;
+}>) {
+  if (loading) {
+    return (
+      <div className="space-y-2 p-4">
+        <Skeleton className="h-10" />
+        <Skeleton className="h-10" />
+        <Skeleton className="h-10" />
+      </div>
+    );
+  }
+  if (error) {
+    return <ErrorState message="No pudimos cargar esta información." onRetry={onRetry} />;
+  }
+  if (empty) {
+    return <EmptyState title={emptyTitle} description={emptyDescription} />;
+  }
+  return (
+    <div className="overflow-x-auto">
+      <table className="min-w-full text-left text-sm">
+        <thead className="bg-slate-50 text-muted">
+          <tr>
+            {columns.map((column) => (
+              <th key={column.key} className="px-4 py-3 font-medium">
+                {column.label}
+              </th>
+            ))}
+            <th className="px-4 py-3 font-medium">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {items.map((row) => (
+            <tr key={String(row.id)} className="border-t border-border hover:bg-slate-50">
+              {columns.map((column) => (
+                <td key={column.key} className="px-4 py-3">
+                  {cell(row, column)}
+                </td>
+              ))}
+              <td className="px-4 py-3">
+                <div className="flex flex-wrap gap-2">
+                  <Button variant="ghost" onClick={() => onOpen(String(row.id))}>
+                    Detalle
+                  </Button>
+                  {extraActions?.(row, { refresh, push })}
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function ResourceDetailBody({
+  loading,
+  error,
+  selected,
+  renderDetail,
+  onRetry,
+}: Readonly<{
+  loading: boolean;
+  error: boolean;
+  selected?: Record<string, unknown> | null;
+  renderDetail?: (row: Record<string, unknown>) => ReactNode;
+  onRetry: () => void;
+}>) {
+  if (loading) {
+    return (
+      <div className="space-y-3">
+        <Skeleton className="h-8" />
+        <Skeleton className="h-32" />
+      </div>
+    );
+  }
+  if (error) {
+    return <ErrorState message="No pudimos cargar el detalle." onRetry={onRetry} />;
+  }
+  if (!selected) return null;
+  if (renderDetail) return <>{renderDetail(selected)}</>;
+  return <pre className="whitespace-pre-wrap text-sm">{JSON.stringify(selected, null, 2)}</pre>;
+}
+
+export function Field({ label, value }: Readonly<{ label: string; value?: ReactNode }>) {
   return (
     <div className="border-b border-border py-3">
       <p className="text-xs uppercase tracking-wide text-muted">{label}</p>
@@ -342,7 +415,7 @@ export function SimpleForm({
   loading,
   submitLabel = "Guardar",
   validate,
-}: {
+}: Readonly<{
   fields: Array<{
     name: string;
     label: string;
@@ -356,7 +429,7 @@ export function SimpleForm({
   validate?: (
     body: Record<string, unknown>,
   ) => { ok: true; data: Record<string, unknown> } | { ok: false; errors: Record<string, string>; message: string };
-}) {
+}>) {
   const [values, setValues] = useState<Record<string, string>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [formError, setFormError] = useState<string | null>(null);

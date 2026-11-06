@@ -53,10 +53,18 @@ export default function LoginPage() {
             error={form.formState.errors.password?.message}
             {...form.register("password")}
           />
-          <label className="flex items-center gap-2 text-sm text-muted">
-            <input type="checkbox" checked={showPassword} onChange={(event) => setShowPassword(event.target.checked)} />
-            Mostrar contraseña
-          </label>
+          <div className="flex items-center gap-2 text-sm text-muted">
+            <input
+              id="show-password"
+              type="checkbox"
+              className="h-4 w-4"
+              checked={showPassword}
+              onChange={(event) => setShowPassword(event.target.checked)}
+            />
+            <label htmlFor="show-password" className="m-0">
+              Mostrar contraseña
+            </label>
+          </div>
           <Link href="/forgot-password" className="block text-sm text-primary hover:underline">
             ¿Olvidaste tu contraseña?
           </Link>

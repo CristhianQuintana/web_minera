@@ -43,7 +43,7 @@ Abrir http://localhost:3000
 Las mismas de la app móvil:
 
 - URL: `https://oewpepqrtoezbvrxhrfe.supabase.co`
-- Anon / publishable key: `sb_publishable_51MkYSgxXND4Sfqzhz1smA_pke0IOJY`
+- Anon / publishable key: configurar `NEXT_PUBLIC_SUPABASE_ANON_KEY` / `SUPABASE_ANON_KEY` en `.env` (no versionar secretos)
 
 Nunca colocar `service_role` en el frontend. Si se configura `SUPABASE_SERVICE_ROLE_KEY` en el backend, se habilitan invitaciones Admin de Auth.
 

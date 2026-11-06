@@ -2,18 +2,20 @@
 
 import { cn } from "@/shared/utils/format";
 import { AlertCircle, Loader2 } from "lucide-react";
-import { type ButtonHTMLAttributes, type InputHTMLAttributes, type ReactNode, useState } from "react";
+import {
+  type ButtonHTMLAttributes,
+  type InputHTMLAttributes,
+  type ReactNode,
+  useCallback,
+  useState,
+} from "react";
 
-export function Button({
-  children,
-  loading,
-  variant = "primary",
-  className,
-  ...props
-}: ButtonHTMLAttributes<HTMLButtonElement> & {
+type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   loading?: boolean;
   variant?: "primary" | "secondary" | "ghost" | "danger";
-}) {
+};
+
+export function Button({ children, loading, variant = "primary", className, ...props }: Readonly<ButtonProps>) {
   const styles = {
     primary: "bg-primary text-white hover:bg-primary-dark",
     secondary: "bg-white border border-border text-text hover:bg-slate-50",
@@ -36,13 +38,9 @@ export function Button({
   );
 }
 
-export function Input({
-  label,
-  error,
-  hint,
-  className,
-  ...props
-}: InputHTMLAttributes<HTMLInputElement> & { label?: string; error?: string; hint?: string }) {
+type InputProps = InputHTMLAttributes<HTMLInputElement> & { label?: string; error?: string; hint?: string };
+
+export function Input({ label, error, hint, className, ...props }: Readonly<InputProps>) {
   return (
     <label className="block space-y-1.5">
       {label ? <span className="text-sm font-medium text-text">{label}</span> : null}
@@ -60,13 +58,9 @@ export function Input({
   );
 }
 
-export function Select({
-  label,
-  error,
-  children,
-  className,
-  ...props
-}: React.SelectHTMLAttributes<HTMLSelectElement> & { label?: string; error?: string }) {
+type SelectProps = React.SelectHTMLAttributes<HTMLSelectElement> & { label?: string; error?: string };
+
+export function Select({ label, error, children, className, ...props }: Readonly<SelectProps>) {
   return (
     <label className="block space-y-1.5">
       {label ? <span className="text-sm font-medium text-text">{label}</span> : null}
@@ -81,7 +75,17 @@ export function Select({
   );
 }
 
-export function Badge({ value, tone = "neutral" }: { value: string; tone?: "neutral" | "success" | "warning" | "error" | "info" }) {
+function badgePrefix(tone: string): string {
+  if (tone === "success") return "Éxito: ";
+  if (tone === "warning") return "Advertencia: ";
+  if (tone === "error") return "Error: ";
+  return "";
+}
+
+export function Badge({
+  value,
+  tone = "neutral",
+}: Readonly<{ value: string; tone?: "neutral" | "success" | "warning" | "error" | "info" }>) {
   const colors = {
     neutral: "bg-slate-100 text-slate-700",
     success: "bg-emerald-50 text-[var(--success-fg)]",
@@ -91,7 +95,7 @@ export function Badge({ value, tone = "neutral" }: { value: string; tone?: "neut
   }[tone];
   return (
     <span className={cn("inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium", colors)}>
-      <span className="sr-only">{tone === "success" ? "Éxito: " : tone === "warning" ? "Advertencia: " : tone === "error" ? "Error: " : ""}</span>
+      <span className="sr-only">{badgePrefix(tone)}</span>
       {value}
     </span>
   );
@@ -106,11 +110,15 @@ export function toneFor(status?: string): "neutral" | "success" | "warning" | "e
   return "neutral";
 }
 
-export function Card({ children, className }: { children: ReactNode; className?: string }) {
+export function Card({ children, className }: Readonly<{ children: ReactNode; className?: string }>) {
   return <div className={cn("rounded-2xl border border-border bg-surface p-5 shadow-[var(--shadow)]", className)}>{children}</div>;
 }
 
-export function EmptyState({ title, description, action }: { title: string; description?: string; action?: ReactNode }) {
+export function EmptyState({
+  title,
+  description,
+  action,
+}: Readonly<{ title: string; description?: string; action?: ReactNode }>) {
   return (
     <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
       <p className="text-base font-semibold text-text">{title}</p>
@@ -120,7 +128,7 @@ export function EmptyState({ title, description, action }: { title: string; desc
   );
 }
 
-export function ErrorState({ message, onRetry }: { message: string; onRetry?: () => void }) {
+export function ErrorState({ message, onRetry }: Readonly<{ message: string; onRetry?: () => void }>) {
   return (
     <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
       <AlertCircle className="h-8 w-8 text-error" />
@@ -130,13 +138,15 @@ export function ErrorState({ message, onRetry }: { message: string; onRetry?: ()
   );
 }
 
-export function Skeleton({ className }: { className?: string }) {
+export function Skeleton({ className }: Readonly<{ className?: string }>) {
   return <div className={cn("animate-pulse rounded-xl bg-slate-200", className)} />;
 }
 
-export function ToastHost({ toasts }: { toasts: Array<{ id: string; text: string; tone: "success" | "error" }> }) {
+type ToastItem = { id: string; text: string; tone: "success" | "error" };
+
+export function ToastHost({ toasts }: Readonly<{ toasts: ToastItem[] }>) {
   return (
-    <div className="fixed right-4 top-4 z-[60] space-y-2" role="status" aria-live="polite">
+    <output className="fixed right-4 top-4 z-[60] block space-y-2" aria-live="polite">
       {toasts.map((toast) => (
         <div
           key={toast.id}
@@ -151,17 +161,23 @@ export function ToastHost({ toasts }: { toasts: Array<{ id: string; text: string
           {toast.text}
         </div>
       ))}
-    </div>
+    </output>
   );
 }
 
+function removeToastById(current: ToastItem[], id: string): ToastItem[] {
+  return current.filter((item) => item.id !== id);
+}
+
 export function useToasts() {
-  const [toasts, setToasts] = useState<Array<{ id: string; text: string; tone: "success" | "error" }>>([]);
-  const push = (text: string, tone: "success" | "error" = "success") => {
+  const [toasts, setToasts] = useState<ToastItem[]>([]);
+  const push = useCallback((text: string, tone: "success" | "error" = "success") => {
     const id = crypto.randomUUID();
     setToasts((current) => [...current, { id, text, tone }]);
-    setTimeout(() => setToasts((current) => current.filter((item) => item.id !== id)), 3200);
-  };
+    window.setTimeout(() => {
+      setToasts((current) => removeToastById(current, id));
+    }, 3200);
+  }, []);
   return { toasts, push };
 }
 
@@ -170,12 +186,12 @@ export function Modal({
   title,
   children,
   onClose,
-}: {
+}: Readonly<{
   open: boolean;
   title: string;
   children: ReactNode;
   onClose: () => void;
-}) {
+}>) {
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-[50] flex items-center justify-center p-4">

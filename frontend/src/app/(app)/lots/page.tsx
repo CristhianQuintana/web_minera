@@ -16,7 +16,7 @@ type TimelineItem = {
   user_id?: string;
 };
 
-function LotTimeline({ lotId }: { lotId: string }) {
+function LotTimeline({ lotId }: Readonly<{ lotId: string }>) {
   const timeline = useDetail<{ items: TimelineItem[] }>(
     "lot-timeline",
     `/api/v1/lots/${lotId}/timeline`,
@@ -103,7 +103,7 @@ export default function LotsPage() {
             <Field label="QR" value={String(row.qr_payload ?? row.code)} />
             <Field
               label="Ubicación"
-              value={row.latitude != null && row.longitude != null ? `${row.latitude}, ${row.longitude}` : "—"}
+              value={row.latitude != null && row.longitude != null ? `${String(row.latitude)}, ${String(row.longitude)}` : "—"}
             />
             <h3 className="mt-6 font-semibold">Evidencias</h3>
             <p className="text-sm text-muted">

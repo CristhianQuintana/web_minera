@@ -33,6 +33,7 @@
   --space-xl: 2rem;
 }
 
+/* NOSONAR - Tailwind v4 theme tokens */
 @theme inline {
   --color-primary: var(--primary);
   --color-primary-dark: var(--primary-dark);

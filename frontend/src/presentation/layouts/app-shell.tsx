@@ -1,7 +1,6 @@
 "use client";
 
-import { getCurrentUserUseCase, logoutUseCase } from "@/composition/container";
-import { platform } from "@/composition/container";
+import { getCurrentUserUseCase, logoutUseCase, platform } from "@/composition/container";
 import { hasAccessToken } from "@/adapters/outbound/api/http-client";
 import { useSessionStore } from "@/infrastructure/auth/session-store";
 import { Badge, Button, Skeleton } from "@/shared/components/ui";
@@ -46,7 +45,19 @@ const nav = [
   { href: "/settings", label: "Configuración", icon: Settings, permission: "manage_settings" },
 ];
 
-export function AppShell({ children }: { children: React.ReactNode }) {
+function AppShellLoading() {
+  return (
+    <div className="grid min-h-screen grid-cols-[240px_1fr] gap-4 p-4">
+      <Skeleton className="h-full" />
+      <div className="space-y-4">
+        <Skeleton className="h-16" />
+        <Skeleton className="h-64" />
+      </div>
+    </div>
+  );
+}
+
+export function AppShell({ children }: Readonly<{ children: React.ReactNode }>) {
   const pathname = usePathname();
   const router = useRouter();
   const { user, setUser, sidebarCollapsed, toggleSidebar } = useSessionStore();
@@ -91,15 +102,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const items = nav.filter((item) => !user || user.permissions.includes(item.permission) || user.role === "admin");
 
   if (!user && me.isLoading) {
-    return (
-      <div className="grid min-h-screen grid-cols-[240px_1fr] gap-4 p-4">
-        <Skeleton className="h-full" />
-        <div className="space-y-4">
-          <Skeleton className="h-16" />
-          <Skeleton className="h-64" />
-        </div>
-      </div>
-    );
+    return <AppShellLoading />;
   }
 
   async function logout() {
@@ -240,11 +243,11 @@ export function PageHeader({
   title,
   description,
   actions,
-}: {
+}: Readonly<{
   title: string;
   description?: string;
   actions?: React.ReactNode;
-}) {
+}>) {
   return (
     <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
       <div>
@@ -256,7 +259,7 @@ export function PageHeader({
   );
 }
 
-export function PermissionGate({ permission, children }: { permission: string; children: React.ReactNode }) {
+export function PermissionGate({ permission, children }: Readonly<{ permission: string; children: React.ReactNode }>) {
   const user = useSessionStore((state) => state.user);
   if (user && !user.permissions.includes(permission) && user.role !== "admin") {
     return (
@@ -272,7 +275,7 @@ export function PermissionGate({ permission, children }: { permission: string; c
   return <>{children}</>;
 }
 
-export function StatusBadge({ value }: { value?: string }) {
+export function StatusBadge({ value }: Readonly<{ value?: string }>) {
   return <Badge value={labelOfStatus(value)} tone={toneForStatus(value)} />;
 }
 

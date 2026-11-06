@@ -1,3 +1,5 @@
+import pytest
+
 from app.adapters.outbound.ml.client import MLServiceAdapter
 from app.infrastructure.configuration.settings import Settings
 
@@ -7,7 +9,7 @@ def test_fallback_when_ml_url_missing() -> None:
     result = adapter.estimate({"origin_quantity": 100, "mineral": "Oro"})
     assert result["source"] == "fallback"
     assert result["model_version"].endswith("fallback")
-    assert result["expected_quantity"] == 97.8
+    assert result["expected_quantity"] == pytest.approx(97.8)
 
 
 def test_fallback_marks_reason_when_service_configured_but_down() -> None:

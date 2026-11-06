@@ -27,29 +27,30 @@ def _authed_client(gateway: MagicMock) -> TestClient:
     platform = app.state.container.platform
     platform._db = gateway
     gateway.get_user.return_value = {"id": "admin-1", "email": "admin@cooperativa.org"}
-    gateway.get.side_effect = lambda table, record_id, **kwargs: (
-        {
-            "id": "admin-1",
-            "email": "admin@cooperativa.org",
-            "full_name": "Admin",
-            "role": "admin",
-            "organization_id": ORG,
-            "status": "active",
-            "invitation_status": "active",
-        }
-        if table == "profiles"
-        else {
-            "id": record_id,
-            "organization_id": ORG,
-            "quantity": 100,
-            "mineral": "Oro",
-            "unit": "kg",
-            "code": "DEMO-LOTE-001",
-            "mining_operation_id": None,
-        }
-        if table == "lots"
-        else None
-    )
+    def _get_row(table, record_id, **kwargs):
+        if table == "profiles":
+            return {
+                "id": "admin-1",
+                "email": "admin@cooperativa.org",
+                "full_name": "Admin",
+                "role": "admin",
+                "organization_id": ORG,
+                "status": "active",
+                "invitation_status": "active",
+            }
+        if table == "lots":
+            return {
+                "id": record_id,
+                "organization_id": ORG,
+                "quantity": 100,
+                "mineral": "Oro",
+                "unit": "kg",
+                "code": "DEMO-LOTE-001",
+                "mining_operation_id": None,
+            }
+        return None
+
+    gateway.get.side_effect = _get_row
     gateway.map_actor.return_value = _actor()
     return TestClient(app)
 

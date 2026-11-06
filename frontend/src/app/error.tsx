@@ -1,6 +1,6 @@
 "use client";
 
-export default function ErrorPage({ reset }: { reset: () => void }) {
+export default function ErrorPage({ reset }: Readonly<{ reset: () => void }>) {
   return (
     <main className="grid min-h-screen place-items-center p-6 text-center">
       <div>

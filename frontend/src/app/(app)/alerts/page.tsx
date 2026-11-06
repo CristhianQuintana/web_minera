@@ -49,10 +49,10 @@ export default function AlertsPage() {
 function ReviewAction({
   alertId,
   onDone,
-}: {
+}: Readonly<{
   alertId: string;
   onDone: { refresh: () => void; push: (text: string, tone?: "success" | "error") => void };
-}) {
+}>) {
   const [open, setOpen] = useState(false);
   const [result, setResult] = useState("");
   const [observation, setObservation] = useState("");

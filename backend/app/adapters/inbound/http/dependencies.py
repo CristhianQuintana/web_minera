@@ -1,5 +1,7 @@
 """Adaptador inbound FastAPI: traduce HTTP a puertos/casos de uso."""
 
+from app.application.messages import MSG_SESSION_EXPIRED
+
 from fastapi import Cookie, Depends, Header, Request
 
 from app.application.auth_context import AuthContext
@@ -60,5 +62,5 @@ def get_context(
         token = authorization.split(" ", 1)[1]
     token = token or access_token or request.cookies.get("access_token")
     if not token:
-        raise UnauthorizedError("Tu sesión ha expirado. Vuelve a iniciar sesión.")
+        raise UnauthorizedError(MSG_SESSION_EXPIRED)
     return resolve_session.execute(token)

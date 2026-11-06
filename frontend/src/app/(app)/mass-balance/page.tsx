@@ -6,6 +6,54 @@ import { Field, ResourcePage } from "@/presentation/modules/resource-page";
 import { Button } from "@/shared/components/ui";
 import { formatQuantity, labelOf } from "@/shared/utils/format";
 
+
+function RecalculateAction({
+  row,
+  helpers,
+}: Readonly<{
+  row: Record<string, unknown>;
+  helpers: { refresh: () => void; push: (text: string, tone?: "success" | "error") => void };
+}>) {
+  return (
+    <Button
+      variant="secondary"
+      onClick={async () => {
+        try {
+          await platform.post(`/api/v1/mass-balance/${String(row.lot_id)}/recalculate`);
+          helpers.push("Balance recalculado correctamente.");
+          helpers.refresh();
+        } catch (error) {
+          helpers.push(error instanceof Error ? error.message : "No se pudo recalcular.", "error");
+        }
+      }}
+    >
+      Recalcular
+    </Button>
+  );
+}
+
+function BalanceDetail({ row }: Readonly<{ row: Record<string, unknown> }>) {
+  const difference =
+    row.difference != null ? `${String(row.difference)} (${String(row.difference_percent)}%)` : "—";
+  return (
+    <div>
+      <Field label="Lote" value={String(row.lot_code ?? row.lot_id)} />
+      <Field label="Mineral" value={String(row.mineral ?? "—")} />
+      <Field label="Cantidad de origen" value={formatQuantity(Number(row.origin_quantity), "kg")} />
+      <Field
+        label="Cantidad recibida"
+        value={row.received_quantity == null ? "—" : formatQuantity(Number(row.received_quantity), "kg")}
+      />
+      <Field label="Diferencia" value={difference} />
+      <Field
+        label="Tolerancia"
+        value={`${String(row.tolerance_value)} ${String(row.tolerance_unit)} · v${String(row.tolerance_version ?? "—")}`}
+      />
+      <Field label="Estado" value={labelOf(String(row.status))} />
+    </div>
+  );
+}
+
 export default function MassBalancePage() {
   return (
     <PermissionGate permission="view_balance">
@@ -44,12 +92,12 @@ export default function MassBalancePage() {
             render: (row) =>
               row.difference == null
                 ? "—"
-                : `${row.difference} (${row.difference_percent ?? "—"}%)`,
+                : `${String(row.difference)} (${String(row.difference_percent ?? "—")}%)`,
           },
           {
             key: "tolerance_value",
             label: "Tolerancia",
-            render: (row) => `${row.tolerance_value ?? "—"} ${row.tolerance_unit ?? ""}`.trim(),
+            render: (row) => `${String(row.tolerance_value ?? "—")} ${String(row.tolerance_unit ?? "")}`.trim(),
           },
           {
             key: "status",
@@ -58,44 +106,8 @@ export default function MassBalancePage() {
           },
         ]}
         detailTitle="Detalle de balance"
-        extraActions={(row, helpers) => (
-          <Button
-            variant="secondary"
-            onClick={async () => {
-              try {
-                await platform.post(`/api/v1/mass-balance/${row.lot_id}/recalculate`);
-                helpers.push("Balance recalculado correctamente.");
-                helpers.refresh();
-              } catch (error) {
-                helpers.push(error instanceof Error ? error.message : "No se pudo recalcular.", "error");
-              }
-            }}
-          >
-            Recalcular
-          </Button>
-        )}
-        renderDetail={(row) => (
-          <div>
-            <Field label="Lote" value={String(row.lot_code ?? row.lot_id)} />
-            <Field label="Mineral" value={String(row.mineral ?? "—")} />
-            <Field label="Cantidad de origen" value={formatQuantity(Number(row.origin_quantity), "kg")} />
-            <Field
-              label="Cantidad recibida"
-              value={row.received_quantity == null ? "—" : formatQuantity(Number(row.received_quantity), "kg")}
-            />
-            <Field
-              label="Diferencia"
-              value={
-                row.difference != null ? `${row.difference} (${row.difference_percent}%)` : "—"
-              }
-            />
-            <Field
-              label="Tolerancia"
-              value={`${row.tolerance_value} ${row.tolerance_unit} · v${row.tolerance_version ?? "—"}`}
-            />
-            <Field label="Estado" value={labelOf(String(row.status))} />
-          </div>
-        )}
+        extraActions={(row, helpers) => <RecalculateAction row={row} helpers={helpers} />}
+        renderDetail={(row) => <BalanceDetail row={row} />}
       />
     </PermissionGate>
   );

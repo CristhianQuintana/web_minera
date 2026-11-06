@@ -26,7 +26,7 @@ export default function AuditPage() {
         detailTitle="Evento de auditoría"
         extraActions={(row) =>
           row.lot_id ? (
-            <Link href={`/audit/cases/${row.lot_id}`}>
+            <Link href={`/audit/cases/${String(row.lot_id ?? "—")}`}>
               <Button variant="secondary">Expediente</Button>
             </Link>
           ) : null
