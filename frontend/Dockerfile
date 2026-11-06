@@ -31,12 +31,16 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
 
-COPY --from=build /app/package.json ./
-COPY --from=build /app/package-lock.json ./
-COPY --from=build /app/next.config.ts ./
-COPY --from=build /app/public ./public
-COPY --from=build /app/.next ./.next
-COPY --from=deps /app/node_modules ./node_modules
+RUN addgroup -S nodejs && adduser -S nextjs -G nodejs -u 10001
+
+COPY --from=build --chown=nextjs:nodejs /app/package.json ./
+COPY --from=build --chown=nextjs:nodejs /app/package-lock.json ./
+COPY --from=build --chown=nextjs:nodejs /app/next.config.ts ./
+COPY --from=build --chown=nextjs:nodejs /app/public ./public
+COPY --from=build --chown=nextjs:nodejs /app/.next ./.next
+COPY --from=deps --chown=nextjs:nodejs /app/node_modules ./node_modules
+
+USER nextjs
 
 EXPOSE 3000
 CMD ["npm", "run", "start", "--", "-H", "0.0.0.0", "-p", "3000"]

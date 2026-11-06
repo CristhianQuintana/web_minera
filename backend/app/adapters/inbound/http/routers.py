@@ -41,12 +41,21 @@ auth_router = APIRouter(prefix="/api/v1/auth", tags=["auth"])
 api_router = APIRouter(prefix="/api/v1", tags=["api"])
 
 
+def _cookie_secure() -> bool:
+    """Secure cookies en producción (HTTPS). En local HTTP se omiten para no romper login."""
+    from app.infrastructure.configuration.settings import get_settings
+
+    return get_settings().is_production
+
+
 def _set_session(response: Response, tokens: dict) -> None:
+    secure = _cookie_secure()
     if tokens.get("access_token"):
         response.set_cookie(
             "access_token",
             tokens["access_token"],
             httponly=True,
+            secure=secure,
             samesite="lax",
             max_age=tokens.get("expires_in") or 3600,
         )
@@ -55,6 +64,7 @@ def _set_session(response: Response, tokens: dict) -> None:
             "refresh_token",
             tokens["refresh_token"],
             httponly=True,
+            secure=secure,
             samesite="lax",
             max_age=60 * 60 * 24 * 14,
         )
@@ -78,8 +88,9 @@ def logout(
     platform: PlatformService = Depends(get_platform),
 ):
     platform.logout(ctx.access_token)
-    response.delete_cookie("access_token")
-    response.delete_cookie("refresh_token")
+    secure = _cookie_secure()
+    response.delete_cookie("access_token", secure=secure, samesite="lax")
+    response.delete_cookie("refresh_token", secure=secure, samesite="lax")
     return {"ok": True}
 
 

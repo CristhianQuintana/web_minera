@@ -15,6 +15,6 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - run: pip install --only-binary=:all: -r requirements/dev.lock.txt
+      - run: pip install --require-hashes -r requirements/dev.hashed.txt
       - run: ruff check app tests
       - run: pytest
