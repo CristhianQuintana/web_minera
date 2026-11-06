@@ -1,0 +1,1 @@
+[x] EV-11 — Cobertura de pruebas\nMeta 80%: NO CUMPLE (BE 69.49% / FE lines 16.21%)\nCommit: 615cdc0ba14a88c96808b15b62b1a63275c92dba\nFecha: 2026-11-06T08:21:42-05:00\nReporte: Document/EV-11_COBERTURA_PRUEBAS.md\n

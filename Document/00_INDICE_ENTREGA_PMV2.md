@@ -15,4 +15,4 @@ Fecha: 2026-11-03 | Dictamen: APTA CON RIESGOS ACEPTADOS | IC_WEB 67.4%
 11. MATRIZ_TRAZABILIDAD_WEB_MINERA.md / .csv
 12. AUDIT_WEB_MINERA_HALLAZGOS.md
 
-Evidencias tecnicas detalladas: `../audit/web_minera/`
+Evidencias tecnicas detalladas: `../audit/web_minera/`\n13. EV-11_COBERTURA_PRUEBAS.md ← cobertura vs meta 80 %\n
