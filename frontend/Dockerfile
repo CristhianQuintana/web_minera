@@ -3,12 +3,14 @@
 FROM node:22-alpine AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
-RUN npm install --legacy-peer-deps
+RUN npm ci --ignore-scripts --legacy-peer-deps
 
 FROM node:22-alpine AS build
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
-COPY . .
+COPY package.json package-lock.json next.config.ts tsconfig.json postcss.config.mjs next-env.d.ts ./
+COPY public public
+COPY src src
 
 # NEXT_PUBLIC_* se incrustan en el build. Vacío = rutas relativas (/api/v1/...)
 # vía Nginx en el mismo origen. No usar http://localhost:8000 ni /api (doble prefijo).

@@ -6,8 +6,8 @@ WORKDIR /app
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-COPY requirements/base.txt requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+COPY requirements/base.lock.txt requirements.lock.txt
+RUN pip install --no-cache-dir --only-binary=:all: -r requirements.lock.txt
 
 COPY app app
 

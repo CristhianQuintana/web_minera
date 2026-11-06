@@ -40,6 +40,9 @@ def create_app() -> FastAPI:
         if cleaned:
             origins.add(cleaned)
 
+    # Starlette: el último add_middleware queda como capa más externa.
+    # RateLimit primero; CORSMiddleware al final (S8414).
+    app.add_middleware(RateLimitMiddleware, limit=120, window=60)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=sorted(origins),
@@ -47,7 +50,6 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
-    app.add_middleware(RateLimitMiddleware, limit=120, window=60)
     register_error_handlers(app)
     app.include_router(auth_router)
     app.include_router(api_router)

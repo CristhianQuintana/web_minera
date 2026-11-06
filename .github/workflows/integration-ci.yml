@@ -10,9 +10,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - run: pip install -r backend/requirements/dev.txt
+      - run: pip install --only-binary=:all: -r backend/requirements/dev.lock.txt
       - run: pytest backend/tests/unit
-      - run: pip install -r ml/requirements.txt
+      - run: pip install --only-binary=:all: -r ml/requirements.lock.txt
       - run: pytest ml/tests
         env:
           PYTHONPATH: ml
