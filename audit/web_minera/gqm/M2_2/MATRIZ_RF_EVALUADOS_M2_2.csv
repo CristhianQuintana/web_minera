@@ -1,0 +1,18 @@
+Incremento,RF_ID,Nombre,Plataforma,Definido,Evaluado_WEB,Resultado_evaluacion,Tipo_prueba,Evidencia,Notas
+1,RF-01,Autenticacion,WEB,Si,Si,Aprobado parcial,E2E Playwright + unit API,audit/web_minera/test-reports/playwright/playwright-cierre-stdout.txt,"Negativos y redirect Aprobados; login OK No ejecutado (falta E2E_EMAIL/PASSWORD)"
+1,RF-02,Registro lotes,WEB,Si,Si,Aprobado parcial,Unit schemas + codigo API,frontend tests resource-schemas; backend /lots,"E2E create autenticado No ejecutado"
+1,RF-03,Validacion,WEB,Si,Si,Aprobado parcial,Unit Zod/Pydantic,resource-schemas.test.ts; pydantic BE,"Zod en login/lotes/custodia/transporte; remanente HTML required = observacion tecnica no defecto abierto"
+1,RF-04,Ubicacion,WEB,Si,Si,Aprobado parcial,Codigo + consulta detalle,UI detalle lat/lon,"GPS nativo = APP (fuera de alcance WEB)"
+1,RF-05,Evidencias (consulta),WEB,Si,Si,Aprobado parcial,Decision B + codigo consulta,audit/web_minera/evidence/RF-05/DECISION_ALCANCE.md,"Upload = APP; no es defecto WEB"
+1,RF-06,QR fisico,APP,Si,No,N/A,—,—,Excluido del denominador M2.2 WEB
+1,RF-07,Consulta permisos,WEB,Si,Si,Aprobado parcial,Unit PermissionGate + SQL RLS,tests unit permissions,"RLS vivo multi-org = riesgo aceptado / no defecto funcional confirmado en demo"
+1,RF-08,Offline,APP,Si,No,N/A,—,—,Excluido del denominador M2.2 WEB
+1,RF-09,Sync,APP,Si,No,N/A,—,—,Excluido del denominador M2.2 WEB
+1,RF-10,Estado sync,APP,Si,No,N/A,—,—,Excluido del denominador M2.2 WEB
+1,RF-11,Detalle lote,WEB,Si,Si,Aprobado parcial,Unit + UI drawer/timeline,codigo FE + pytest,"E2E autenticado No ejecutado"
+1,RF-12,Roles,WEB,Si,Si,Aprobado parcial,Unit require()/gates,test permissions,"RLS vivo NV; no falla funcional confirmada en suites"
+2,RF-I2-01,Custodia,WEB,Si,Si,Aprobado parcial,Unit Zod + API/UI,tests unit + /custody,"E2E autenticado No ejecutado"
+2,RF-I2-02,Eventos transporte,WEB,Si,Si,Aprobado parcial,Unit test_transport_events + API/UI,backend tests transport_events,"Gap historico WEB-AUD-008 corregido; E2E NV"
+2,RF-I2-03,QR trazabilidad,APP,Si,No,N/A,—,—,Excluido del denominador M2.2 WEB
+2,RF-I2-04,Historial/timeline,WEB,Si,Si,Aprobado parcial,Codigo FE timeline + unit,timeline UI,"Gap historico WEB-AUD-009 corregido; E2E NV"
+3,RF-I3-*,Candidatos Inc.3 (recepcion/pesaje/balance/ML/alertas),WEB,No formal,No (excluido),No mezclar con I1-I2,—,Document/INFORME_AUDITORIA_WEB_MINERA.md §5.2,"Avance operativo sin catalogo RF oficial; NO entra a TDF I1/I2"

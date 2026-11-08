@@ -1,0 +1,70 @@
+; Espejo operativo de architecture-audit/configs/backend-contracts.ini
+; Ejecutar desde backend/:  lint-imports
+; O vía script central: python architecture-audit/scripts/run_architecture_audit.py
+
+[importlinter]
+root_packages =
+    app
+include_external_packages = True
+
+[importlinter:contract:domain-independence]
+name = Domain independence (no frameworks / outer layers)
+type = forbidden
+source_modules =
+    app.domain
+forbidden_modules =
+    app.adapters
+    app.application
+    app.composition
+    app.infrastructure
+    app.ports
+    fastapi
+    uvicorn
+    starlette
+    httpx
+    supabase
+    sqlalchemy
+    pydantic
+    pydantic_settings
+
+[importlinter:contract:application-independence]
+name = Application independence (no adapters / HTTP / Supabase)
+type = forbidden
+source_modules =
+    app.application
+forbidden_modules =
+    app.adapters
+    app.composition
+    fastapi
+    uvicorn
+    starlette
+    httpx
+    supabase
+    sqlalchemy
+
+[importlinter:contract:ports-independence]
+name = Ports independence (no adapters / infra / frameworks)
+type = forbidden
+source_modules =
+    app.ports
+forbidden_modules =
+    app.adapters
+    app.composition
+    app.infrastructure
+    fastapi
+    uvicorn
+    starlette
+    httpx
+    supabase
+    sqlalchemy
+
+[importlinter:contract:hexagonal-layers]
+name = Hexagonal layer direction
+type = layers
+layers =
+    app.composition
+    app.adapters
+    app.infrastructure
+    app.application
+    app.ports
+    app.domain

@@ -1,0 +1,37 @@
+{
+  "generatedAt": "2026-11-08T14:13:11.717Z",
+  "totalFindingNodes": 2,
+  "disclaimer": "Cero violaciones automáticas NO declara cumplimiento WCAG 2.1 AA. Se requiere validación manual complementaria (teclado, foco, lector de pantalla, contraste, modales).",
+  "findings": [
+    {
+      "url": "http://127.0.0.1:3000/alerts",
+      "ruleId": "select-name",
+      "impact": "critical",
+      "wcagTags": [
+        "wcag2a",
+        "wcag412"
+      ],
+      "description": "Ensure select element has an accessible name",
+      "help": "Select element must have an accessible name",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/select-name?application=playwright",
+      "selector": "select",
+      "html": "<select class=\"w-full rounded-xl border border-border bg-white px-3 py-2.5 text-sm\">",
+      "failureSummary": "Fix any of the following:\n  Element does not have an implicit (wrapped) <label>\n  Element does not have an explicit <label>\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
+    },
+    {
+      "url": "http://127.0.0.1:3000/mass-balance",
+      "ruleId": "select-name",
+      "impact": "critical",
+      "wcagTags": [
+        "wcag2a",
+        "wcag412"
+      ],
+      "description": "Ensure select element has an accessible name",
+      "help": "Select element must have an accessible name",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/select-name?application=playwright",
+      "selector": "select",
+      "html": "<select class=\"w-full rounded-xl border border-border bg-white px-3 py-2.5 text-sm\">",
+      "failureSummary": "Fix any of the following:\n  Element does not have an implicit (wrapped) <label>\n  Element does not have an explicit <label>\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
+    }
+  ]
+}

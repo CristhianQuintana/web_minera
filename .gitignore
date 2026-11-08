@@ -44,3 +44,7 @@ docker-data/
 # k6 binary downloaded for audit
 audit/web_minera/performance/k6/bin/
 
+# Playwright auth (accesibilidad / e2e) — no versionar sesiones
+**/playwright/.auth/
+**/*.auth.json
+

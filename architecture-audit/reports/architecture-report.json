@@ -1,0 +1,378 @@
+{
+  "project": "WEB_MINERA",
+  "date": "2026-11-07 19:49:30 -0500",
+  "commit": "d0480fe",
+  "branch": "main",
+  "overall_result": "no_conforme",
+  "notes": [
+    "Hallazgos reales no se excluyen para forzar 'conforme'. Observaciones de tamaño/cohesión no son defectos automáticos."
+  ],
+  "components": {
+    "backend": {
+      "component": "backend",
+      "files_inspected_count": 50,
+      "files_inspected": [
+        "backend/app/__init__.py",
+        "backend/app/adapters/__init__.py",
+        "backend/app/adapters/inbound/__init__.py",
+        "backend/app/adapters/inbound/http/__init__.py",
+        "backend/app/adapters/inbound/http/dependencies.py",
+        "backend/app/adapters/inbound/http/errors.py",
+        "backend/app/adapters/inbound/http/rate_limit.py",
+        "backend/app/adapters/inbound/http/routers.py",
+        "backend/app/adapters/outbound/__init__.py",
+        "backend/app/adapters/outbound/external/__init__.py",
+        "backend/app/adapters/outbound/external/email_adapter.py",
+        "backend/app/adapters/outbound/ml/__init__.py",
+        "backend/app/adapters/outbound/ml/client.py",
+        "backend/app/adapters/outbound/supabase/__init__.py",
+        "backend/app/adapters/outbound/supabase/client.py",
+        "backend/app/application/__init__.py",
+        "backend/app/application/auth_context.py",
+        "backend/app/application/dto/__init__.py",
+        "backend/app/application/messages.py",
+        "backend/app/application/profile_access.py",
+        "backend/app/application/services/__init__.py",
+        "backend/app/application/services/platform.py",
+        "backend/app/application/use_cases/__init__.py",
+        "backend/app/composition/__init__.py",
+        "backend/app/composition/application_factory/__init__.py",
+        "backend/app/composition/application_factory/factory.py",
+        "backend/app/composition/container.py",
+        "backend/app/domain/__init__.py",
+        "backend/app/domain/entities/__init__.py",
+        "backend/app/domain/exceptions/__init__.py",
+        "backend/app/domain/model/__init__.py",
+        "backend/app/domain/rules/__init__.py",
+        "backend/app/domain/service/__init__.py",
+        "backend/app/domain/services/__init__.py",
+        "backend/app/domain/services/profile_status.py",
+        "backend/app/domain/value_objects/__init__.py",
+        "backend/app/infrastructure/__init__.py",
+        "backend/app/infrastructure/configuration/__init__.py",
+        "backend/app/infrastructure/configuration/settings.py",
+        "backend/app/infrastructure/logging/__init__.py",
+        "backend/app/infrastructure/logging/logger.py",
+        "backend/app/infrastructure/security/__init__.py",
+        "backend/app/infrastructure/security/auth_context.py",
+        "backend/app/main.py",
+        "backend/app/ports/__init__.py",
+        "backend/app/ports/inbound/__init__.py",
+        "backend/app/ports/inbound/use_cases/__init__.py",
+        "backend/app/ports/outbound/__init__.py",
+        "backend/app/ports/outbound/gateway.py",
+        "backend/app/ports/outbound/repositories/__init__.py"
+      ],
+      "rules_evaluated": [
+        {
+          "id": "domain-independence",
+          "description": "Dominio sin frameworks ni capas externas"
+        },
+        {
+          "id": "application-independence",
+          "description": "Application sin adapters/HTTP/Supabase"
+        },
+        {
+          "id": "ports-independence",
+          "description": "Ports sin adapters/infra/frameworks"
+        },
+        {
+          "id": "hexagonal-layers",
+          "description": "Dirección de capas hexagonal"
+        },
+        {
+          "id": "no-circular-grimp",
+          "description": "Sin ciclos entre módulos app.* (grimp)"
+        }
+      ],
+      "violations_count": 1,
+      "violations": [
+        {
+          "component": "backend",
+          "severity": "error",
+          "rule": "Hexagonal layer direction",
+          "file": "backend/app/adapters/inbound/http/dependencies.py",
+          "line": 17,
+          "dependency": "app.composition.container",
+          "message": "app.adapters.inbound.http.dependencies -> app.composition.container (l.17)",
+          "recommendation": "Inyectar el contenedor desde el composition root (p. ej. app.state) sin que adapters importen app.composition."
+        }
+      ],
+      "circular_dependencies": [],
+      "tool_exit_code": 1,
+      "result": "parcialmente_conforme"
+    },
+    "frontend": {
+      "component": "frontend",
+      "files_inspected_count": 46,
+      "files_inspected": [
+        "frontend/src/adapters/outbound/api/http-client.auth.test.ts",
+        "frontend/src/adapters/outbound/api/http-client.ts",
+        "frontend/src/adapters/outbound/api/platform-adapter.ts",
+        "frontend/src/app/(app)/alerts/page.tsx",
+        "frontend/src/app/(app)/audit/cases/[id]/page.tsx",
+        "frontend/src/app/(app)/audit/page.tsx",
+        "frontend/src/app/(app)/custody/page.tsx",
+        "frontend/src/app/(app)/dashboard/page.tsx",
+        "frontend/src/app/(app)/layout.tsx",
+        "frontend/src/app/(app)/lots/page.tsx",
+        "frontend/src/app/(app)/mass-balance/page.tsx",
+        "frontend/src/app/(app)/ml/page.tsx",
+        "frontend/src/app/(app)/profile/page.tsx",
+        "frontend/src/app/(app)/receptions/page.tsx",
+        "frontend/src/app/(app)/settings/page.tsx",
+        "frontend/src/app/(app)/transport/page.tsx",
+        "frontend/src/app/(app)/users/page.tsx",
+        "frontend/src/app/(app)/weighings/page.tsx",
+        "frontend/src/app/activate-account/page.tsx",
+        "frontend/src/app/error.tsx",
+        "frontend/src/app/forbidden/page.tsx",
+        "frontend/src/app/forgot-password/page.tsx",
+        "frontend/src/app/layout.tsx",
+        "frontend/src/app/login/page.tsx",
+        "frontend/src/app/not-found.tsx",
+        "frontend/src/app/page.tsx",
+        "frontend/src/application/dto/login-schema.test.ts",
+        "frontend/src/application/dto/login-schema.ts",
+        "frontend/src/application/dto/resource-schemas.test.ts",
+        "frontend/src/application/dto/resource-schemas.ts",
+        "frontend/src/application/use-cases/auth.ts",
+        "frontend/src/architecture/isolation.test.ts",
+        "frontend/src/composition/container.ts",
+        "frontend/src/config/env.ts",
+        "frontend/src/domain/entities.ts",
+        "frontend/src/domain/exceptions.ts",
+        "frontend/src/infrastructure/auth/session-store.ts",
+        "frontend/src/infrastructure/http/providers.tsx",
+        "frontend/src/ports/outbound/platform-port.ts",
+        "frontend/src/presentation/layouts/app-shell.tsx",
+        "frontend/src/presentation/modules/resource-page.tsx",
+        "frontend/src/shared/components/ui.test.ts",
+        "frontend/src/shared/components/ui.tsx",
+        "frontend/src/shared/hooks/use-platform.ts",
+        "frontend/src/shared/utils/format.test.ts",
+        "frontend/src/shared/utils/format.ts"
+      ],
+      "rules_evaluated": [
+        {
+          "id": "domain-no-ui-or-outer-layers",
+          "description": "Domain sin React/Next/capas externas"
+        },
+        {
+          "id": "application-no-adapters-or-next",
+          "description": "Application sin adapters/Next/React"
+        },
+        {
+          "id": "ports-no-adapters",
+          "description": "Ports sin adapters/composition"
+        },
+        {
+          "id": "no-direct-database-from-ui",
+          "description": "UI sin acceso directo a BD/SDK"
+        },
+        {
+          "id": "presentation-prefer-ports-over-adapters",
+          "description": "Presentation/App no importan adapters"
+        },
+        {
+          "id": "no-circular",
+          "description": "Sin dependencias circulares"
+        }
+      ],
+      "violations_count": 3,
+      "violations": [
+        {
+          "component": "frontend",
+          "severity": "error",
+          "rule": "presentation-prefer-ports-over-adapters",
+          "file": "frontend/src/presentation/layouts/app-shell.tsx",
+          "line": null,
+          "dependency": "@/adapters/outbound/api/http-client",
+          "message": "src/presentation/layouts/app-shell.tsx → @/adapters/outbound/api/http-client incumple presentation-prefer-ports-over-adapters",
+          "recommendation": "Importar desde @/composition o hooks que usen PlatformPort; no desde @/adapters/...."
+        },
+        {
+          "component": "frontend",
+          "severity": "error",
+          "rule": "presentation-prefer-ports-over-adapters",
+          "file": "frontend/src/app/(app)/profile/page.tsx",
+          "line": null,
+          "dependency": "@/adapters/outbound/api/http-client",
+          "message": "src/app/(app)/profile/page.tsx → @/adapters/outbound/api/http-client incumple presentation-prefer-ports-over-adapters",
+          "recommendation": "Importar desde @/composition o hooks que usen PlatformPort; no desde @/adapters/...."
+        },
+        {
+          "component": "frontend",
+          "severity": "error",
+          "rule": "presentation-prefer-ports-over-adapters",
+          "file": "frontend/src/app/login/page.tsx",
+          "line": null,
+          "dependency": "@/adapters/outbound/api/http-client",
+          "message": "src/app/login/page.tsx → @/adapters/outbound/api/http-client incumple presentation-prefer-ports-over-adapters",
+          "recommendation": "Importar desde @/composition o hooks que usen PlatformPort; no desde @/adapters/...."
+        }
+      ],
+      "circular_dependencies": [],
+      "tool_exit_code": 3,
+      "result": "no_conforme"
+    }
+  },
+  "coupling_observations": [
+    {
+      "component": "backend",
+      "severity": "error",
+      "rule": "adapters-must-not-import-composition",
+      "file": "backend/app/adapters/inbound/http/dependencies.py",
+      "line": 17,
+      "dependency": "app.composition.container",
+      "message": "El adaptador inbound HTTP importa el composition root (Container).",
+      "recommendation": "Leer container solo desde request.app.state inyectado en composition; tipar Depends con Protocol/callable sin importar Container."
+    },
+    {
+      "component": "frontend",
+      "severity": "error",
+      "rule": "presentation-prefer-ports-over-adapters",
+      "file": "frontend/src/app/(app)/profile/page.tsx",
+      "line": 3,
+      "dependency": "@/adapters/outbound/api/http-client",
+      "message": "UI importa adaptador concreto @/adapters/outbound/api/http-client",
+      "recommendation": "Usar @/composition o un hook sobre PlatformPort; tipar errores vía dominio/ports."
+    },
+    {
+      "component": "frontend",
+      "severity": "error",
+      "rule": "presentation-prefer-ports-over-adapters",
+      "file": "frontend/src/app/login/page.tsx",
+      "line": 4,
+      "dependency": "@/adapters/outbound/api/http-client",
+      "message": "UI importa adaptador concreto @/adapters/outbound/api/http-client",
+      "recommendation": "Usar @/composition o un hook sobre PlatformPort; tipar errores vía dominio/ports."
+    },
+    {
+      "component": "frontend",
+      "severity": "error",
+      "rule": "presentation-prefer-ports-over-adapters",
+      "file": "frontend/src/presentation/layouts/app-shell.tsx",
+      "line": 4,
+      "dependency": "@/adapters/outbound/api/http-client",
+      "message": "UI importa adaptador concreto @/adapters/outbound/api/http-client",
+      "recommendation": "Usar @/composition o un hook sobre PlatformPort; tipar errores vía dominio/ports."
+    },
+    {
+      "component": "backend",
+      "severity": "observation",
+      "rule": "responsibility-concentration",
+      "file": "backend/app/application/services/platform.py",
+      "line": null,
+      "dependency": "",
+      "message": "PlatformService concentra muchos casos de uso; riesgo de god-service. (tamaño actual: 1215 líneas; el tamaño solo contextualiza, no define defecto).",
+      "recommendation": "Evaluar split por bounded contexts manteniendo DataGatewayPort."
+    },
+    {
+      "component": "backend",
+      "severity": "observation",
+      "rule": "responsibility-concentration",
+      "file": "backend/app/adapters/inbound/http/routers.py",
+      "line": null,
+      "dependency": "",
+      "message": "Router HTTP amplio: mezcla superficie API; acoplamiento de presentación inbound. (tamaño actual: 511 líneas; el tamaño solo contextualiza, no define defecto).",
+      "recommendation": "Partir routers por recurso si crece el churn."
+    },
+    {
+      "component": "backend",
+      "severity": "observation",
+      "rule": "responsibility-concentration",
+      "file": "backend/app/adapters/outbound/supabase/client.py",
+      "line": null,
+      "dependency": "",
+      "message": "Gateway Supabase monolítico implementa el puerto unificado. (tamaño actual: 332 líneas; el tamaño solo contextualiza, no define defecto).",
+      "recommendation": "Aceptable como adaptador; vigilar que application no lo importe (ya vetado)."
+    },
+    {
+      "component": "frontend",
+      "severity": "observation",
+      "rule": "responsibility-concentration",
+      "file": "frontend/src/presentation/modules/resource-page.tsx",
+      "line": null,
+      "dependency": "",
+      "message": "ResourcePage mezcla listado, detalle, create y export en un módulo UI. (tamaño actual: 503 líneas; el tamaño solo contextualiza, no define defecto).",
+      "recommendation": "Observación de cohesión UI; no es violación hexagonal por sí sola."
+    }
+  ],
+  "ml_audit": {
+    "component": "ml",
+    "architectural_conformance": {
+      "result": "conforme",
+      "note": "Separación modular verificada estáticamente; validación analítica del modelo = fuera de alcance."
+    },
+    "analytical_validation_note": "La conformidad modular NO demuestra precisión ni reproducibilidad analítica del modelo (MAE/RMSE/R²). El estimador actual es heurístico.",
+    "violations": [],
+    "checks": [
+      {
+        "name": "domain_estimator_exists",
+        "ok": true,
+        "detail": "ml/domain/services/estimator.py"
+      },
+      {
+        "name": "application_use_case_exists",
+        "ok": true,
+        "detail": "ml/application/use_cases/estimate.py"
+      },
+      {
+        "name": "composition_wiring_exists",
+        "ok": true,
+        "detail": "ml/composition/__init__.py"
+      },
+      {
+        "name": "http_adapter_exists",
+        "ok": true,
+        "detail": "ml/adapters/inbound/http/main.py"
+      },
+      {
+        "name": "unit_test_exists",
+        "ok": true,
+        "detail": "ml/tests/unit/test_estimator.py"
+      },
+      {
+        "name": "domain_free_of_ml_frameworks",
+        "ok": true,
+        "detail": "imports=['typing']; forbidden_hits=[]"
+      },
+      {
+        "name": "model_version_identified",
+        "ok": true,
+        "detail": "ExpectedQuantityEstimator.version == '1.0.0'"
+      },
+      {
+        "name": "input_output_contract",
+        "ok": true,
+        "detail": "EstimateExpectedQuantity.execute(features: dict) -> dict"
+      },
+      {
+        "name": "use_case_depends_on_domain_not_fastapi",
+        "ok": true,
+        "detail": "use case importa estimador de dominio"
+      },
+      {
+        "name": "adapter_uses_composition",
+        "ok": true,
+        "detail": "HTTP adapter cablea composition"
+      },
+      {
+        "name": "adapter_has_pydantic_request_model",
+        "ok": true,
+        "detail": "EstimateRequest como contrato de borde HTTP"
+      },
+      {
+        "name": "reproducible_unit_test",
+        "ok": true,
+        "detail": "ml/tests/unit/test_estimator.py"
+      },
+      {
+        "name": "test_input_fixture",
+        "ok": true,
+        "detail": "features de prueba en test_estimator.py"
+      }
+    ]
+  }
+}

@@ -146,6 +146,8 @@ export function ResourcePage({
         </div>
         {statuses ? (
           <Select
+            label="Estado"
+            name="status-filter"
             value={status}
             onChange={(event) => {
               setStatus(event.target.value);

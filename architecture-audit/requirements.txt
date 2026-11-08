@@ -1,0 +1,3 @@
+# Herramientas de auditoría (venv backend o entorno dedicado).
+# No sustituye el lock de producción del API.
+import-linter>=2.1

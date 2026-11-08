@@ -60,13 +60,25 @@ export function Input({ label, error, hint, className, ...props }: Readonly<Inpu
 
 type SelectProps = React.SelectHTMLAttributes<HTMLSelectElement> & { label?: string; error?: string };
 
-export function Select({ label, error, children, className, ...props }: Readonly<SelectProps>) {
+export function Select({ label, error, children, className, id, ...props }: Readonly<SelectProps>) {
+  const { "aria-label": ariaLabelProp, name, ...rest } = props;
+  const selectId = id ?? (typeof name === "string" ? name : undefined);
+  const accessibleName =
+    (typeof label === "string" && label.trim()) ||
+    (typeof ariaLabelProp === "string" && ariaLabelProp.trim()) ||
+    (typeof name === "string" && name.trim()) ||
+    "Seleccionar";
   return (
-    <label className="block space-y-1.5">
-      {label ? <span className="text-sm font-medium text-text">{label}</span> : null}
+    <label className="block space-y-1.5" htmlFor={selectId}>
+      {label ? <span className="text-sm font-medium text-text">{label}</span> : (
+        <span className="sr-only">{accessibleName}</span>
+      )}
       <select
+        {...rest}
+        name={name}
+        id={selectId}
+        aria-label={accessibleName}
         className={cn("w-full rounded-xl border border-border bg-white px-3 py-2.5 text-sm", className)}
-        {...props}
       >
         {children}
       </select>

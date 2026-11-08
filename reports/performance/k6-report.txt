@@ -1,0 +1,93 @@
+
+========================================================================
+RESULTADOS FINALES — Prueba de carga k6 WEB_MINERA
+========================================================================
+Proyecto:     WEB_MINERA
+Herramienta:  k6
+BASE_URL:     http://127.0.0.1:8000
+Perfil:       load
+Generado:     2026-11-08T14:47:44.963Z
+------------------------------------------------------------------------
+RESUMEN HTTP
+------------------------------------------------------------------------
+  Iteraciones:        2237
+  Requests HTTP:      11186
+  Tasa fallo HTTP:    0.00 %
+  Checks OK:          100.00 %
+  VUs máx:            40
+  Data recibida:      2478.3 KB
+------------------------------------------------------------------------
+LATENCIAS (http_req_duration)
+------------------------------------------------------------------------
+  global
+    avg=38.83 ms  med=21.45 ms  p90=63.78 ms  p95=81.26 ms  p99=504.83 ms  max=2710.27 ms
+  GET /health
+    avg=29.05 ms  med=19.56 ms  p90=65.51 ms  p95=75.01 ms  p99=109.72 ms  max=220.76 ms
+  POST /auth/login (inválido)
+    avg=100.90 ms  med=44.36 ms  p90=98.29 ms  p95=505.07 ms  p99=1471.88 ms  max=2710.27 ms
+  GET protegidos → 401
+    avg=21.40 ms  med=16.04 ms  p90=46.70 ms  p95=54.80 ms  p99=84.75 ms  max=129.43 ms
+  GET negocio (si hay token): (sin datos)
+------------------------------------------------------------------------
+THRESHOLDS
+------------------------------------------------------------------------
+  (thresholds evaluados por k6 en salida estándar)
+------------------------------------------------------------------------
+ANÁLISIS
+------------------------------------------------------------------------
+  Dictamen: CARGA ACEPTABLE bajo el perfil ejecutado.
+  - Health p95: 75.01 ms (meta orientativa < 500 ms)
+  - HTTP p95:   81.26 ms (meta umbral < 800 ms)
+  - Fallo HTTP: 0.00 % (meta < 10 %)
+  - Negocio autenticado: NO EJECUTADO (sin TOKEN / K6_EMAIL+K6_PASSWORD).
+    Se midió infra (/health), camino login inválido y 401/429 en protegidos.
+  - Rate limit: API aplica ~120 req/60s por IP+segmento; bajo carga alta es normal ver 429.
+  - Nota: /health valida infraestructura; no sustituye por sí solo la capacidad de negocio.
+------------------------------------------------------------------------
+ENDPOINTS CUBIERTOS
+------------------------------------------------------------------------
+  GET  /health
+  POST /api/v1/auth/login (credenciales inválidas)
+  GET  /api/v1/auth/me | /dashboard | /lots  (sin token → 401)
+========================================================================
+
+
+--- Resumen nativo k6 ---
+      █ 01 health (infra)
+
+        ✓ health status 200
+        ✓ health body ok
+
+      █ 02 auth login path
+
+        ✓ login inválido responde 4xx
+
+      █ 03 autorización sin token (401/429)
+
+        ✓ /api/v1/lots sin token → 401|429
+        ✓ /api/v1/dashboard sin token → 401|429
+        ✓ /api/v1/auth/me sin token → 401|429
+
+    ✓ checks.........................: 100.00% ✓ 13422      ✗ 0    
+      data_received..................: 2.5 MB  30 kB/s
+      data_sent......................: 1.5 MB  18 kB/s
+      endpoint_authz_401_duration....: avg=21.39ms  min=555.69µs med=16.04ms  max=129.43ms p(90)=46.69ms  p(95)=54.79ms  p(99)=84.75ms 
+    ✓ endpoint_health_duration.......: avg=29.04ms  min=1.56ms   med=19.55ms  max=220.75ms p(90)=65.51ms  p(95)=75ms     p(99)=109.72ms
+      endpoint_login_duration........: avg=100.89ms min=5.51ms   med=44.36ms  max=2.71s    p(90)=98.28ms  p(95)=505.06ms p(99)=1.47s   
+      group_duration.................: avg=64.98ms  min=1.56ms   med=36.37ms  max=2.71s    p(90)=107.24ms p(95)=140.25ms p(99)=810.27ms
+      http_req_blocked...............: avg=8.95µs   min=0s       med=0s       max=7.6ms    p(90)=0s       p(95)=0s       p(99)=0s      
+      http_req_connecting............: avg=4.88µs   min=0s       med=0s       max=7.6ms    p(90)=0s       p(95)=0s       p(99)=0s      
+    ✓ http_req_duration..............: avg=38.82ms  min=555.69µs med=21.45ms  max=2.71s    p(90)=63.78ms  p(95)=81.25ms  p(99)=504.83ms
+        { expected_response:true }...: avg=38.82ms  min=555.69µs med=21.45ms  max=2.71s    p(90)=63.78ms  p(95)=81.25ms  p(99)=504.83ms
+    ✓ http_req_failed................: 0.00%   ✓ 0          ✗ 11186
+      http_req_receiving.............: avg=208.85µs min=0s       med=0s       max=15.56ms  p(90)=764.9µs  p(95)=928.17µs p(99)=1.14ms  
+      http_req_sending...............: avg=17.79µs  min=0s       med=0s       max=13.04ms  p(90)=0s       p(95)=0s       p(99)=576.95µs
+      http_req_tls_handshaking.......: avg=0s       min=0s       med=0s       max=0s       p(90)=0s       p(95)=0s       p(99)=0s      
+      http_req_waiting...............: avg=38.59ms  min=555.69µs med=21.29ms  max=2.71s    p(90)=63.68ms  p(95)=80.98ms  p(99)=504.83ms
+      http_reqs......................: 11186   131.124144/s
+      iteration_duration.............: avg=595.54ms min=414.06ms med=545.65ms max=3.15s    p(90)=694.08ms p(95)=934.21ms p(99)=1.91s   
+      iterations.....................: 2237    26.222484/s
+      vus............................: 3       min=1        max=39 
+      vus_max........................: 40      min=40       max=40 
+      web_minera_checks_failed.......: 0.00%   ✓ 0          ✗ 11185
+      web_minera_requests............: 11185   131.112422/s

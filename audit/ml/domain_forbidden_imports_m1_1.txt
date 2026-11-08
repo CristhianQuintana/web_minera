@@ -1,0 +1,45 @@
+﻿========================================================================
+AUDITORÍA M1.1 — Importaciones prohibidas (dominio ML / WEB_MINERA)
+========================================================================
+
+Raíz del repositorio : C:\Users\USER\OneDrive\Documentos\Proyectos\web_minera
+Directorio de dominio: ml/domain
+
+--- Archivos inspeccionados ---
+  - ml/domain/__init__.py
+  - ml/domain/services/__init__.py
+  - ml/domain/services/estimator.py
+
+--- Dependencias prohibidas (catálogo) ---
+  - fastapi: Framework web HTTP; pertenece a adapters/presentation, no al dominio.
+  - uvicorn: Servidor ASGI; infraestructura de ejecución, no dominio.
+  - starlette: Stack HTTP subyacente a FastAPI; acoplaría el dominio al transporte.
+  - pydantic: Validación/serialización de API; contrato de borde, no regla de negocio.
+  - httpx: Cliente HTTP; I/O de red externo al núcleo de dominio.
+  - requests: Cliente HTTP; misma razón que httpx.
+  - supabase: SDK de infraestructura/persistencia; viola independencia del dominio.
+  - sqlalchemy: ORM/persistencia; detalle de infraestructura.
+  - sklearn: Framework ML externo; el dominio debe expresar reglas sin acoplar librerías.
+  - torch: Framework ML externo; acoplamiento de infraestructura de modelo.
+  - tensorflow: Framework ML externo; acoplamiento de infraestructura de modelo.
+  - numpy: Dependencia numérica externa; no requerida por el dominio heurístico actual.
+  - pandas: Dependencia de datos externa; no pertenece al núcleo de dominio.
+  - adapters: Capa hexagonal externa; el dominio no debe conocer adaptadores.
+  - application: Capa de casos de uso; dependencia invertida incorrecta hacia afuera.
+  - composition: Composition root / wiring; no debe filtrarse al dominio.
+  - presentation: Capa de presentación HTTP; borde del sistema.
+  - infrastructure: Infraestructura; detalle técnico externo al dominio.
+  - ports: Puertos son contratos de borde; el dominio no debe importarlos en este PMV.
+
+--- Detecciones ---
+  (ninguna)
+
+--- Resumen ---
+  Archivos inspeccionados : 3
+  Archivos afectados      : 0
+  Total de detecciones    : 0
+  Índice de contaminación : 0.0 %
+  Meta GQM M1.1           : 0,0 %
+  Estado                  : CUMPLE
+
+========================================================================

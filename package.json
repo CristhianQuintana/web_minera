@@ -1,0 +1,9 @@
+{
+  "name": "web-minera",
+  "private": true,
+  "description": "Raíz monorepo WEB_MINERA — scripts de auditoría",
+  "scripts": {
+    "audit:accessibility": "node scripts/accessibility-audit.mjs",
+    "load:k6": "powershell -ExecutionPolicy Bypass -File performance/k6/run-load.ps1"
+  }
+}

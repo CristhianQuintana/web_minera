@@ -1,0 +1,6541 @@
+{
+  "project": "WEB_MINERA",
+  "standard": "WCAG 2.1 AA",
+  "tool": "Playwright + axe-core",
+  "disclaimer": "Cero violaciones automáticas NO declara cumplimiento WCAG 2.1 AA. Se requiere validación manual complementaria (teclado, foco, lector de pantalla, contraste, modales).",
+  "generatedAt": "2026-11-08T14:16:43.838Z",
+  "baseUrl": "http://127.0.0.1:3000",
+  "storageStateUsed": false,
+  "storageStatePath": null,
+  "pagesAnalyzed": 17,
+  "totalViolations": 0,
+  "totalPasses": 362,
+  "totalIncomplete": 0,
+  "impactTotals": {
+    "critical": 0,
+    "serious": 0,
+    "moderate": 0,
+    "minor": 0
+  },
+  "results": [
+    {
+      "url": "http://127.0.0.1:3000/",
+      "finalUrl": "http://127.0.0.1:3000/login",
+      "statusCode": 200,
+      "scannedAt": "2026-11-08T14:14:38.973Z",
+      "summary": {
+        "violations": 0,
+        "passes": 22,
+        "incomplete": 0,
+        "inapplicable": 41,
+        "byImpact": {
+          "critical": 0,
+          "serious": 0,
+          "moderate": 0,
+          "minor": 0
+        }
+      },
+      "violations": [],
+      "incomplete": [],
+      "passes": [
+        {
+          "id": "aria-allowed-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure an element's role supports its ARIA attributes",
+          "help": "Elements must only use supported ARIA attributes"
+        },
+        {
+          "id": "aria-conditional-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure ARIA attributes are used as described in the specification of the element's role",
+          "help": "ARIA attributes must be used as specified for the element's role"
+        },
+        {
+          "id": "aria-deprecated-role",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure elements do not use deprecated roles",
+          "help": "Deprecated ARIA roles must not be used"
+        },
+        {
+          "id": "aria-hidden-body",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag131",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.1.3.1",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-10.8.1"
+          ],
+          "description": "Ensure aria-hidden=\"true\" is not present on the document body.",
+          "help": "aria-hidden=\"true\" must not be present on the document body"
+        },
+        {
+          "id": "aria-hidden-focus",
+          "impact": null,
+          "tags": [
+            "cat.name-role-value",
+            "wcag2a",
+            "wcag412",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-10.8.1"
+          ],
+          "description": "Ensure aria-hidden elements are not focusable nor contain focusable elements",
+          "help": "ARIA hidden element must not be focusable or contain focusable elements"
+        },
+        {
+          "id": "aria-prohibited-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure ARIA attributes are not prohibited for an element's role",
+          "help": "Elements must only use permitted ARIA attributes"
+        },
+        {
+          "id": "aria-required-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure elements with ARIA roles have all required ARIA attributes",
+          "help": "Required ARIA attributes must be provided"
+        },
+        {
+          "id": "aria-roles",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure all elements with a role attribute use a valid value",
+          "help": "ARIA roles used must conform to valid values"
+        },
+        {
+          "id": "aria-valid-attr-value",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure all ARIA attributes have valid values",
+          "help": "ARIA attributes must conform to valid values"
+        },
+        {
+          "id": "aria-valid-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure attributes that begin with aria- are valid ARIA attributes",
+          "help": "ARIA attributes must conform to valid names"
+        },
+        {
+          "id": "button-name",
+          "impact": null,
+          "tags": [
+            "cat.name-role-value",
+            "wcag2a",
+            "wcag412",
+            "section508",
+            "section508.22.a",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-11.9.1"
+          ],
+          "description": "Ensure buttons have discernible text",
+          "help": "Buttons must have discernible text"
+        },
+        {
+          "id": "bypass",
+          "impact": null,
+          "tags": [
+            "cat.keyboard",
+            "wcag2a",
+            "wcag241",
+            "section508",
+            "section508.22.o",
+            "TTv5",
+            "TT9.a",
+            "EN-301-549",
+            "EN-9.2.4.1",
+            "RGAAv4",
+            "RGAA-12.7.1"
+          ],
+          "description": "Ensure each page has at least one mechanism for a user to bypass navigation and jump straight to the content",
+          "help": "Page must have means to bypass repeated blocks"
+        },
+        {
+          "id": "color-contrast",
+          "impact": null,
+          "tags": [
+            "cat.color",
+            "wcag2aa",
+            "wcag143",
+            "TTv5",
+            "TT13.c",
+            "EN-301-549",
+            "EN-9.1.4.3",
+            "ACT",
+            "RGAAv4",
+            "RGAA-3.2.1"
+          ],
+          "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+          "help": "Elements must meet minimum color contrast ratio thresholds"
+        },
+        {
+          "id": "document-title",
+          "impact": null,
+          "tags": [
+            "cat.text-alternatives",
+            "wcag2a",
+            "wcag242",
+            "TTv5",
+            "TT12.a",
+            "EN-301-549",
+            "EN-9.2.4.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-8.5.1"
+          ],
+          "description": "Ensure each HTML document contains a non-empty <title> element",
+          "help": "Documents must have <title> element to aid in navigation"
+        },
+        {
+          "id": "duplicate-id-aria",
+          "impact": null,
+          "tags": [
+            "cat.parsing",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-8.2.1"
+          ],
+          "description": "Ensure every id attribute value used in ARIA and in labels is unique",
+          "help": "IDs used in ARIA and labels must be unique"
+        },
+        {
+          "id": "form-field-multiple-labels",
+          "impact": null,
+          "tags": [
+            "cat.forms",
+            "wcag2a",
+            "wcag332",
+            "TTv5",
+            "TT5.c",
+            "EN-301-549",
+            "EN-9.3.3.2",
+            "RGAAv4",
+            "RGAA-11.2.1"
+          ],
+          "description": "Ensure form field does not have multiple label elements",
+          "help": "Form field must not have multiple label elements"
+        },
+        {
+          "id": "html-has-lang",
+          "impact": null,
+          "tags": [
+            "cat.language",
+            "wcag2a",
+            "wcag311",
+            "TTv5",
+            "TT11.a",
+            "EN-301-549",
+            "EN-9.3.1.1",
+            "ACT",
+            "RGAAv4",
+            "RGAA-8.3.1"
+          ],
+          "description": "Ensure every HTML document has a lang attribute",
+          "help": "<html> element must have a lang attribute"
+        },
+        {
+          "id": "html-lang-valid",
+          "impact": null,
+          "tags": [
+            "cat.language",
+            "wcag2a",
+            "wcag311",
+            "TTv5",
+            "TT11.a",
+            "EN-301-549",
+            "EN-9.3.1.1",
+            "ACT",
+            "RGAAv4",
+            "RGAA-8.4.1"
+          ],
+          "description": "Ensure the lang attribute of the <html> element has a valid value",
+          "help": "<html> element must have a valid value for the lang attribute"
+        },
+        {
+          "id": "label",
+          "impact": null,
+          "tags": [
+            "cat.forms",
+            "wcag2a",
+            "wcag412",
+            "section508",
+            "section508.22.n",
+            "TTv5",
+            "TT5.c",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-11.1.1"
+          ],
+          "description": "Ensure every form element has a label",
+          "help": "Form elements must have labels"
+        },
+        {
+          "id": "link-name",
+          "impact": null,
+          "tags": [
+            "cat.name-role-value",
+            "wcag2a",
+            "wcag244",
+            "wcag412",
+            "section508",
+            "section508.22.a",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.2.4.4",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-6.2.1"
+          ],
+          "description": "Ensure links have discernible text",
+          "help": "Links must have discernible text"
+        },
+        {
+          "id": "meta-viewport",
+          "impact": null,
+          "tags": [
+            "cat.sensory-and-visual-cues",
+            "wcag2aa",
+            "wcag144",
+            "EN-301-549",
+            "EN-9.1.4.4",
+            "ACT",
+            "RGAAv4",
+            "RGAA-10.4.2"
+          ],
+          "description": "Ensure <meta name=\"viewport\"> does not disable text scaling and zooming",
+          "help": "Zooming and scaling must not be disabled"
+        },
+        {
+          "id": "nested-interactive",
+          "impact": null,
+          "tags": [
+            "cat.keyboard",
+            "wcag2a",
+            "wcag412",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure interactive controls are not nested as they are not always announced by screen readers or can cause focus problems for assistive technologies",
+          "help": "Interactive controls must not be nested"
+        }
+      ]
+    },
+    {
+      "url": "http://127.0.0.1:3000/login",
+      "finalUrl": "http://127.0.0.1:3000/login",
+      "statusCode": 200,
+      "scannedAt": "2026-11-08T14:14:42.423Z",
+      "summary": {
+        "violations": 0,
+        "passes": 22,
+        "incomplete": 0,
+        "inapplicable": 41,
+        "byImpact": {
+          "critical": 0,
+          "serious": 0,
+          "moderate": 0,
+          "minor": 0
+        }
+      },
+      "violations": [],
+      "incomplete": [],
+      "passes": [
+        {
+          "id": "aria-allowed-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure an element's role supports its ARIA attributes",
+          "help": "Elements must only use supported ARIA attributes"
+        },
+        {
+          "id": "aria-conditional-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure ARIA attributes are used as described in the specification of the element's role",
+          "help": "ARIA attributes must be used as specified for the element's role"
+        },
+        {
+          "id": "aria-deprecated-role",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure elements do not use deprecated roles",
+          "help": "Deprecated ARIA roles must not be used"
+        },
+        {
+          "id": "aria-hidden-body",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag131",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.1.3.1",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-10.8.1"
+          ],
+          "description": "Ensure aria-hidden=\"true\" is not present on the document body.",
+          "help": "aria-hidden=\"true\" must not be present on the document body"
+        },
+        {
+          "id": "aria-hidden-focus",
+          "impact": null,
+          "tags": [
+            "cat.name-role-value",
+            "wcag2a",
+            "wcag412",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-10.8.1"
+          ],
+          "description": "Ensure aria-hidden elements are not focusable nor contain focusable elements",
+          "help": "ARIA hidden element must not be focusable or contain focusable elements"
+        },
+        {
+          "id": "aria-prohibited-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure ARIA attributes are not prohibited for an element's role",
+          "help": "Elements must only use permitted ARIA attributes"
+        },
+        {
+          "id": "aria-required-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure elements with ARIA roles have all required ARIA attributes",
+          "help": "Required ARIA attributes must be provided"
+        },
+        {
+          "id": "aria-roles",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure all elements with a role attribute use a valid value",
+          "help": "ARIA roles used must conform to valid values"
+        },
+        {
+          "id": "aria-valid-attr-value",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure all ARIA attributes have valid values",
+          "help": "ARIA attributes must conform to valid values"
+        },
+        {
+          "id": "aria-valid-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure attributes that begin with aria- are valid ARIA attributes",
+          "help": "ARIA attributes must conform to valid names"
+        },
+        {
+          "id": "button-name",
+          "impact": null,
+          "tags": [
+            "cat.name-role-value",
+            "wcag2a",
+            "wcag412",
+            "section508",
+            "section508.22.a",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-11.9.1"
+          ],
+          "description": "Ensure buttons have discernible text",
+          "help": "Buttons must have discernible text"
+        },
+        {
+          "id": "bypass",
+          "impact": null,
+          "tags": [
+            "cat.keyboard",
+            "wcag2a",
+            "wcag241",
+            "section508",
+            "section508.22.o",
+            "TTv5",
+            "TT9.a",
+            "EN-301-549",
+            "EN-9.2.4.1",
+            "RGAAv4",
+            "RGAA-12.7.1"
+          ],
+          "description": "Ensure each page has at least one mechanism for a user to bypass navigation and jump straight to the content",
+          "help": "Page must have means to bypass repeated blocks"
+        },
+        {
+          "id": "color-contrast",
+          "impact": null,
+          "tags": [
+            "cat.color",
+            "wcag2aa",
+            "wcag143",
+            "TTv5",
+            "TT13.c",
+            "EN-301-549",
+            "EN-9.1.4.3",
+            "ACT",
+            "RGAAv4",
+            "RGAA-3.2.1"
+          ],
+          "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+          "help": "Elements must meet minimum color contrast ratio thresholds"
+        },
+        {
+          "id": "document-title",
+          "impact": null,
+          "tags": [
+            "cat.text-alternatives",
+            "wcag2a",
+            "wcag242",
+            "TTv5",
+            "TT12.a",
+            "EN-301-549",
+            "EN-9.2.4.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-8.5.1"
+          ],
+          "description": "Ensure each HTML document contains a non-empty <title> element",
+          "help": "Documents must have <title> element to aid in navigation"
+        },
+        {
+          "id": "duplicate-id-aria",
+          "impact": null,
+          "tags": [
+            "cat.parsing",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-8.2.1"
+          ],
+          "description": "Ensure every id attribute value used in ARIA and in labels is unique",
+          "help": "IDs used in ARIA and labels must be unique"
+        },
+        {
+          "id": "form-field-multiple-labels",
+          "impact": null,
+          "tags": [
+            "cat.forms",
+            "wcag2a",
+            "wcag332",
+            "TTv5",
+            "TT5.c",
+            "EN-301-549",
+            "EN-9.3.3.2",
+            "RGAAv4",
+            "RGAA-11.2.1"
+          ],
+          "description": "Ensure form field does not have multiple label elements",
+          "help": "Form field must not have multiple label elements"
+        },
+        {
+          "id": "html-has-lang",
+          "impact": null,
+          "tags": [
+            "cat.language",
+            "wcag2a",
+            "wcag311",
+            "TTv5",
+            "TT11.a",
+            "EN-301-549",
+            "EN-9.3.1.1",
+            "ACT",
+            "RGAAv4",
+            "RGAA-8.3.1"
+          ],
+          "description": "Ensure every HTML document has a lang attribute",
+          "help": "<html> element must have a lang attribute"
+        },
+        {
+          "id": "html-lang-valid",
+          "impact": null,
+          "tags": [
+            "cat.language",
+            "wcag2a",
+            "wcag311",
+            "TTv5",
+            "TT11.a",
+            "EN-301-549",
+            "EN-9.3.1.1",
+            "ACT",
+            "RGAAv4",
+            "RGAA-8.4.1"
+          ],
+          "description": "Ensure the lang attribute of the <html> element has a valid value",
+          "help": "<html> element must have a valid value for the lang attribute"
+        },
+        {
+          "id": "label",
+          "impact": null,
+          "tags": [
+            "cat.forms",
+            "wcag2a",
+            "wcag412",
+            "section508",
+            "section508.22.n",
+            "TTv5",
+            "TT5.c",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-11.1.1"
+          ],
+          "description": "Ensure every form element has a label",
+          "help": "Form elements must have labels"
+        },
+        {
+          "id": "link-name",
+          "impact": null,
+          "tags": [
+            "cat.name-role-value",
+            "wcag2a",
+            "wcag244",
+            "wcag412",
+            "section508",
+            "section508.22.a",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.2.4.4",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-6.2.1"
+          ],
+          "description": "Ensure links have discernible text",
+          "help": "Links must have discernible text"
+        },
+        {
+          "id": "meta-viewport",
+          "impact": null,
+          "tags": [
+            "cat.sensory-and-visual-cues",
+            "wcag2aa",
+            "wcag144",
+            "EN-301-549",
+            "EN-9.1.4.4",
+            "ACT",
+            "RGAAv4",
+            "RGAA-10.4.2"
+          ],
+          "description": "Ensure <meta name=\"viewport\"> does not disable text scaling and zooming",
+          "help": "Zooming and scaling must not be disabled"
+        },
+        {
+          "id": "nested-interactive",
+          "impact": null,
+          "tags": [
+            "cat.keyboard",
+            "wcag2a",
+            "wcag412",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure interactive controls are not nested as they are not always announced by screen readers or can cause focus problems for assistive technologies",
+          "help": "Interactive controls must not be nested"
+        }
+      ]
+    },
+    {
+      "url": "http://127.0.0.1:3000/forgot-password",
+      "finalUrl": "http://127.0.0.1:3000/forgot-password",
+      "statusCode": 200,
+      "scannedAt": "2026-11-08T14:14:47.239Z",
+      "summary": {
+        "violations": 0,
+        "passes": 21,
+        "incomplete": 0,
+        "inapplicable": 42,
+        "byImpact": {
+          "critical": 0,
+          "serious": 0,
+          "moderate": 0,
+          "minor": 0
+        }
+      },
+      "violations": [],
+      "incomplete": [],
+      "passes": [
+        {
+          "id": "aria-allowed-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure an element's role supports its ARIA attributes",
+          "help": "Elements must only use supported ARIA attributes"
+        },
+        {
+          "id": "aria-conditional-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure ARIA attributes are used as described in the specification of the element's role",
+          "help": "ARIA attributes must be used as specified for the element's role"
+        },
+        {
+          "id": "aria-deprecated-role",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure elements do not use deprecated roles",
+          "help": "Deprecated ARIA roles must not be used"
+        },
+        {
+          "id": "aria-hidden-body",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag131",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.1.3.1",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-10.8.1"
+          ],
+          "description": "Ensure aria-hidden=\"true\" is not present on the document body.",
+          "help": "aria-hidden=\"true\" must not be present on the document body"
+        },
+        {
+          "id": "aria-hidden-focus",
+          "impact": null,
+          "tags": [
+            "cat.name-role-value",
+            "wcag2a",
+            "wcag412",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-10.8.1"
+          ],
+          "description": "Ensure aria-hidden elements are not focusable nor contain focusable elements",
+          "help": "ARIA hidden element must not be focusable or contain focusable elements"
+        },
+        {
+          "id": "aria-prohibited-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure ARIA attributes are not prohibited for an element's role",
+          "help": "Elements must only use permitted ARIA attributes"
+        },
+        {
+          "id": "aria-required-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure elements with ARIA roles have all required ARIA attributes",
+          "help": "Required ARIA attributes must be provided"
+        },
+        {
+          "id": "aria-roles",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure all elements with a role attribute use a valid value",
+          "help": "ARIA roles used must conform to valid values"
+        },
+        {
+          "id": "aria-valid-attr-value",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure all ARIA attributes have valid values",
+          "help": "ARIA attributes must conform to valid values"
+        },
+        {
+          "id": "aria-valid-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure attributes that begin with aria- are valid ARIA attributes",
+          "help": "ARIA attributes must conform to valid names"
+        },
+        {
+          "id": "button-name",
+          "impact": null,
+          "tags": [
+            "cat.name-role-value",
+            "wcag2a",
+            "wcag412",
+            "section508",
+            "section508.22.a",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-11.9.1"
+          ],
+          "description": "Ensure buttons have discernible text",
+          "help": "Buttons must have discernible text"
+        },
+        {
+          "id": "bypass",
+          "impact": null,
+          "tags": [
+            "cat.keyboard",
+            "wcag2a",
+            "wcag241",
+            "section508",
+            "section508.22.o",
+            "TTv5",
+            "TT9.a",
+            "EN-301-549",
+            "EN-9.2.4.1",
+            "RGAAv4",
+            "RGAA-12.7.1"
+          ],
+          "description": "Ensure each page has at least one mechanism for a user to bypass navigation and jump straight to the content",
+          "help": "Page must have means to bypass repeated blocks"
+        },
+        {
+          "id": "color-contrast",
+          "impact": null,
+          "tags": [
+            "cat.color",
+            "wcag2aa",
+            "wcag143",
+            "TTv5",
+            "TT13.c",
+            "EN-301-549",
+            "EN-9.1.4.3",
+            "ACT",
+            "RGAAv4",
+            "RGAA-3.2.1"
+          ],
+          "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+          "help": "Elements must meet minimum color contrast ratio thresholds"
+        },
+        {
+          "id": "document-title",
+          "impact": null,
+          "tags": [
+            "cat.text-alternatives",
+            "wcag2a",
+            "wcag242",
+            "TTv5",
+            "TT12.a",
+            "EN-301-549",
+            "EN-9.2.4.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-8.5.1"
+          ],
+          "description": "Ensure each HTML document contains a non-empty <title> element",
+          "help": "Documents must have <title> element to aid in navigation"
+        },
+        {
+          "id": "form-field-multiple-labels",
+          "impact": null,
+          "tags": [
+            "cat.forms",
+            "wcag2a",
+            "wcag332",
+            "TTv5",
+            "TT5.c",
+            "EN-301-549",
+            "EN-9.3.3.2",
+            "RGAAv4",
+            "RGAA-11.2.1"
+          ],
+          "description": "Ensure form field does not have multiple label elements",
+          "help": "Form field must not have multiple label elements"
+        },
+        {
+          "id": "html-has-lang",
+          "impact": null,
+          "tags": [
+            "cat.language",
+            "wcag2a",
+            "wcag311",
+            "TTv5",
+            "TT11.a",
+            "EN-301-549",
+            "EN-9.3.1.1",
+            "ACT",
+            "RGAAv4",
+            "RGAA-8.3.1"
+          ],
+          "description": "Ensure every HTML document has a lang attribute",
+          "help": "<html> element must have a lang attribute"
+        },
+        {
+          "id": "html-lang-valid",
+          "impact": null,
+          "tags": [
+            "cat.language",
+            "wcag2a",
+            "wcag311",
+            "TTv5",
+            "TT11.a",
+            "EN-301-549",
+            "EN-9.3.1.1",
+            "ACT",
+            "RGAAv4",
+            "RGAA-8.4.1"
+          ],
+          "description": "Ensure the lang attribute of the <html> element has a valid value",
+          "help": "<html> element must have a valid value for the lang attribute"
+        },
+        {
+          "id": "label",
+          "impact": null,
+          "tags": [
+            "cat.forms",
+            "wcag2a",
+            "wcag412",
+            "section508",
+            "section508.22.n",
+            "TTv5",
+            "TT5.c",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-11.1.1"
+          ],
+          "description": "Ensure every form element has a label",
+          "help": "Form elements must have labels"
+        },
+        {
+          "id": "link-name",
+          "impact": null,
+          "tags": [
+            "cat.name-role-value",
+            "wcag2a",
+            "wcag244",
+            "wcag412",
+            "section508",
+            "section508.22.a",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.2.4.4",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-6.2.1"
+          ],
+          "description": "Ensure links have discernible text",
+          "help": "Links must have discernible text"
+        },
+        {
+          "id": "meta-viewport",
+          "impact": null,
+          "tags": [
+            "cat.sensory-and-visual-cues",
+            "wcag2aa",
+            "wcag144",
+            "EN-301-549",
+            "EN-9.1.4.4",
+            "ACT",
+            "RGAAv4",
+            "RGAA-10.4.2"
+          ],
+          "description": "Ensure <meta name=\"viewport\"> does not disable text scaling and zooming",
+          "help": "Zooming and scaling must not be disabled"
+        },
+        {
+          "id": "nested-interactive",
+          "impact": null,
+          "tags": [
+            "cat.keyboard",
+            "wcag2a",
+            "wcag412",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure interactive controls are not nested as they are not always announced by screen readers or can cause focus problems for assistive technologies",
+          "help": "Interactive controls must not be nested"
+        }
+      ]
+    },
+    {
+      "url": "http://127.0.0.1:3000/activate-account",
+      "finalUrl": "http://127.0.0.1:3000/activate-account",
+      "statusCode": 200,
+      "scannedAt": "2026-11-08T14:14:54.020Z",
+      "summary": {
+        "violations": 0,
+        "passes": 17,
+        "incomplete": 0,
+        "inapplicable": 46,
+        "byImpact": {
+          "critical": 0,
+          "serious": 0,
+          "moderate": 0,
+          "minor": 0
+        }
+      },
+      "violations": [],
+      "incomplete": [],
+      "passes": [
+        {
+          "id": "aria-allowed-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure an element's role supports its ARIA attributes",
+          "help": "Elements must only use supported ARIA attributes"
+        },
+        {
+          "id": "aria-conditional-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure ARIA attributes are used as described in the specification of the element's role",
+          "help": "ARIA attributes must be used as specified for the element's role"
+        },
+        {
+          "id": "aria-deprecated-role",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure elements do not use deprecated roles",
+          "help": "Deprecated ARIA roles must not be used"
+        },
+        {
+          "id": "aria-hidden-body",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag131",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.1.3.1",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-10.8.1"
+          ],
+          "description": "Ensure aria-hidden=\"true\" is not present on the document body.",
+          "help": "aria-hidden=\"true\" must not be present on the document body"
+        },
+        {
+          "id": "aria-hidden-focus",
+          "impact": null,
+          "tags": [
+            "cat.name-role-value",
+            "wcag2a",
+            "wcag412",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-10.8.1"
+          ],
+          "description": "Ensure aria-hidden elements are not focusable nor contain focusable elements",
+          "help": "ARIA hidden element must not be focusable or contain focusable elements"
+        },
+        {
+          "id": "aria-prohibited-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure ARIA attributes are not prohibited for an element's role",
+          "help": "Elements must only use permitted ARIA attributes"
+        },
+        {
+          "id": "aria-required-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure elements with ARIA roles have all required ARIA attributes",
+          "help": "Required ARIA attributes must be provided"
+        },
+        {
+          "id": "aria-roles",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure all elements with a role attribute use a valid value",
+          "help": "ARIA roles used must conform to valid values"
+        },
+        {
+          "id": "aria-valid-attr-value",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure all ARIA attributes have valid values",
+          "help": "ARIA attributes must conform to valid values"
+        },
+        {
+          "id": "aria-valid-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure attributes that begin with aria- are valid ARIA attributes",
+          "help": "ARIA attributes must conform to valid names"
+        },
+        {
+          "id": "bypass",
+          "impact": null,
+          "tags": [
+            "cat.keyboard",
+            "wcag2a",
+            "wcag241",
+            "section508",
+            "section508.22.o",
+            "TTv5",
+            "TT9.a",
+            "EN-301-549",
+            "EN-9.2.4.1",
+            "RGAAv4",
+            "RGAA-12.7.1"
+          ],
+          "description": "Ensure each page has at least one mechanism for a user to bypass navigation and jump straight to the content",
+          "help": "Page must have means to bypass repeated blocks"
+        },
+        {
+          "id": "color-contrast",
+          "impact": null,
+          "tags": [
+            "cat.color",
+            "wcag2aa",
+            "wcag143",
+            "TTv5",
+            "TT13.c",
+            "EN-301-549",
+            "EN-9.1.4.3",
+            "ACT",
+            "RGAAv4",
+            "RGAA-3.2.1"
+          ],
+          "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+          "help": "Elements must meet minimum color contrast ratio thresholds"
+        },
+        {
+          "id": "document-title",
+          "impact": null,
+          "tags": [
+            "cat.text-alternatives",
+            "wcag2a",
+            "wcag242",
+            "TTv5",
+            "TT12.a",
+            "EN-301-549",
+            "EN-9.2.4.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-8.5.1"
+          ],
+          "description": "Ensure each HTML document contains a non-empty <title> element",
+          "help": "Documents must have <title> element to aid in navigation"
+        },
+        {
+          "id": "html-has-lang",
+          "impact": null,
+          "tags": [
+            "cat.language",
+            "wcag2a",
+            "wcag311",
+            "TTv5",
+            "TT11.a",
+            "EN-301-549",
+            "EN-9.3.1.1",
+            "ACT",
+            "RGAAv4",
+            "RGAA-8.3.1"
+          ],
+          "description": "Ensure every HTML document has a lang attribute",
+          "help": "<html> element must have a lang attribute"
+        },
+        {
+          "id": "html-lang-valid",
+          "impact": null,
+          "tags": [
+            "cat.language",
+            "wcag2a",
+            "wcag311",
+            "TTv5",
+            "TT11.a",
+            "EN-301-549",
+            "EN-9.3.1.1",
+            "ACT",
+            "RGAAv4",
+            "RGAA-8.4.1"
+          ],
+          "description": "Ensure the lang attribute of the <html> element has a valid value",
+          "help": "<html> element must have a valid value for the lang attribute"
+        },
+        {
+          "id": "link-name",
+          "impact": null,
+          "tags": [
+            "cat.name-role-value",
+            "wcag2a",
+            "wcag244",
+            "wcag412",
+            "section508",
+            "section508.22.a",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.2.4.4",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-6.2.1"
+          ],
+          "description": "Ensure links have discernible text",
+          "help": "Links must have discernible text"
+        },
+        {
+          "id": "meta-viewport",
+          "impact": null,
+          "tags": [
+            "cat.sensory-and-visual-cues",
+            "wcag2aa",
+            "wcag144",
+            "EN-301-549",
+            "EN-9.1.4.4",
+            "ACT",
+            "RGAAv4",
+            "RGAA-10.4.2"
+          ],
+          "description": "Ensure <meta name=\"viewport\"> does not disable text scaling and zooming",
+          "help": "Zooming and scaling must not be disabled"
+        }
+      ]
+    },
+    {
+      "url": "http://127.0.0.1:3000/dashboard",
+      "finalUrl": "http://127.0.0.1:3000/login",
+      "statusCode": 200,
+      "scannedAt": "2026-11-08T14:14:58.836Z",
+      "summary": {
+        "violations": 0,
+        "passes": 21,
+        "incomplete": 0,
+        "inapplicable": 42,
+        "byImpact": {
+          "critical": 0,
+          "serious": 0,
+          "moderate": 0,
+          "minor": 0
+        }
+      },
+      "violations": [],
+      "incomplete": [],
+      "passes": [
+        {
+          "id": "aria-allowed-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure an element's role supports its ARIA attributes",
+          "help": "Elements must only use supported ARIA attributes"
+        },
+        {
+          "id": "aria-conditional-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure ARIA attributes are used as described in the specification of the element's role",
+          "help": "ARIA attributes must be used as specified for the element's role"
+        },
+        {
+          "id": "aria-deprecated-role",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure elements do not use deprecated roles",
+          "help": "Deprecated ARIA roles must not be used"
+        },
+        {
+          "id": "aria-hidden-body",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag131",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.1.3.1",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-10.8.1"
+          ],
+          "description": "Ensure aria-hidden=\"true\" is not present on the document body.",
+          "help": "aria-hidden=\"true\" must not be present on the document body"
+        },
+        {
+          "id": "aria-hidden-focus",
+          "impact": null,
+          "tags": [
+            "cat.name-role-value",
+            "wcag2a",
+            "wcag412",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-10.8.1"
+          ],
+          "description": "Ensure aria-hidden elements are not focusable nor contain focusable elements",
+          "help": "ARIA hidden element must not be focusable or contain focusable elements"
+        },
+        {
+          "id": "aria-prohibited-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure ARIA attributes are not prohibited for an element's role",
+          "help": "Elements must only use permitted ARIA attributes"
+        },
+        {
+          "id": "aria-required-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure elements with ARIA roles have all required ARIA attributes",
+          "help": "Required ARIA attributes must be provided"
+        },
+        {
+          "id": "aria-roles",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure all elements with a role attribute use a valid value",
+          "help": "ARIA roles used must conform to valid values"
+        },
+        {
+          "id": "aria-valid-attr-value",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure all ARIA attributes have valid values",
+          "help": "ARIA attributes must conform to valid values"
+        },
+        {
+          "id": "aria-valid-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure attributes that begin with aria- are valid ARIA attributes",
+          "help": "ARIA attributes must conform to valid names"
+        },
+        {
+          "id": "button-name",
+          "impact": null,
+          "tags": [
+            "cat.name-role-value",
+            "wcag2a",
+            "wcag412",
+            "section508",
+            "section508.22.a",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-11.9.1"
+          ],
+          "description": "Ensure buttons have discernible text",
+          "help": "Buttons must have discernible text"
+        },
+        {
+          "id": "bypass",
+          "impact": null,
+          "tags": [
+            "cat.keyboard",
+            "wcag2a",
+            "wcag241",
+            "section508",
+            "section508.22.o",
+            "TTv5",
+            "TT9.a",
+            "EN-301-549",
+            "EN-9.2.4.1",
+            "RGAAv4",
+            "RGAA-12.7.1"
+          ],
+          "description": "Ensure each page has at least one mechanism for a user to bypass navigation and jump straight to the content",
+          "help": "Page must have means to bypass repeated blocks"
+        },
+        {
+          "id": "color-contrast",
+          "impact": null,
+          "tags": [
+            "cat.color",
+            "wcag2aa",
+            "wcag143",
+            "TTv5",
+            "TT13.c",
+            "EN-301-549",
+            "EN-9.1.4.3",
+            "ACT",
+            "RGAAv4",
+            "RGAA-3.2.1"
+          ],
+          "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+          "help": "Elements must meet minimum color contrast ratio thresholds"
+        },
+        {
+          "id": "document-title",
+          "impact": null,
+          "tags": [
+            "cat.text-alternatives",
+            "wcag2a",
+            "wcag242",
+            "TTv5",
+            "TT12.a",
+            "EN-301-549",
+            "EN-9.2.4.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-8.5.1"
+          ],
+          "description": "Ensure each HTML document contains a non-empty <title> element",
+          "help": "Documents must have <title> element to aid in navigation"
+        },
+        {
+          "id": "form-field-multiple-labels",
+          "impact": null,
+          "tags": [
+            "cat.forms",
+            "wcag2a",
+            "wcag332",
+            "TTv5",
+            "TT5.c",
+            "EN-301-549",
+            "EN-9.3.3.2",
+            "RGAAv4",
+            "RGAA-11.2.1"
+          ],
+          "description": "Ensure form field does not have multiple label elements",
+          "help": "Form field must not have multiple label elements"
+        },
+        {
+          "id": "html-has-lang",
+          "impact": null,
+          "tags": [
+            "cat.language",
+            "wcag2a",
+            "wcag311",
+            "TTv5",
+            "TT11.a",
+            "EN-301-549",
+            "EN-9.3.1.1",
+            "ACT",
+            "RGAAv4",
+            "RGAA-8.3.1"
+          ],
+          "description": "Ensure every HTML document has a lang attribute",
+          "help": "<html> element must have a lang attribute"
+        },
+        {
+          "id": "html-lang-valid",
+          "impact": null,
+          "tags": [
+            "cat.language",
+            "wcag2a",
+            "wcag311",
+            "TTv5",
+            "TT11.a",
+            "EN-301-549",
+            "EN-9.3.1.1",
+            "ACT",
+            "RGAAv4",
+            "RGAA-8.4.1"
+          ],
+          "description": "Ensure the lang attribute of the <html> element has a valid value",
+          "help": "<html> element must have a valid value for the lang attribute"
+        },
+        {
+          "id": "label",
+          "impact": null,
+          "tags": [
+            "cat.forms",
+            "wcag2a",
+            "wcag412",
+            "section508",
+            "section508.22.n",
+            "TTv5",
+            "TT5.c",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-11.1.1"
+          ],
+          "description": "Ensure every form element has a label",
+          "help": "Form elements must have labels"
+        },
+        {
+          "id": "link-name",
+          "impact": null,
+          "tags": [
+            "cat.name-role-value",
+            "wcag2a",
+            "wcag244",
+            "wcag412",
+            "section508",
+            "section508.22.a",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.2.4.4",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-6.2.1"
+          ],
+          "description": "Ensure links have discernible text",
+          "help": "Links must have discernible text"
+        },
+        {
+          "id": "meta-viewport",
+          "impact": null,
+          "tags": [
+            "cat.sensory-and-visual-cues",
+            "wcag2aa",
+            "wcag144",
+            "EN-301-549",
+            "EN-9.1.4.4",
+            "ACT",
+            "RGAAv4",
+            "RGAA-10.4.2"
+          ],
+          "description": "Ensure <meta name=\"viewport\"> does not disable text scaling and zooming",
+          "help": "Zooming and scaling must not be disabled"
+        },
+        {
+          "id": "nested-interactive",
+          "impact": null,
+          "tags": [
+            "cat.keyboard",
+            "wcag2a",
+            "wcag412",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure interactive controls are not nested as they are not always announced by screen readers or can cause focus problems for assistive technologies",
+          "help": "Interactive controls must not be nested"
+        }
+      ]
+    },
+    {
+      "url": "http://127.0.0.1:3000/lots",
+      "finalUrl": "http://127.0.0.1:3000/login",
+      "statusCode": 200,
+      "scannedAt": "2026-11-08T14:15:03.760Z",
+      "summary": {
+        "violations": 0,
+        "passes": 23,
+        "incomplete": 0,
+        "inapplicable": 40,
+        "byImpact": {
+          "critical": 0,
+          "serious": 0,
+          "moderate": 0,
+          "minor": 0
+        }
+      },
+      "violations": [],
+      "incomplete": [],
+      "passes": [
+        {
+          "id": "aria-allowed-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure an element's role supports its ARIA attributes",
+          "help": "Elements must only use supported ARIA attributes"
+        },
+        {
+          "id": "aria-conditional-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure ARIA attributes are used as described in the specification of the element's role",
+          "help": "ARIA attributes must be used as specified for the element's role"
+        },
+        {
+          "id": "aria-deprecated-role",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure elements do not use deprecated roles",
+          "help": "Deprecated ARIA roles must not be used"
+        },
+        {
+          "id": "aria-hidden-body",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag131",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.1.3.1",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-10.8.1"
+          ],
+          "description": "Ensure aria-hidden=\"true\" is not present on the document body.",
+          "help": "aria-hidden=\"true\" must not be present on the document body"
+        },
+        {
+          "id": "aria-hidden-focus",
+          "impact": null,
+          "tags": [
+            "cat.name-role-value",
+            "wcag2a",
+            "wcag412",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-10.8.1"
+          ],
+          "description": "Ensure aria-hidden elements are not focusable nor contain focusable elements",
+          "help": "ARIA hidden element must not be focusable or contain focusable elements"
+        },
+        {
+          "id": "aria-prohibited-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure ARIA attributes are not prohibited for an element's role",
+          "help": "Elements must only use permitted ARIA attributes"
+        },
+        {
+          "id": "aria-required-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure elements with ARIA roles have all required ARIA attributes",
+          "help": "Required ARIA attributes must be provided"
+        },
+        {
+          "id": "aria-roles",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure all elements with a role attribute use a valid value",
+          "help": "ARIA roles used must conform to valid values"
+        },
+        {
+          "id": "aria-valid-attr-value",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure all ARIA attributes have valid values",
+          "help": "ARIA attributes must conform to valid values"
+        },
+        {
+          "id": "aria-valid-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure attributes that begin with aria- are valid ARIA attributes",
+          "help": "ARIA attributes must conform to valid names"
+        },
+        {
+          "id": "button-name",
+          "impact": null,
+          "tags": [
+            "cat.name-role-value",
+            "wcag2a",
+            "wcag412",
+            "section508",
+            "section508.22.a",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-11.9.1"
+          ],
+          "description": "Ensure buttons have discernible text",
+          "help": "Buttons must have discernible text"
+        },
+        {
+          "id": "bypass",
+          "impact": null,
+          "tags": [
+            "cat.keyboard",
+            "wcag2a",
+            "wcag241",
+            "section508",
+            "section508.22.o",
+            "TTv5",
+            "TT9.a",
+            "EN-301-549",
+            "EN-9.2.4.1",
+            "RGAAv4",
+            "RGAA-12.7.1"
+          ],
+          "description": "Ensure each page has at least one mechanism for a user to bypass navigation and jump straight to the content",
+          "help": "Page must have means to bypass repeated blocks"
+        },
+        {
+          "id": "color-contrast",
+          "impact": null,
+          "tags": [
+            "cat.color",
+            "wcag2aa",
+            "wcag143",
+            "TTv5",
+            "TT13.c",
+            "EN-301-549",
+            "EN-9.1.4.3",
+            "ACT",
+            "RGAAv4",
+            "RGAA-3.2.1"
+          ],
+          "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+          "help": "Elements must meet minimum color contrast ratio thresholds"
+        },
+        {
+          "id": "document-title",
+          "impact": null,
+          "tags": [
+            "cat.text-alternatives",
+            "wcag2a",
+            "wcag242",
+            "TTv5",
+            "TT12.a",
+            "EN-301-549",
+            "EN-9.2.4.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-8.5.1"
+          ],
+          "description": "Ensure each HTML document contains a non-empty <title> element",
+          "help": "Documents must have <title> element to aid in navigation"
+        },
+        {
+          "id": "duplicate-id-aria",
+          "impact": null,
+          "tags": [
+            "cat.parsing",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-8.2.1"
+          ],
+          "description": "Ensure every id attribute value used in ARIA and in labels is unique",
+          "help": "IDs used in ARIA and labels must be unique"
+        },
+        {
+          "id": "form-field-multiple-labels",
+          "impact": null,
+          "tags": [
+            "cat.forms",
+            "wcag2a",
+            "wcag332",
+            "TTv5",
+            "TT5.c",
+            "EN-301-549",
+            "EN-9.3.3.2",
+            "RGAAv4",
+            "RGAA-11.2.1"
+          ],
+          "description": "Ensure form field does not have multiple label elements",
+          "help": "Form field must not have multiple label elements"
+        },
+        {
+          "id": "html-has-lang",
+          "impact": null,
+          "tags": [
+            "cat.language",
+            "wcag2a",
+            "wcag311",
+            "TTv5",
+            "TT11.a",
+            "EN-301-549",
+            "EN-9.3.1.1",
+            "ACT",
+            "RGAAv4",
+            "RGAA-8.3.1"
+          ],
+          "description": "Ensure every HTML document has a lang attribute",
+          "help": "<html> element must have a lang attribute"
+        },
+        {
+          "id": "html-lang-valid",
+          "impact": null,
+          "tags": [
+            "cat.language",
+            "wcag2a",
+            "wcag311",
+            "TTv5",
+            "TT11.a",
+            "EN-301-549",
+            "EN-9.3.1.1",
+            "ACT",
+            "RGAAv4",
+            "RGAA-8.4.1"
+          ],
+          "description": "Ensure the lang attribute of the <html> element has a valid value",
+          "help": "<html> element must have a valid value for the lang attribute"
+        },
+        {
+          "id": "label",
+          "impact": null,
+          "tags": [
+            "cat.forms",
+            "wcag2a",
+            "wcag412",
+            "section508",
+            "section508.22.n",
+            "TTv5",
+            "TT5.c",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-11.1.1"
+          ],
+          "description": "Ensure every form element has a label",
+          "help": "Form elements must have labels"
+        },
+        {
+          "id": "link-name",
+          "impact": null,
+          "tags": [
+            "cat.name-role-value",
+            "wcag2a",
+            "wcag244",
+            "wcag412",
+            "section508",
+            "section508.22.a",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.2.4.4",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-6.2.1"
+          ],
+          "description": "Ensure links have discernible text",
+          "help": "Links must have discernible text"
+        },
+        {
+          "id": "meta-viewport",
+          "impact": null,
+          "tags": [
+            "cat.sensory-and-visual-cues",
+            "wcag2aa",
+            "wcag144",
+            "EN-301-549",
+            "EN-9.1.4.4",
+            "ACT",
+            "RGAAv4",
+            "RGAA-10.4.2"
+          ],
+          "description": "Ensure <meta name=\"viewport\"> does not disable text scaling and zooming",
+          "help": "Zooming and scaling must not be disabled"
+        },
+        {
+          "id": "nested-interactive",
+          "impact": null,
+          "tags": [
+            "cat.keyboard",
+            "wcag2a",
+            "wcag412",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure interactive controls are not nested as they are not always announced by screen readers or can cause focus problems for assistive technologies",
+          "help": "Interactive controls must not be nested"
+        },
+        {
+          "id": "select-name",
+          "impact": null,
+          "tags": [
+            "cat.forms",
+            "wcag2a",
+            "wcag412",
+            "section508",
+            "section508.22.n",
+            "TTv5",
+            "TT5.c",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-11.1.1"
+          ],
+          "description": "Ensure select element has an accessible name",
+          "help": "Select element must have an accessible name"
+        }
+      ]
+    },
+    {
+      "url": "http://127.0.0.1:3000/custody",
+      "finalUrl": "http://127.0.0.1:3000/login",
+      "statusCode": 200,
+      "scannedAt": "2026-11-08T14:15:07.760Z",
+      "summary": {
+        "violations": 0,
+        "passes": 21,
+        "incomplete": 0,
+        "inapplicable": 42,
+        "byImpact": {
+          "critical": 0,
+          "serious": 0,
+          "moderate": 0,
+          "minor": 0
+        }
+      },
+      "violations": [],
+      "incomplete": [],
+      "passes": [
+        {
+          "id": "aria-allowed-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure an element's role supports its ARIA attributes",
+          "help": "Elements must only use supported ARIA attributes"
+        },
+        {
+          "id": "aria-conditional-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure ARIA attributes are used as described in the specification of the element's role",
+          "help": "ARIA attributes must be used as specified for the element's role"
+        },
+        {
+          "id": "aria-deprecated-role",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure elements do not use deprecated roles",
+          "help": "Deprecated ARIA roles must not be used"
+        },
+        {
+          "id": "aria-hidden-body",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag131",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.1.3.1",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-10.8.1"
+          ],
+          "description": "Ensure aria-hidden=\"true\" is not present on the document body.",
+          "help": "aria-hidden=\"true\" must not be present on the document body"
+        },
+        {
+          "id": "aria-hidden-focus",
+          "impact": null,
+          "tags": [
+            "cat.name-role-value",
+            "wcag2a",
+            "wcag412",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-10.8.1"
+          ],
+          "description": "Ensure aria-hidden elements are not focusable nor contain focusable elements",
+          "help": "ARIA hidden element must not be focusable or contain focusable elements"
+        },
+        {
+          "id": "aria-prohibited-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure ARIA attributes are not prohibited for an element's role",
+          "help": "Elements must only use permitted ARIA attributes"
+        },
+        {
+          "id": "aria-required-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure elements with ARIA roles have all required ARIA attributes",
+          "help": "Required ARIA attributes must be provided"
+        },
+        {
+          "id": "aria-roles",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure all elements with a role attribute use a valid value",
+          "help": "ARIA roles used must conform to valid values"
+        },
+        {
+          "id": "aria-valid-attr-value",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure all ARIA attributes have valid values",
+          "help": "ARIA attributes must conform to valid values"
+        },
+        {
+          "id": "aria-valid-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure attributes that begin with aria- are valid ARIA attributes",
+          "help": "ARIA attributes must conform to valid names"
+        },
+        {
+          "id": "button-name",
+          "impact": null,
+          "tags": [
+            "cat.name-role-value",
+            "wcag2a",
+            "wcag412",
+            "section508",
+            "section508.22.a",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-11.9.1"
+          ],
+          "description": "Ensure buttons have discernible text",
+          "help": "Buttons must have discernible text"
+        },
+        {
+          "id": "bypass",
+          "impact": null,
+          "tags": [
+            "cat.keyboard",
+            "wcag2a",
+            "wcag241",
+            "section508",
+            "section508.22.o",
+            "TTv5",
+            "TT9.a",
+            "EN-301-549",
+            "EN-9.2.4.1",
+            "RGAAv4",
+            "RGAA-12.7.1"
+          ],
+          "description": "Ensure each page has at least one mechanism for a user to bypass navigation and jump straight to the content",
+          "help": "Page must have means to bypass repeated blocks"
+        },
+        {
+          "id": "color-contrast",
+          "impact": null,
+          "tags": [
+            "cat.color",
+            "wcag2aa",
+            "wcag143",
+            "TTv5",
+            "TT13.c",
+            "EN-301-549",
+            "EN-9.1.4.3",
+            "ACT",
+            "RGAAv4",
+            "RGAA-3.2.1"
+          ],
+          "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+          "help": "Elements must meet minimum color contrast ratio thresholds"
+        },
+        {
+          "id": "document-title",
+          "impact": null,
+          "tags": [
+            "cat.text-alternatives",
+            "wcag2a",
+            "wcag242",
+            "TTv5",
+            "TT12.a",
+            "EN-301-549",
+            "EN-9.2.4.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-8.5.1"
+          ],
+          "description": "Ensure each HTML document contains a non-empty <title> element",
+          "help": "Documents must have <title> element to aid in navigation"
+        },
+        {
+          "id": "form-field-multiple-labels",
+          "impact": null,
+          "tags": [
+            "cat.forms",
+            "wcag2a",
+            "wcag332",
+            "TTv5",
+            "TT5.c",
+            "EN-301-549",
+            "EN-9.3.3.2",
+            "RGAAv4",
+            "RGAA-11.2.1"
+          ],
+          "description": "Ensure form field does not have multiple label elements",
+          "help": "Form field must not have multiple label elements"
+        },
+        {
+          "id": "html-has-lang",
+          "impact": null,
+          "tags": [
+            "cat.language",
+            "wcag2a",
+            "wcag311",
+            "TTv5",
+            "TT11.a",
+            "EN-301-549",
+            "EN-9.3.1.1",
+            "ACT",
+            "RGAAv4",
+            "RGAA-8.3.1"
+          ],
+          "description": "Ensure every HTML document has a lang attribute",
+          "help": "<html> element must have a lang attribute"
+        },
+        {
+          "id": "html-lang-valid",
+          "impact": null,
+          "tags": [
+            "cat.language",
+            "wcag2a",
+            "wcag311",
+            "TTv5",
+            "TT11.a",
+            "EN-301-549",
+            "EN-9.3.1.1",
+            "ACT",
+            "RGAAv4",
+            "RGAA-8.4.1"
+          ],
+          "description": "Ensure the lang attribute of the <html> element has a valid value",
+          "help": "<html> element must have a valid value for the lang attribute"
+        },
+        {
+          "id": "label",
+          "impact": null,
+          "tags": [
+            "cat.forms",
+            "wcag2a",
+            "wcag412",
+            "section508",
+            "section508.22.n",
+            "TTv5",
+            "TT5.c",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-11.1.1"
+          ],
+          "description": "Ensure every form element has a label",
+          "help": "Form elements must have labels"
+        },
+        {
+          "id": "link-name",
+          "impact": null,
+          "tags": [
+            "cat.name-role-value",
+            "wcag2a",
+            "wcag244",
+            "wcag412",
+            "section508",
+            "section508.22.a",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.2.4.4",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-6.2.1"
+          ],
+          "description": "Ensure links have discernible text",
+          "help": "Links must have discernible text"
+        },
+        {
+          "id": "meta-viewport",
+          "impact": null,
+          "tags": [
+            "cat.sensory-and-visual-cues",
+            "wcag2aa",
+            "wcag144",
+            "EN-301-549",
+            "EN-9.1.4.4",
+            "ACT",
+            "RGAAv4",
+            "RGAA-10.4.2"
+          ],
+          "description": "Ensure <meta name=\"viewport\"> does not disable text scaling and zooming",
+          "help": "Zooming and scaling must not be disabled"
+        },
+        {
+          "id": "nested-interactive",
+          "impact": null,
+          "tags": [
+            "cat.keyboard",
+            "wcag2a",
+            "wcag412",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure interactive controls are not nested as they are not always announced by screen readers or can cause focus problems for assistive technologies",
+          "help": "Interactive controls must not be nested"
+        }
+      ]
+    },
+    {
+      "url": "http://127.0.0.1:3000/transport",
+      "finalUrl": "http://127.0.0.1:3000/login",
+      "statusCode": 200,
+      "scannedAt": "2026-11-08T14:15:12.891Z",
+      "summary": {
+        "violations": 0,
+        "passes": 21,
+        "incomplete": 0,
+        "inapplicable": 42,
+        "byImpact": {
+          "critical": 0,
+          "serious": 0,
+          "moderate": 0,
+          "minor": 0
+        }
+      },
+      "violations": [],
+      "incomplete": [],
+      "passes": [
+        {
+          "id": "aria-allowed-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure an element's role supports its ARIA attributes",
+          "help": "Elements must only use supported ARIA attributes"
+        },
+        {
+          "id": "aria-conditional-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure ARIA attributes are used as described in the specification of the element's role",
+          "help": "ARIA attributes must be used as specified for the element's role"
+        },
+        {
+          "id": "aria-deprecated-role",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure elements do not use deprecated roles",
+          "help": "Deprecated ARIA roles must not be used"
+        },
+        {
+          "id": "aria-hidden-body",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag131",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.1.3.1",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-10.8.1"
+          ],
+          "description": "Ensure aria-hidden=\"true\" is not present on the document body.",
+          "help": "aria-hidden=\"true\" must not be present on the document body"
+        },
+        {
+          "id": "aria-hidden-focus",
+          "impact": null,
+          "tags": [
+            "cat.name-role-value",
+            "wcag2a",
+            "wcag412",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-10.8.1"
+          ],
+          "description": "Ensure aria-hidden elements are not focusable nor contain focusable elements",
+          "help": "ARIA hidden element must not be focusable or contain focusable elements"
+        },
+        {
+          "id": "aria-prohibited-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure ARIA attributes are not prohibited for an element's role",
+          "help": "Elements must only use permitted ARIA attributes"
+        },
+        {
+          "id": "aria-required-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure elements with ARIA roles have all required ARIA attributes",
+          "help": "Required ARIA attributes must be provided"
+        },
+        {
+          "id": "aria-roles",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure all elements with a role attribute use a valid value",
+          "help": "ARIA roles used must conform to valid values"
+        },
+        {
+          "id": "aria-valid-attr-value",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure all ARIA attributes have valid values",
+          "help": "ARIA attributes must conform to valid values"
+        },
+        {
+          "id": "aria-valid-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure attributes that begin with aria- are valid ARIA attributes",
+          "help": "ARIA attributes must conform to valid names"
+        },
+        {
+          "id": "button-name",
+          "impact": null,
+          "tags": [
+            "cat.name-role-value",
+            "wcag2a",
+            "wcag412",
+            "section508",
+            "section508.22.a",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-11.9.1"
+          ],
+          "description": "Ensure buttons have discernible text",
+          "help": "Buttons must have discernible text"
+        },
+        {
+          "id": "bypass",
+          "impact": null,
+          "tags": [
+            "cat.keyboard",
+            "wcag2a",
+            "wcag241",
+            "section508",
+            "section508.22.o",
+            "TTv5",
+            "TT9.a",
+            "EN-301-549",
+            "EN-9.2.4.1",
+            "RGAAv4",
+            "RGAA-12.7.1"
+          ],
+          "description": "Ensure each page has at least one mechanism for a user to bypass navigation and jump straight to the content",
+          "help": "Page must have means to bypass repeated blocks"
+        },
+        {
+          "id": "color-contrast",
+          "impact": null,
+          "tags": [
+            "cat.color",
+            "wcag2aa",
+            "wcag143",
+            "TTv5",
+            "TT13.c",
+            "EN-301-549",
+            "EN-9.1.4.3",
+            "ACT",
+            "RGAAv4",
+            "RGAA-3.2.1"
+          ],
+          "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+          "help": "Elements must meet minimum color contrast ratio thresholds"
+        },
+        {
+          "id": "document-title",
+          "impact": null,
+          "tags": [
+            "cat.text-alternatives",
+            "wcag2a",
+            "wcag242",
+            "TTv5",
+            "TT12.a",
+            "EN-301-549",
+            "EN-9.2.4.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-8.5.1"
+          ],
+          "description": "Ensure each HTML document contains a non-empty <title> element",
+          "help": "Documents must have <title> element to aid in navigation"
+        },
+        {
+          "id": "form-field-multiple-labels",
+          "impact": null,
+          "tags": [
+            "cat.forms",
+            "wcag2a",
+            "wcag332",
+            "TTv5",
+            "TT5.c",
+            "EN-301-549",
+            "EN-9.3.3.2",
+            "RGAAv4",
+            "RGAA-11.2.1"
+          ],
+          "description": "Ensure form field does not have multiple label elements",
+          "help": "Form field must not have multiple label elements"
+        },
+        {
+          "id": "html-has-lang",
+          "impact": null,
+          "tags": [
+            "cat.language",
+            "wcag2a",
+            "wcag311",
+            "TTv5",
+            "TT11.a",
+            "EN-301-549",
+            "EN-9.3.1.1",
+            "ACT",
+            "RGAAv4",
+            "RGAA-8.3.1"
+          ],
+          "description": "Ensure every HTML document has a lang attribute",
+          "help": "<html> element must have a lang attribute"
+        },
+        {
+          "id": "html-lang-valid",
+          "impact": null,
+          "tags": [
+            "cat.language",
+            "wcag2a",
+            "wcag311",
+            "TTv5",
+            "TT11.a",
+            "EN-301-549",
+            "EN-9.3.1.1",
+            "ACT",
+            "RGAAv4",
+            "RGAA-8.4.1"
+          ],
+          "description": "Ensure the lang attribute of the <html> element has a valid value",
+          "help": "<html> element must have a valid value for the lang attribute"
+        },
+        {
+          "id": "label",
+          "impact": null,
+          "tags": [
+            "cat.forms",
+            "wcag2a",
+            "wcag412",
+            "section508",
+            "section508.22.n",
+            "TTv5",
+            "TT5.c",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-11.1.1"
+          ],
+          "description": "Ensure every form element has a label",
+          "help": "Form elements must have labels"
+        },
+        {
+          "id": "link-name",
+          "impact": null,
+          "tags": [
+            "cat.name-role-value",
+            "wcag2a",
+            "wcag244",
+            "wcag412",
+            "section508",
+            "section508.22.a",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.2.4.4",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-6.2.1"
+          ],
+          "description": "Ensure links have discernible text",
+          "help": "Links must have discernible text"
+        },
+        {
+          "id": "meta-viewport",
+          "impact": null,
+          "tags": [
+            "cat.sensory-and-visual-cues",
+            "wcag2aa",
+            "wcag144",
+            "EN-301-549",
+            "EN-9.1.4.4",
+            "ACT",
+            "RGAAv4",
+            "RGAA-10.4.2"
+          ],
+          "description": "Ensure <meta name=\"viewport\"> does not disable text scaling and zooming",
+          "help": "Zooming and scaling must not be disabled"
+        },
+        {
+          "id": "nested-interactive",
+          "impact": null,
+          "tags": [
+            "cat.keyboard",
+            "wcag2a",
+            "wcag412",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure interactive controls are not nested as they are not always announced by screen readers or can cause focus problems for assistive technologies",
+          "help": "Interactive controls must not be nested"
+        }
+      ]
+    },
+    {
+      "url": "http://127.0.0.1:3000/receptions",
+      "finalUrl": "http://127.0.0.1:3000/receptions",
+      "statusCode": 200,
+      "scannedAt": "2026-11-08T14:15:27.500Z",
+      "summary": {
+        "violations": 0,
+        "passes": 21,
+        "incomplete": 0,
+        "inapplicable": 42,
+        "byImpact": {
+          "critical": 0,
+          "serious": 0,
+          "moderate": 0,
+          "minor": 0
+        }
+      },
+      "violations": [],
+      "incomplete": [],
+      "passes": [
+        {
+          "id": "aria-allowed-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure an element's role supports its ARIA attributes",
+          "help": "Elements must only use supported ARIA attributes"
+        },
+        {
+          "id": "aria-conditional-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure ARIA attributes are used as described in the specification of the element's role",
+          "help": "ARIA attributes must be used as specified for the element's role"
+        },
+        {
+          "id": "aria-deprecated-role",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure elements do not use deprecated roles",
+          "help": "Deprecated ARIA roles must not be used"
+        },
+        {
+          "id": "aria-hidden-body",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag131",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.1.3.1",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-10.8.1"
+          ],
+          "description": "Ensure aria-hidden=\"true\" is not present on the document body.",
+          "help": "aria-hidden=\"true\" must not be present on the document body"
+        },
+        {
+          "id": "aria-hidden-focus",
+          "impact": null,
+          "tags": [
+            "cat.name-role-value",
+            "wcag2a",
+            "wcag412",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-10.8.1"
+          ],
+          "description": "Ensure aria-hidden elements are not focusable nor contain focusable elements",
+          "help": "ARIA hidden element must not be focusable or contain focusable elements"
+        },
+        {
+          "id": "aria-prohibited-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure ARIA attributes are not prohibited for an element's role",
+          "help": "Elements must only use permitted ARIA attributes"
+        },
+        {
+          "id": "aria-required-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure elements with ARIA roles have all required ARIA attributes",
+          "help": "Required ARIA attributes must be provided"
+        },
+        {
+          "id": "aria-roles",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure all elements with a role attribute use a valid value",
+          "help": "ARIA roles used must conform to valid values"
+        },
+        {
+          "id": "aria-valid-attr-value",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure all ARIA attributes have valid values",
+          "help": "ARIA attributes must conform to valid values"
+        },
+        {
+          "id": "aria-valid-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure attributes that begin with aria- are valid ARIA attributes",
+          "help": "ARIA attributes must conform to valid names"
+        },
+        {
+          "id": "button-name",
+          "impact": null,
+          "tags": [
+            "cat.name-role-value",
+            "wcag2a",
+            "wcag412",
+            "section508",
+            "section508.22.a",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-11.9.1"
+          ],
+          "description": "Ensure buttons have discernible text",
+          "help": "Buttons must have discernible text"
+        },
+        {
+          "id": "bypass",
+          "impact": null,
+          "tags": [
+            "cat.keyboard",
+            "wcag2a",
+            "wcag241",
+            "section508",
+            "section508.22.o",
+            "TTv5",
+            "TT9.a",
+            "EN-301-549",
+            "EN-9.2.4.1",
+            "RGAAv4",
+            "RGAA-12.7.1"
+          ],
+          "description": "Ensure each page has at least one mechanism for a user to bypass navigation and jump straight to the content",
+          "help": "Page must have means to bypass repeated blocks"
+        },
+        {
+          "id": "color-contrast",
+          "impact": null,
+          "tags": [
+            "cat.color",
+            "wcag2aa",
+            "wcag143",
+            "TTv5",
+            "TT13.c",
+            "EN-301-549",
+            "EN-9.1.4.3",
+            "ACT",
+            "RGAAv4",
+            "RGAA-3.2.1"
+          ],
+          "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+          "help": "Elements must meet minimum color contrast ratio thresholds"
+        },
+        {
+          "id": "document-title",
+          "impact": null,
+          "tags": [
+            "cat.text-alternatives",
+            "wcag2a",
+            "wcag242",
+            "TTv5",
+            "TT12.a",
+            "EN-301-549",
+            "EN-9.2.4.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-8.5.1"
+          ],
+          "description": "Ensure each HTML document contains a non-empty <title> element",
+          "help": "Documents must have <title> element to aid in navigation"
+        },
+        {
+          "id": "form-field-multiple-labels",
+          "impact": null,
+          "tags": [
+            "cat.forms",
+            "wcag2a",
+            "wcag332",
+            "TTv5",
+            "TT5.c",
+            "EN-301-549",
+            "EN-9.3.3.2",
+            "RGAAv4",
+            "RGAA-11.2.1"
+          ],
+          "description": "Ensure form field does not have multiple label elements",
+          "help": "Form field must not have multiple label elements"
+        },
+        {
+          "id": "html-has-lang",
+          "impact": null,
+          "tags": [
+            "cat.language",
+            "wcag2a",
+            "wcag311",
+            "TTv5",
+            "TT11.a",
+            "EN-301-549",
+            "EN-9.3.1.1",
+            "ACT",
+            "RGAAv4",
+            "RGAA-8.3.1"
+          ],
+          "description": "Ensure every HTML document has a lang attribute",
+          "help": "<html> element must have a lang attribute"
+        },
+        {
+          "id": "html-lang-valid",
+          "impact": null,
+          "tags": [
+            "cat.language",
+            "wcag2a",
+            "wcag311",
+            "TTv5",
+            "TT11.a",
+            "EN-301-549",
+            "EN-9.3.1.1",
+            "ACT",
+            "RGAAv4",
+            "RGAA-8.4.1"
+          ],
+          "description": "Ensure the lang attribute of the <html> element has a valid value",
+          "help": "<html> element must have a valid value for the lang attribute"
+        },
+        {
+          "id": "label",
+          "impact": null,
+          "tags": [
+            "cat.forms",
+            "wcag2a",
+            "wcag412",
+            "section508",
+            "section508.22.n",
+            "TTv5",
+            "TT5.c",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-11.1.1"
+          ],
+          "description": "Ensure every form element has a label",
+          "help": "Form elements must have labels"
+        },
+        {
+          "id": "link-name",
+          "impact": null,
+          "tags": [
+            "cat.name-role-value",
+            "wcag2a",
+            "wcag244",
+            "wcag412",
+            "section508",
+            "section508.22.a",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.2.4.4",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-6.2.1"
+          ],
+          "description": "Ensure links have discernible text",
+          "help": "Links must have discernible text"
+        },
+        {
+          "id": "meta-viewport",
+          "impact": null,
+          "tags": [
+            "cat.sensory-and-visual-cues",
+            "wcag2aa",
+            "wcag144",
+            "EN-301-549",
+            "EN-9.1.4.4",
+            "ACT",
+            "RGAAv4",
+            "RGAA-10.4.2"
+          ],
+          "description": "Ensure <meta name=\"viewport\"> does not disable text scaling and zooming",
+          "help": "Zooming and scaling must not be disabled"
+        },
+        {
+          "id": "nested-interactive",
+          "impact": null,
+          "tags": [
+            "cat.keyboard",
+            "wcag2a",
+            "wcag412",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure interactive controls are not nested as they are not always announced by screen readers or can cause focus problems for assistive technologies",
+          "help": "Interactive controls must not be nested"
+        }
+      ]
+    },
+    {
+      "url": "http://127.0.0.1:3000/weighings",
+      "finalUrl": "http://127.0.0.1:3000/weighings",
+      "statusCode": 200,
+      "scannedAt": "2026-11-08T14:15:38.830Z",
+      "summary": {
+        "violations": 0,
+        "passes": 21,
+        "incomplete": 0,
+        "inapplicable": 42,
+        "byImpact": {
+          "critical": 0,
+          "serious": 0,
+          "moderate": 0,
+          "minor": 0
+        }
+      },
+      "violations": [],
+      "incomplete": [],
+      "passes": [
+        {
+          "id": "aria-allowed-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure an element's role supports its ARIA attributes",
+          "help": "Elements must only use supported ARIA attributes"
+        },
+        {
+          "id": "aria-conditional-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure ARIA attributes are used as described in the specification of the element's role",
+          "help": "ARIA attributes must be used as specified for the element's role"
+        },
+        {
+          "id": "aria-deprecated-role",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure elements do not use deprecated roles",
+          "help": "Deprecated ARIA roles must not be used"
+        },
+        {
+          "id": "aria-hidden-body",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag131",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.1.3.1",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-10.8.1"
+          ],
+          "description": "Ensure aria-hidden=\"true\" is not present on the document body.",
+          "help": "aria-hidden=\"true\" must not be present on the document body"
+        },
+        {
+          "id": "aria-hidden-focus",
+          "impact": null,
+          "tags": [
+            "cat.name-role-value",
+            "wcag2a",
+            "wcag412",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-10.8.1"
+          ],
+          "description": "Ensure aria-hidden elements are not focusable nor contain focusable elements",
+          "help": "ARIA hidden element must not be focusable or contain focusable elements"
+        },
+        {
+          "id": "aria-prohibited-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure ARIA attributes are not prohibited for an element's role",
+          "help": "Elements must only use permitted ARIA attributes"
+        },
+        {
+          "id": "aria-required-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure elements with ARIA roles have all required ARIA attributes",
+          "help": "Required ARIA attributes must be provided"
+        },
+        {
+          "id": "aria-roles",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure all elements with a role attribute use a valid value",
+          "help": "ARIA roles used must conform to valid values"
+        },
+        {
+          "id": "aria-valid-attr-value",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure all ARIA attributes have valid values",
+          "help": "ARIA attributes must conform to valid values"
+        },
+        {
+          "id": "aria-valid-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure attributes that begin with aria- are valid ARIA attributes",
+          "help": "ARIA attributes must conform to valid names"
+        },
+        {
+          "id": "button-name",
+          "impact": null,
+          "tags": [
+            "cat.name-role-value",
+            "wcag2a",
+            "wcag412",
+            "section508",
+            "section508.22.a",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-11.9.1"
+          ],
+          "description": "Ensure buttons have discernible text",
+          "help": "Buttons must have discernible text"
+        },
+        {
+          "id": "bypass",
+          "impact": null,
+          "tags": [
+            "cat.keyboard",
+            "wcag2a",
+            "wcag241",
+            "section508",
+            "section508.22.o",
+            "TTv5",
+            "TT9.a",
+            "EN-301-549",
+            "EN-9.2.4.1",
+            "RGAAv4",
+            "RGAA-12.7.1"
+          ],
+          "description": "Ensure each page has at least one mechanism for a user to bypass navigation and jump straight to the content",
+          "help": "Page must have means to bypass repeated blocks"
+        },
+        {
+          "id": "color-contrast",
+          "impact": null,
+          "tags": [
+            "cat.color",
+            "wcag2aa",
+            "wcag143",
+            "TTv5",
+            "TT13.c",
+            "EN-301-549",
+            "EN-9.1.4.3",
+            "ACT",
+            "RGAAv4",
+            "RGAA-3.2.1"
+          ],
+          "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+          "help": "Elements must meet minimum color contrast ratio thresholds"
+        },
+        {
+          "id": "document-title",
+          "impact": null,
+          "tags": [
+            "cat.text-alternatives",
+            "wcag2a",
+            "wcag242",
+            "TTv5",
+            "TT12.a",
+            "EN-301-549",
+            "EN-9.2.4.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-8.5.1"
+          ],
+          "description": "Ensure each HTML document contains a non-empty <title> element",
+          "help": "Documents must have <title> element to aid in navigation"
+        },
+        {
+          "id": "form-field-multiple-labels",
+          "impact": null,
+          "tags": [
+            "cat.forms",
+            "wcag2a",
+            "wcag332",
+            "TTv5",
+            "TT5.c",
+            "EN-301-549",
+            "EN-9.3.3.2",
+            "RGAAv4",
+            "RGAA-11.2.1"
+          ],
+          "description": "Ensure form field does not have multiple label elements",
+          "help": "Form field must not have multiple label elements"
+        },
+        {
+          "id": "html-has-lang",
+          "impact": null,
+          "tags": [
+            "cat.language",
+            "wcag2a",
+            "wcag311",
+            "TTv5",
+            "TT11.a",
+            "EN-301-549",
+            "EN-9.3.1.1",
+            "ACT",
+            "RGAAv4",
+            "RGAA-8.3.1"
+          ],
+          "description": "Ensure every HTML document has a lang attribute",
+          "help": "<html> element must have a lang attribute"
+        },
+        {
+          "id": "html-lang-valid",
+          "impact": null,
+          "tags": [
+            "cat.language",
+            "wcag2a",
+            "wcag311",
+            "TTv5",
+            "TT11.a",
+            "EN-301-549",
+            "EN-9.3.1.1",
+            "ACT",
+            "RGAAv4",
+            "RGAA-8.4.1"
+          ],
+          "description": "Ensure the lang attribute of the <html> element has a valid value",
+          "help": "<html> element must have a valid value for the lang attribute"
+        },
+        {
+          "id": "label",
+          "impact": null,
+          "tags": [
+            "cat.forms",
+            "wcag2a",
+            "wcag412",
+            "section508",
+            "section508.22.n",
+            "TTv5",
+            "TT5.c",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-11.1.1"
+          ],
+          "description": "Ensure every form element has a label",
+          "help": "Form elements must have labels"
+        },
+        {
+          "id": "link-name",
+          "impact": null,
+          "tags": [
+            "cat.name-role-value",
+            "wcag2a",
+            "wcag244",
+            "wcag412",
+            "section508",
+            "section508.22.a",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.2.4.4",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-6.2.1"
+          ],
+          "description": "Ensure links have discernible text",
+          "help": "Links must have discernible text"
+        },
+        {
+          "id": "meta-viewport",
+          "impact": null,
+          "tags": [
+            "cat.sensory-and-visual-cues",
+            "wcag2aa",
+            "wcag144",
+            "EN-301-549",
+            "EN-9.1.4.4",
+            "ACT",
+            "RGAAv4",
+            "RGAA-10.4.2"
+          ],
+          "description": "Ensure <meta name=\"viewport\"> does not disable text scaling and zooming",
+          "help": "Zooming and scaling must not be disabled"
+        },
+        {
+          "id": "nested-interactive",
+          "impact": null,
+          "tags": [
+            "cat.keyboard",
+            "wcag2a",
+            "wcag412",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure interactive controls are not nested as they are not always announced by screen readers or can cause focus problems for assistive technologies",
+          "help": "Interactive controls must not be nested"
+        }
+      ]
+    },
+    {
+      "url": "http://127.0.0.1:3000/alerts",
+      "finalUrl": "http://127.0.0.1:3000/login",
+      "statusCode": 200,
+      "scannedAt": "2026-11-08T14:15:46.260Z",
+      "summary": {
+        "violations": 0,
+        "passes": 23,
+        "incomplete": 0,
+        "inapplicable": 40,
+        "byImpact": {
+          "critical": 0,
+          "serious": 0,
+          "moderate": 0,
+          "minor": 0
+        }
+      },
+      "violations": [],
+      "incomplete": [],
+      "passes": [
+        {
+          "id": "aria-allowed-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure an element's role supports its ARIA attributes",
+          "help": "Elements must only use supported ARIA attributes"
+        },
+        {
+          "id": "aria-conditional-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure ARIA attributes are used as described in the specification of the element's role",
+          "help": "ARIA attributes must be used as specified for the element's role"
+        },
+        {
+          "id": "aria-deprecated-role",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure elements do not use deprecated roles",
+          "help": "Deprecated ARIA roles must not be used"
+        },
+        {
+          "id": "aria-hidden-body",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag131",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.1.3.1",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-10.8.1"
+          ],
+          "description": "Ensure aria-hidden=\"true\" is not present on the document body.",
+          "help": "aria-hidden=\"true\" must not be present on the document body"
+        },
+        {
+          "id": "aria-hidden-focus",
+          "impact": null,
+          "tags": [
+            "cat.name-role-value",
+            "wcag2a",
+            "wcag412",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-10.8.1"
+          ],
+          "description": "Ensure aria-hidden elements are not focusable nor contain focusable elements",
+          "help": "ARIA hidden element must not be focusable or contain focusable elements"
+        },
+        {
+          "id": "aria-prohibited-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure ARIA attributes are not prohibited for an element's role",
+          "help": "Elements must only use permitted ARIA attributes"
+        },
+        {
+          "id": "aria-required-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure elements with ARIA roles have all required ARIA attributes",
+          "help": "Required ARIA attributes must be provided"
+        },
+        {
+          "id": "aria-roles",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure all elements with a role attribute use a valid value",
+          "help": "ARIA roles used must conform to valid values"
+        },
+        {
+          "id": "aria-valid-attr-value",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure all ARIA attributes have valid values",
+          "help": "ARIA attributes must conform to valid values"
+        },
+        {
+          "id": "aria-valid-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure attributes that begin with aria- are valid ARIA attributes",
+          "help": "ARIA attributes must conform to valid names"
+        },
+        {
+          "id": "button-name",
+          "impact": null,
+          "tags": [
+            "cat.name-role-value",
+            "wcag2a",
+            "wcag412",
+            "section508",
+            "section508.22.a",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-11.9.1"
+          ],
+          "description": "Ensure buttons have discernible text",
+          "help": "Buttons must have discernible text"
+        },
+        {
+          "id": "bypass",
+          "impact": null,
+          "tags": [
+            "cat.keyboard",
+            "wcag2a",
+            "wcag241",
+            "section508",
+            "section508.22.o",
+            "TTv5",
+            "TT9.a",
+            "EN-301-549",
+            "EN-9.2.4.1",
+            "RGAAv4",
+            "RGAA-12.7.1"
+          ],
+          "description": "Ensure each page has at least one mechanism for a user to bypass navigation and jump straight to the content",
+          "help": "Page must have means to bypass repeated blocks"
+        },
+        {
+          "id": "color-contrast",
+          "impact": null,
+          "tags": [
+            "cat.color",
+            "wcag2aa",
+            "wcag143",
+            "TTv5",
+            "TT13.c",
+            "EN-301-549",
+            "EN-9.1.4.3",
+            "ACT",
+            "RGAAv4",
+            "RGAA-3.2.1"
+          ],
+          "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+          "help": "Elements must meet minimum color contrast ratio thresholds"
+        },
+        {
+          "id": "document-title",
+          "impact": null,
+          "tags": [
+            "cat.text-alternatives",
+            "wcag2a",
+            "wcag242",
+            "TTv5",
+            "TT12.a",
+            "EN-301-549",
+            "EN-9.2.4.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-8.5.1"
+          ],
+          "description": "Ensure each HTML document contains a non-empty <title> element",
+          "help": "Documents must have <title> element to aid in navigation"
+        },
+        {
+          "id": "duplicate-id-aria",
+          "impact": null,
+          "tags": [
+            "cat.parsing",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-8.2.1"
+          ],
+          "description": "Ensure every id attribute value used in ARIA and in labels is unique",
+          "help": "IDs used in ARIA and labels must be unique"
+        },
+        {
+          "id": "form-field-multiple-labels",
+          "impact": null,
+          "tags": [
+            "cat.forms",
+            "wcag2a",
+            "wcag332",
+            "TTv5",
+            "TT5.c",
+            "EN-301-549",
+            "EN-9.3.3.2",
+            "RGAAv4",
+            "RGAA-11.2.1"
+          ],
+          "description": "Ensure form field does not have multiple label elements",
+          "help": "Form field must not have multiple label elements"
+        },
+        {
+          "id": "html-has-lang",
+          "impact": null,
+          "tags": [
+            "cat.language",
+            "wcag2a",
+            "wcag311",
+            "TTv5",
+            "TT11.a",
+            "EN-301-549",
+            "EN-9.3.1.1",
+            "ACT",
+            "RGAAv4",
+            "RGAA-8.3.1"
+          ],
+          "description": "Ensure every HTML document has a lang attribute",
+          "help": "<html> element must have a lang attribute"
+        },
+        {
+          "id": "html-lang-valid",
+          "impact": null,
+          "tags": [
+            "cat.language",
+            "wcag2a",
+            "wcag311",
+            "TTv5",
+            "TT11.a",
+            "EN-301-549",
+            "EN-9.3.1.1",
+            "ACT",
+            "RGAAv4",
+            "RGAA-8.4.1"
+          ],
+          "description": "Ensure the lang attribute of the <html> element has a valid value",
+          "help": "<html> element must have a valid value for the lang attribute"
+        },
+        {
+          "id": "label",
+          "impact": null,
+          "tags": [
+            "cat.forms",
+            "wcag2a",
+            "wcag412",
+            "section508",
+            "section508.22.n",
+            "TTv5",
+            "TT5.c",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-11.1.1"
+          ],
+          "description": "Ensure every form element has a label",
+          "help": "Form elements must have labels"
+        },
+        {
+          "id": "link-name",
+          "impact": null,
+          "tags": [
+            "cat.name-role-value",
+            "wcag2a",
+            "wcag244",
+            "wcag412",
+            "section508",
+            "section508.22.a",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.2.4.4",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-6.2.1"
+          ],
+          "description": "Ensure links have discernible text",
+          "help": "Links must have discernible text"
+        },
+        {
+          "id": "meta-viewport",
+          "impact": null,
+          "tags": [
+            "cat.sensory-and-visual-cues",
+            "wcag2aa",
+            "wcag144",
+            "EN-301-549",
+            "EN-9.1.4.4",
+            "ACT",
+            "RGAAv4",
+            "RGAA-10.4.2"
+          ],
+          "description": "Ensure <meta name=\"viewport\"> does not disable text scaling and zooming",
+          "help": "Zooming and scaling must not be disabled"
+        },
+        {
+          "id": "nested-interactive",
+          "impact": null,
+          "tags": [
+            "cat.keyboard",
+            "wcag2a",
+            "wcag412",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure interactive controls are not nested as they are not always announced by screen readers or can cause focus problems for assistive technologies",
+          "help": "Interactive controls must not be nested"
+        },
+        {
+          "id": "select-name",
+          "impact": null,
+          "tags": [
+            "cat.forms",
+            "wcag2a",
+            "wcag412",
+            "section508",
+            "section508.22.n",
+            "TTv5",
+            "TT5.c",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-11.1.1"
+          ],
+          "description": "Ensure select element has an accessible name",
+          "help": "Select element must have an accessible name"
+        }
+      ]
+    },
+    {
+      "url": "http://127.0.0.1:3000/mass-balance",
+      "finalUrl": "http://127.0.0.1:3000/mass-balance",
+      "statusCode": 200,
+      "scannedAt": "2026-11-08T14:15:54.366Z",
+      "summary": {
+        "violations": 0,
+        "passes": 23,
+        "incomplete": 0,
+        "inapplicable": 40,
+        "byImpact": {
+          "critical": 0,
+          "serious": 0,
+          "moderate": 0,
+          "minor": 0
+        }
+      },
+      "violations": [],
+      "incomplete": [],
+      "passes": [
+        {
+          "id": "aria-allowed-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure an element's role supports its ARIA attributes",
+          "help": "Elements must only use supported ARIA attributes"
+        },
+        {
+          "id": "aria-conditional-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure ARIA attributes are used as described in the specification of the element's role",
+          "help": "ARIA attributes must be used as specified for the element's role"
+        },
+        {
+          "id": "aria-deprecated-role",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure elements do not use deprecated roles",
+          "help": "Deprecated ARIA roles must not be used"
+        },
+        {
+          "id": "aria-hidden-body",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag131",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.1.3.1",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-10.8.1"
+          ],
+          "description": "Ensure aria-hidden=\"true\" is not present on the document body.",
+          "help": "aria-hidden=\"true\" must not be present on the document body"
+        },
+        {
+          "id": "aria-hidden-focus",
+          "impact": null,
+          "tags": [
+            "cat.name-role-value",
+            "wcag2a",
+            "wcag412",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-10.8.1"
+          ],
+          "description": "Ensure aria-hidden elements are not focusable nor contain focusable elements",
+          "help": "ARIA hidden element must not be focusable or contain focusable elements"
+        },
+        {
+          "id": "aria-prohibited-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure ARIA attributes are not prohibited for an element's role",
+          "help": "Elements must only use permitted ARIA attributes"
+        },
+        {
+          "id": "aria-required-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure elements with ARIA roles have all required ARIA attributes",
+          "help": "Required ARIA attributes must be provided"
+        },
+        {
+          "id": "aria-roles",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure all elements with a role attribute use a valid value",
+          "help": "ARIA roles used must conform to valid values"
+        },
+        {
+          "id": "aria-valid-attr-value",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure all ARIA attributes have valid values",
+          "help": "ARIA attributes must conform to valid values"
+        },
+        {
+          "id": "aria-valid-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure attributes that begin with aria- are valid ARIA attributes",
+          "help": "ARIA attributes must conform to valid names"
+        },
+        {
+          "id": "button-name",
+          "impact": null,
+          "tags": [
+            "cat.name-role-value",
+            "wcag2a",
+            "wcag412",
+            "section508",
+            "section508.22.a",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-11.9.1"
+          ],
+          "description": "Ensure buttons have discernible text",
+          "help": "Buttons must have discernible text"
+        },
+        {
+          "id": "bypass",
+          "impact": null,
+          "tags": [
+            "cat.keyboard",
+            "wcag2a",
+            "wcag241",
+            "section508",
+            "section508.22.o",
+            "TTv5",
+            "TT9.a",
+            "EN-301-549",
+            "EN-9.2.4.1",
+            "RGAAv4",
+            "RGAA-12.7.1"
+          ],
+          "description": "Ensure each page has at least one mechanism for a user to bypass navigation and jump straight to the content",
+          "help": "Page must have means to bypass repeated blocks"
+        },
+        {
+          "id": "color-contrast",
+          "impact": null,
+          "tags": [
+            "cat.color",
+            "wcag2aa",
+            "wcag143",
+            "TTv5",
+            "TT13.c",
+            "EN-301-549",
+            "EN-9.1.4.3",
+            "ACT",
+            "RGAAv4",
+            "RGAA-3.2.1"
+          ],
+          "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+          "help": "Elements must meet minimum color contrast ratio thresholds"
+        },
+        {
+          "id": "document-title",
+          "impact": null,
+          "tags": [
+            "cat.text-alternatives",
+            "wcag2a",
+            "wcag242",
+            "TTv5",
+            "TT12.a",
+            "EN-301-549",
+            "EN-9.2.4.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-8.5.1"
+          ],
+          "description": "Ensure each HTML document contains a non-empty <title> element",
+          "help": "Documents must have <title> element to aid in navigation"
+        },
+        {
+          "id": "duplicate-id-aria",
+          "impact": null,
+          "tags": [
+            "cat.parsing",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-8.2.1"
+          ],
+          "description": "Ensure every id attribute value used in ARIA and in labels is unique",
+          "help": "IDs used in ARIA and labels must be unique"
+        },
+        {
+          "id": "form-field-multiple-labels",
+          "impact": null,
+          "tags": [
+            "cat.forms",
+            "wcag2a",
+            "wcag332",
+            "TTv5",
+            "TT5.c",
+            "EN-301-549",
+            "EN-9.3.3.2",
+            "RGAAv4",
+            "RGAA-11.2.1"
+          ],
+          "description": "Ensure form field does not have multiple label elements",
+          "help": "Form field must not have multiple label elements"
+        },
+        {
+          "id": "html-has-lang",
+          "impact": null,
+          "tags": [
+            "cat.language",
+            "wcag2a",
+            "wcag311",
+            "TTv5",
+            "TT11.a",
+            "EN-301-549",
+            "EN-9.3.1.1",
+            "ACT",
+            "RGAAv4",
+            "RGAA-8.3.1"
+          ],
+          "description": "Ensure every HTML document has a lang attribute",
+          "help": "<html> element must have a lang attribute"
+        },
+        {
+          "id": "html-lang-valid",
+          "impact": null,
+          "tags": [
+            "cat.language",
+            "wcag2a",
+            "wcag311",
+            "TTv5",
+            "TT11.a",
+            "EN-301-549",
+            "EN-9.3.1.1",
+            "ACT",
+            "RGAAv4",
+            "RGAA-8.4.1"
+          ],
+          "description": "Ensure the lang attribute of the <html> element has a valid value",
+          "help": "<html> element must have a valid value for the lang attribute"
+        },
+        {
+          "id": "label",
+          "impact": null,
+          "tags": [
+            "cat.forms",
+            "wcag2a",
+            "wcag412",
+            "section508",
+            "section508.22.n",
+            "TTv5",
+            "TT5.c",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-11.1.1"
+          ],
+          "description": "Ensure every form element has a label",
+          "help": "Form elements must have labels"
+        },
+        {
+          "id": "link-name",
+          "impact": null,
+          "tags": [
+            "cat.name-role-value",
+            "wcag2a",
+            "wcag244",
+            "wcag412",
+            "section508",
+            "section508.22.a",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.2.4.4",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-6.2.1"
+          ],
+          "description": "Ensure links have discernible text",
+          "help": "Links must have discernible text"
+        },
+        {
+          "id": "meta-viewport",
+          "impact": null,
+          "tags": [
+            "cat.sensory-and-visual-cues",
+            "wcag2aa",
+            "wcag144",
+            "EN-301-549",
+            "EN-9.1.4.4",
+            "ACT",
+            "RGAAv4",
+            "RGAA-10.4.2"
+          ],
+          "description": "Ensure <meta name=\"viewport\"> does not disable text scaling and zooming",
+          "help": "Zooming and scaling must not be disabled"
+        },
+        {
+          "id": "nested-interactive",
+          "impact": null,
+          "tags": [
+            "cat.keyboard",
+            "wcag2a",
+            "wcag412",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure interactive controls are not nested as they are not always announced by screen readers or can cause focus problems for assistive technologies",
+          "help": "Interactive controls must not be nested"
+        },
+        {
+          "id": "select-name",
+          "impact": null,
+          "tags": [
+            "cat.forms",
+            "wcag2a",
+            "wcag412",
+            "section508",
+            "section508.22.n",
+            "TTv5",
+            "TT5.c",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-11.1.1"
+          ],
+          "description": "Ensure select element has an accessible name",
+          "help": "Select element must have an accessible name"
+        }
+      ]
+    },
+    {
+      "url": "http://127.0.0.1:3000/audit",
+      "finalUrl": "http://127.0.0.1:3000/audit",
+      "statusCode": 200,
+      "scannedAt": "2026-11-08T14:16:06.476Z",
+      "summary": {
+        "violations": 0,
+        "passes": 21,
+        "incomplete": 0,
+        "inapplicable": 42,
+        "byImpact": {
+          "critical": 0,
+          "serious": 0,
+          "moderate": 0,
+          "minor": 0
+        }
+      },
+      "violations": [],
+      "incomplete": [],
+      "passes": [
+        {
+          "id": "aria-allowed-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure an element's role supports its ARIA attributes",
+          "help": "Elements must only use supported ARIA attributes"
+        },
+        {
+          "id": "aria-conditional-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure ARIA attributes are used as described in the specification of the element's role",
+          "help": "ARIA attributes must be used as specified for the element's role"
+        },
+        {
+          "id": "aria-deprecated-role",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure elements do not use deprecated roles",
+          "help": "Deprecated ARIA roles must not be used"
+        },
+        {
+          "id": "aria-hidden-body",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag131",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.1.3.1",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-10.8.1"
+          ],
+          "description": "Ensure aria-hidden=\"true\" is not present on the document body.",
+          "help": "aria-hidden=\"true\" must not be present on the document body"
+        },
+        {
+          "id": "aria-hidden-focus",
+          "impact": null,
+          "tags": [
+            "cat.name-role-value",
+            "wcag2a",
+            "wcag412",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-10.8.1"
+          ],
+          "description": "Ensure aria-hidden elements are not focusable nor contain focusable elements",
+          "help": "ARIA hidden element must not be focusable or contain focusable elements"
+        },
+        {
+          "id": "aria-prohibited-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure ARIA attributes are not prohibited for an element's role",
+          "help": "Elements must only use permitted ARIA attributes"
+        },
+        {
+          "id": "aria-required-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure elements with ARIA roles have all required ARIA attributes",
+          "help": "Required ARIA attributes must be provided"
+        },
+        {
+          "id": "aria-roles",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure all elements with a role attribute use a valid value",
+          "help": "ARIA roles used must conform to valid values"
+        },
+        {
+          "id": "aria-valid-attr-value",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure all ARIA attributes have valid values",
+          "help": "ARIA attributes must conform to valid values"
+        },
+        {
+          "id": "aria-valid-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure attributes that begin with aria- are valid ARIA attributes",
+          "help": "ARIA attributes must conform to valid names"
+        },
+        {
+          "id": "button-name",
+          "impact": null,
+          "tags": [
+            "cat.name-role-value",
+            "wcag2a",
+            "wcag412",
+            "section508",
+            "section508.22.a",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-11.9.1"
+          ],
+          "description": "Ensure buttons have discernible text",
+          "help": "Buttons must have discernible text"
+        },
+        {
+          "id": "bypass",
+          "impact": null,
+          "tags": [
+            "cat.keyboard",
+            "wcag2a",
+            "wcag241",
+            "section508",
+            "section508.22.o",
+            "TTv5",
+            "TT9.a",
+            "EN-301-549",
+            "EN-9.2.4.1",
+            "RGAAv4",
+            "RGAA-12.7.1"
+          ],
+          "description": "Ensure each page has at least one mechanism for a user to bypass navigation and jump straight to the content",
+          "help": "Page must have means to bypass repeated blocks"
+        },
+        {
+          "id": "color-contrast",
+          "impact": null,
+          "tags": [
+            "cat.color",
+            "wcag2aa",
+            "wcag143",
+            "TTv5",
+            "TT13.c",
+            "EN-301-549",
+            "EN-9.1.4.3",
+            "ACT",
+            "RGAAv4",
+            "RGAA-3.2.1"
+          ],
+          "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+          "help": "Elements must meet minimum color contrast ratio thresholds"
+        },
+        {
+          "id": "document-title",
+          "impact": null,
+          "tags": [
+            "cat.text-alternatives",
+            "wcag2a",
+            "wcag242",
+            "TTv5",
+            "TT12.a",
+            "EN-301-549",
+            "EN-9.2.4.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-8.5.1"
+          ],
+          "description": "Ensure each HTML document contains a non-empty <title> element",
+          "help": "Documents must have <title> element to aid in navigation"
+        },
+        {
+          "id": "form-field-multiple-labels",
+          "impact": null,
+          "tags": [
+            "cat.forms",
+            "wcag2a",
+            "wcag332",
+            "TTv5",
+            "TT5.c",
+            "EN-301-549",
+            "EN-9.3.3.2",
+            "RGAAv4",
+            "RGAA-11.2.1"
+          ],
+          "description": "Ensure form field does not have multiple label elements",
+          "help": "Form field must not have multiple label elements"
+        },
+        {
+          "id": "html-has-lang",
+          "impact": null,
+          "tags": [
+            "cat.language",
+            "wcag2a",
+            "wcag311",
+            "TTv5",
+            "TT11.a",
+            "EN-301-549",
+            "EN-9.3.1.1",
+            "ACT",
+            "RGAAv4",
+            "RGAA-8.3.1"
+          ],
+          "description": "Ensure every HTML document has a lang attribute",
+          "help": "<html> element must have a lang attribute"
+        },
+        {
+          "id": "html-lang-valid",
+          "impact": null,
+          "tags": [
+            "cat.language",
+            "wcag2a",
+            "wcag311",
+            "TTv5",
+            "TT11.a",
+            "EN-301-549",
+            "EN-9.3.1.1",
+            "ACT",
+            "RGAAv4",
+            "RGAA-8.4.1"
+          ],
+          "description": "Ensure the lang attribute of the <html> element has a valid value",
+          "help": "<html> element must have a valid value for the lang attribute"
+        },
+        {
+          "id": "label",
+          "impact": null,
+          "tags": [
+            "cat.forms",
+            "wcag2a",
+            "wcag412",
+            "section508",
+            "section508.22.n",
+            "TTv5",
+            "TT5.c",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-11.1.1"
+          ],
+          "description": "Ensure every form element has a label",
+          "help": "Form elements must have labels"
+        },
+        {
+          "id": "link-name",
+          "impact": null,
+          "tags": [
+            "cat.name-role-value",
+            "wcag2a",
+            "wcag244",
+            "wcag412",
+            "section508",
+            "section508.22.a",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.2.4.4",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-6.2.1"
+          ],
+          "description": "Ensure links have discernible text",
+          "help": "Links must have discernible text"
+        },
+        {
+          "id": "meta-viewport",
+          "impact": null,
+          "tags": [
+            "cat.sensory-and-visual-cues",
+            "wcag2aa",
+            "wcag144",
+            "EN-301-549",
+            "EN-9.1.4.4",
+            "ACT",
+            "RGAAv4",
+            "RGAA-10.4.2"
+          ],
+          "description": "Ensure <meta name=\"viewport\"> does not disable text scaling and zooming",
+          "help": "Zooming and scaling must not be disabled"
+        },
+        {
+          "id": "nested-interactive",
+          "impact": null,
+          "tags": [
+            "cat.keyboard",
+            "wcag2a",
+            "wcag412",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure interactive controls are not nested as they are not always announced by screen readers or can cause focus problems for assistive technologies",
+          "help": "Interactive controls must not be nested"
+        }
+      ]
+    },
+    {
+      "url": "http://127.0.0.1:3000/users",
+      "finalUrl": "http://127.0.0.1:3000/login",
+      "statusCode": 200,
+      "scannedAt": "2026-11-08T14:16:16.149Z",
+      "summary": {
+        "violations": 0,
+        "passes": 21,
+        "incomplete": 0,
+        "inapplicable": 42,
+        "byImpact": {
+          "critical": 0,
+          "serious": 0,
+          "moderate": 0,
+          "minor": 0
+        }
+      },
+      "violations": [],
+      "incomplete": [],
+      "passes": [
+        {
+          "id": "aria-allowed-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure an element's role supports its ARIA attributes",
+          "help": "Elements must only use supported ARIA attributes"
+        },
+        {
+          "id": "aria-conditional-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure ARIA attributes are used as described in the specification of the element's role",
+          "help": "ARIA attributes must be used as specified for the element's role"
+        },
+        {
+          "id": "aria-deprecated-role",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure elements do not use deprecated roles",
+          "help": "Deprecated ARIA roles must not be used"
+        },
+        {
+          "id": "aria-hidden-body",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag131",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.1.3.1",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-10.8.1"
+          ],
+          "description": "Ensure aria-hidden=\"true\" is not present on the document body.",
+          "help": "aria-hidden=\"true\" must not be present on the document body"
+        },
+        {
+          "id": "aria-hidden-focus",
+          "impact": null,
+          "tags": [
+            "cat.name-role-value",
+            "wcag2a",
+            "wcag412",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-10.8.1"
+          ],
+          "description": "Ensure aria-hidden elements are not focusable nor contain focusable elements",
+          "help": "ARIA hidden element must not be focusable or contain focusable elements"
+        },
+        {
+          "id": "aria-prohibited-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure ARIA attributes are not prohibited for an element's role",
+          "help": "Elements must only use permitted ARIA attributes"
+        },
+        {
+          "id": "aria-required-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure elements with ARIA roles have all required ARIA attributes",
+          "help": "Required ARIA attributes must be provided"
+        },
+        {
+          "id": "aria-roles",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure all elements with a role attribute use a valid value",
+          "help": "ARIA roles used must conform to valid values"
+        },
+        {
+          "id": "aria-valid-attr-value",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure all ARIA attributes have valid values",
+          "help": "ARIA attributes must conform to valid values"
+        },
+        {
+          "id": "aria-valid-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure attributes that begin with aria- are valid ARIA attributes",
+          "help": "ARIA attributes must conform to valid names"
+        },
+        {
+          "id": "button-name",
+          "impact": null,
+          "tags": [
+            "cat.name-role-value",
+            "wcag2a",
+            "wcag412",
+            "section508",
+            "section508.22.a",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-11.9.1"
+          ],
+          "description": "Ensure buttons have discernible text",
+          "help": "Buttons must have discernible text"
+        },
+        {
+          "id": "bypass",
+          "impact": null,
+          "tags": [
+            "cat.keyboard",
+            "wcag2a",
+            "wcag241",
+            "section508",
+            "section508.22.o",
+            "TTv5",
+            "TT9.a",
+            "EN-301-549",
+            "EN-9.2.4.1",
+            "RGAAv4",
+            "RGAA-12.7.1"
+          ],
+          "description": "Ensure each page has at least one mechanism for a user to bypass navigation and jump straight to the content",
+          "help": "Page must have means to bypass repeated blocks"
+        },
+        {
+          "id": "color-contrast",
+          "impact": null,
+          "tags": [
+            "cat.color",
+            "wcag2aa",
+            "wcag143",
+            "TTv5",
+            "TT13.c",
+            "EN-301-549",
+            "EN-9.1.4.3",
+            "ACT",
+            "RGAAv4",
+            "RGAA-3.2.1"
+          ],
+          "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+          "help": "Elements must meet minimum color contrast ratio thresholds"
+        },
+        {
+          "id": "document-title",
+          "impact": null,
+          "tags": [
+            "cat.text-alternatives",
+            "wcag2a",
+            "wcag242",
+            "TTv5",
+            "TT12.a",
+            "EN-301-549",
+            "EN-9.2.4.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-8.5.1"
+          ],
+          "description": "Ensure each HTML document contains a non-empty <title> element",
+          "help": "Documents must have <title> element to aid in navigation"
+        },
+        {
+          "id": "form-field-multiple-labels",
+          "impact": null,
+          "tags": [
+            "cat.forms",
+            "wcag2a",
+            "wcag332",
+            "TTv5",
+            "TT5.c",
+            "EN-301-549",
+            "EN-9.3.3.2",
+            "RGAAv4",
+            "RGAA-11.2.1"
+          ],
+          "description": "Ensure form field does not have multiple label elements",
+          "help": "Form field must not have multiple label elements"
+        },
+        {
+          "id": "html-has-lang",
+          "impact": null,
+          "tags": [
+            "cat.language",
+            "wcag2a",
+            "wcag311",
+            "TTv5",
+            "TT11.a",
+            "EN-301-549",
+            "EN-9.3.1.1",
+            "ACT",
+            "RGAAv4",
+            "RGAA-8.3.1"
+          ],
+          "description": "Ensure every HTML document has a lang attribute",
+          "help": "<html> element must have a lang attribute"
+        },
+        {
+          "id": "html-lang-valid",
+          "impact": null,
+          "tags": [
+            "cat.language",
+            "wcag2a",
+            "wcag311",
+            "TTv5",
+            "TT11.a",
+            "EN-301-549",
+            "EN-9.3.1.1",
+            "ACT",
+            "RGAAv4",
+            "RGAA-8.4.1"
+          ],
+          "description": "Ensure the lang attribute of the <html> element has a valid value",
+          "help": "<html> element must have a valid value for the lang attribute"
+        },
+        {
+          "id": "label",
+          "impact": null,
+          "tags": [
+            "cat.forms",
+            "wcag2a",
+            "wcag412",
+            "section508",
+            "section508.22.n",
+            "TTv5",
+            "TT5.c",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-11.1.1"
+          ],
+          "description": "Ensure every form element has a label",
+          "help": "Form elements must have labels"
+        },
+        {
+          "id": "link-name",
+          "impact": null,
+          "tags": [
+            "cat.name-role-value",
+            "wcag2a",
+            "wcag244",
+            "wcag412",
+            "section508",
+            "section508.22.a",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.2.4.4",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-6.2.1"
+          ],
+          "description": "Ensure links have discernible text",
+          "help": "Links must have discernible text"
+        },
+        {
+          "id": "meta-viewport",
+          "impact": null,
+          "tags": [
+            "cat.sensory-and-visual-cues",
+            "wcag2aa",
+            "wcag144",
+            "EN-301-549",
+            "EN-9.1.4.4",
+            "ACT",
+            "RGAAv4",
+            "RGAA-10.4.2"
+          ],
+          "description": "Ensure <meta name=\"viewport\"> does not disable text scaling and zooming",
+          "help": "Zooming and scaling must not be disabled"
+        },
+        {
+          "id": "nested-interactive",
+          "impact": null,
+          "tags": [
+            "cat.keyboard",
+            "wcag2a",
+            "wcag412",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure interactive controls are not nested as they are not always announced by screen readers or can cause focus problems for assistive technologies",
+          "help": "Interactive controls must not be nested"
+        }
+      ]
+    },
+    {
+      "url": "http://127.0.0.1:3000/settings",
+      "finalUrl": "http://127.0.0.1:3000/login",
+      "statusCode": 200,
+      "scannedAt": "2026-11-08T14:16:22.277Z",
+      "summary": {
+        "violations": 0,
+        "passes": 22,
+        "incomplete": 0,
+        "inapplicable": 41,
+        "byImpact": {
+          "critical": 0,
+          "serious": 0,
+          "moderate": 0,
+          "minor": 0
+        }
+      },
+      "violations": [],
+      "incomplete": [],
+      "passes": [
+        {
+          "id": "aria-allowed-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure an element's role supports its ARIA attributes",
+          "help": "Elements must only use supported ARIA attributes"
+        },
+        {
+          "id": "aria-conditional-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure ARIA attributes are used as described in the specification of the element's role",
+          "help": "ARIA attributes must be used as specified for the element's role"
+        },
+        {
+          "id": "aria-deprecated-role",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure elements do not use deprecated roles",
+          "help": "Deprecated ARIA roles must not be used"
+        },
+        {
+          "id": "aria-hidden-body",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag131",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.1.3.1",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-10.8.1"
+          ],
+          "description": "Ensure aria-hidden=\"true\" is not present on the document body.",
+          "help": "aria-hidden=\"true\" must not be present on the document body"
+        },
+        {
+          "id": "aria-hidden-focus",
+          "impact": null,
+          "tags": [
+            "cat.name-role-value",
+            "wcag2a",
+            "wcag412",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-10.8.1"
+          ],
+          "description": "Ensure aria-hidden elements are not focusable nor contain focusable elements",
+          "help": "ARIA hidden element must not be focusable or contain focusable elements"
+        },
+        {
+          "id": "aria-prohibited-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure ARIA attributes are not prohibited for an element's role",
+          "help": "Elements must only use permitted ARIA attributes"
+        },
+        {
+          "id": "aria-required-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure elements with ARIA roles have all required ARIA attributes",
+          "help": "Required ARIA attributes must be provided"
+        },
+        {
+          "id": "aria-roles",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure all elements with a role attribute use a valid value",
+          "help": "ARIA roles used must conform to valid values"
+        },
+        {
+          "id": "aria-valid-attr-value",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure all ARIA attributes have valid values",
+          "help": "ARIA attributes must conform to valid values"
+        },
+        {
+          "id": "aria-valid-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure attributes that begin with aria- are valid ARIA attributes",
+          "help": "ARIA attributes must conform to valid names"
+        },
+        {
+          "id": "button-name",
+          "impact": null,
+          "tags": [
+            "cat.name-role-value",
+            "wcag2a",
+            "wcag412",
+            "section508",
+            "section508.22.a",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-11.9.1"
+          ],
+          "description": "Ensure buttons have discernible text",
+          "help": "Buttons must have discernible text"
+        },
+        {
+          "id": "bypass",
+          "impact": null,
+          "tags": [
+            "cat.keyboard",
+            "wcag2a",
+            "wcag241",
+            "section508",
+            "section508.22.o",
+            "TTv5",
+            "TT9.a",
+            "EN-301-549",
+            "EN-9.2.4.1",
+            "RGAAv4",
+            "RGAA-12.7.1"
+          ],
+          "description": "Ensure each page has at least one mechanism for a user to bypass navigation and jump straight to the content",
+          "help": "Page must have means to bypass repeated blocks"
+        },
+        {
+          "id": "color-contrast",
+          "impact": null,
+          "tags": [
+            "cat.color",
+            "wcag2aa",
+            "wcag143",
+            "TTv5",
+            "TT13.c",
+            "EN-301-549",
+            "EN-9.1.4.3",
+            "ACT",
+            "RGAAv4",
+            "RGAA-3.2.1"
+          ],
+          "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+          "help": "Elements must meet minimum color contrast ratio thresholds"
+        },
+        {
+          "id": "document-title",
+          "impact": null,
+          "tags": [
+            "cat.text-alternatives",
+            "wcag2a",
+            "wcag242",
+            "TTv5",
+            "TT12.a",
+            "EN-301-549",
+            "EN-9.2.4.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-8.5.1"
+          ],
+          "description": "Ensure each HTML document contains a non-empty <title> element",
+          "help": "Documents must have <title> element to aid in navigation"
+        },
+        {
+          "id": "form-field-multiple-labels",
+          "impact": null,
+          "tags": [
+            "cat.forms",
+            "wcag2a",
+            "wcag332",
+            "TTv5",
+            "TT5.c",
+            "EN-301-549",
+            "EN-9.3.3.2",
+            "RGAAv4",
+            "RGAA-11.2.1"
+          ],
+          "description": "Ensure form field does not have multiple label elements",
+          "help": "Form field must not have multiple label elements"
+        },
+        {
+          "id": "html-has-lang",
+          "impact": null,
+          "tags": [
+            "cat.language",
+            "wcag2a",
+            "wcag311",
+            "TTv5",
+            "TT11.a",
+            "EN-301-549",
+            "EN-9.3.1.1",
+            "ACT",
+            "RGAAv4",
+            "RGAA-8.3.1"
+          ],
+          "description": "Ensure every HTML document has a lang attribute",
+          "help": "<html> element must have a lang attribute"
+        },
+        {
+          "id": "html-lang-valid",
+          "impact": null,
+          "tags": [
+            "cat.language",
+            "wcag2a",
+            "wcag311",
+            "TTv5",
+            "TT11.a",
+            "EN-301-549",
+            "EN-9.3.1.1",
+            "ACT",
+            "RGAAv4",
+            "RGAA-8.4.1"
+          ],
+          "description": "Ensure the lang attribute of the <html> element has a valid value",
+          "help": "<html> element must have a valid value for the lang attribute"
+        },
+        {
+          "id": "label",
+          "impact": null,
+          "tags": [
+            "cat.forms",
+            "wcag2a",
+            "wcag412",
+            "section508",
+            "section508.22.n",
+            "TTv5",
+            "TT5.c",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-11.1.1"
+          ],
+          "description": "Ensure every form element has a label",
+          "help": "Form elements must have labels"
+        },
+        {
+          "id": "link-name",
+          "impact": null,
+          "tags": [
+            "cat.name-role-value",
+            "wcag2a",
+            "wcag244",
+            "wcag412",
+            "section508",
+            "section508.22.a",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.2.4.4",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-6.2.1"
+          ],
+          "description": "Ensure links have discernible text",
+          "help": "Links must have discernible text"
+        },
+        {
+          "id": "list",
+          "impact": null,
+          "tags": [
+            "cat.structure",
+            "wcag2a",
+            "wcag131",
+            "EN-301-549",
+            "EN-9.1.3.1",
+            "RGAAv4",
+            "RGAA-9.3.1"
+          ],
+          "description": "Ensure that lists are structured correctly",
+          "help": "<ul> and <ol> must only directly contain <li>, <script> or <template> elements"
+        },
+        {
+          "id": "meta-viewport",
+          "impact": null,
+          "tags": [
+            "cat.sensory-and-visual-cues",
+            "wcag2aa",
+            "wcag144",
+            "EN-301-549",
+            "EN-9.1.4.4",
+            "ACT",
+            "RGAAv4",
+            "RGAA-10.4.2"
+          ],
+          "description": "Ensure <meta name=\"viewport\"> does not disable text scaling and zooming",
+          "help": "Zooming and scaling must not be disabled"
+        },
+        {
+          "id": "nested-interactive",
+          "impact": null,
+          "tags": [
+            "cat.keyboard",
+            "wcag2a",
+            "wcag412",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure interactive controls are not nested as they are not always announced by screen readers or can cause focus problems for assistive technologies",
+          "help": "Interactive controls must not be nested"
+        }
+      ]
+    },
+    {
+      "url": "http://127.0.0.1:3000/profile",
+      "finalUrl": "http://127.0.0.1:3000/profile",
+      "statusCode": 200,
+      "scannedAt": "2026-11-08T14:16:28.675Z",
+      "summary": {
+        "violations": 0,
+        "passes": 21,
+        "incomplete": 0,
+        "inapplicable": 42,
+        "byImpact": {
+          "critical": 0,
+          "serious": 0,
+          "moderate": 0,
+          "minor": 0
+        }
+      },
+      "violations": [],
+      "incomplete": [],
+      "passes": [
+        {
+          "id": "aria-allowed-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure an element's role supports its ARIA attributes",
+          "help": "Elements must only use supported ARIA attributes"
+        },
+        {
+          "id": "aria-conditional-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure ARIA attributes are used as described in the specification of the element's role",
+          "help": "ARIA attributes must be used as specified for the element's role"
+        },
+        {
+          "id": "aria-deprecated-role",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure elements do not use deprecated roles",
+          "help": "Deprecated ARIA roles must not be used"
+        },
+        {
+          "id": "aria-hidden-body",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag131",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.1.3.1",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-10.8.1"
+          ],
+          "description": "Ensure aria-hidden=\"true\" is not present on the document body.",
+          "help": "aria-hidden=\"true\" must not be present on the document body"
+        },
+        {
+          "id": "aria-hidden-focus",
+          "impact": null,
+          "tags": [
+            "cat.name-role-value",
+            "wcag2a",
+            "wcag412",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-10.8.1"
+          ],
+          "description": "Ensure aria-hidden elements are not focusable nor contain focusable elements",
+          "help": "ARIA hidden element must not be focusable or contain focusable elements"
+        },
+        {
+          "id": "aria-prohibited-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure ARIA attributes are not prohibited for an element's role",
+          "help": "Elements must only use permitted ARIA attributes"
+        },
+        {
+          "id": "aria-required-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure elements with ARIA roles have all required ARIA attributes",
+          "help": "Required ARIA attributes must be provided"
+        },
+        {
+          "id": "aria-roles",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure all elements with a role attribute use a valid value",
+          "help": "ARIA roles used must conform to valid values"
+        },
+        {
+          "id": "aria-valid-attr-value",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure all ARIA attributes have valid values",
+          "help": "ARIA attributes must conform to valid values"
+        },
+        {
+          "id": "aria-valid-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure attributes that begin with aria- are valid ARIA attributes",
+          "help": "ARIA attributes must conform to valid names"
+        },
+        {
+          "id": "button-name",
+          "impact": null,
+          "tags": [
+            "cat.name-role-value",
+            "wcag2a",
+            "wcag412",
+            "section508",
+            "section508.22.a",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-11.9.1"
+          ],
+          "description": "Ensure buttons have discernible text",
+          "help": "Buttons must have discernible text"
+        },
+        {
+          "id": "bypass",
+          "impact": null,
+          "tags": [
+            "cat.keyboard",
+            "wcag2a",
+            "wcag241",
+            "section508",
+            "section508.22.o",
+            "TTv5",
+            "TT9.a",
+            "EN-301-549",
+            "EN-9.2.4.1",
+            "RGAAv4",
+            "RGAA-12.7.1"
+          ],
+          "description": "Ensure each page has at least one mechanism for a user to bypass navigation and jump straight to the content",
+          "help": "Page must have means to bypass repeated blocks"
+        },
+        {
+          "id": "color-contrast",
+          "impact": null,
+          "tags": [
+            "cat.color",
+            "wcag2aa",
+            "wcag143",
+            "TTv5",
+            "TT13.c",
+            "EN-301-549",
+            "EN-9.1.4.3",
+            "ACT",
+            "RGAAv4",
+            "RGAA-3.2.1"
+          ],
+          "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+          "help": "Elements must meet minimum color contrast ratio thresholds"
+        },
+        {
+          "id": "document-title",
+          "impact": null,
+          "tags": [
+            "cat.text-alternatives",
+            "wcag2a",
+            "wcag242",
+            "TTv5",
+            "TT12.a",
+            "EN-301-549",
+            "EN-9.2.4.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-8.5.1"
+          ],
+          "description": "Ensure each HTML document contains a non-empty <title> element",
+          "help": "Documents must have <title> element to aid in navigation"
+        },
+        {
+          "id": "form-field-multiple-labels",
+          "impact": null,
+          "tags": [
+            "cat.forms",
+            "wcag2a",
+            "wcag332",
+            "TTv5",
+            "TT5.c",
+            "EN-301-549",
+            "EN-9.3.3.2",
+            "RGAAv4",
+            "RGAA-11.2.1"
+          ],
+          "description": "Ensure form field does not have multiple label elements",
+          "help": "Form field must not have multiple label elements"
+        },
+        {
+          "id": "html-has-lang",
+          "impact": null,
+          "tags": [
+            "cat.language",
+            "wcag2a",
+            "wcag311",
+            "TTv5",
+            "TT11.a",
+            "EN-301-549",
+            "EN-9.3.1.1",
+            "ACT",
+            "RGAAv4",
+            "RGAA-8.3.1"
+          ],
+          "description": "Ensure every HTML document has a lang attribute",
+          "help": "<html> element must have a lang attribute"
+        },
+        {
+          "id": "html-lang-valid",
+          "impact": null,
+          "tags": [
+            "cat.language",
+            "wcag2a",
+            "wcag311",
+            "TTv5",
+            "TT11.a",
+            "EN-301-549",
+            "EN-9.3.1.1",
+            "ACT",
+            "RGAAv4",
+            "RGAA-8.4.1"
+          ],
+          "description": "Ensure the lang attribute of the <html> element has a valid value",
+          "help": "<html> element must have a valid value for the lang attribute"
+        },
+        {
+          "id": "label",
+          "impact": null,
+          "tags": [
+            "cat.forms",
+            "wcag2a",
+            "wcag412",
+            "section508",
+            "section508.22.n",
+            "TTv5",
+            "TT5.c",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-11.1.1"
+          ],
+          "description": "Ensure every form element has a label",
+          "help": "Form elements must have labels"
+        },
+        {
+          "id": "link-name",
+          "impact": null,
+          "tags": [
+            "cat.name-role-value",
+            "wcag2a",
+            "wcag244",
+            "wcag412",
+            "section508",
+            "section508.22.a",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.2.4.4",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-6.2.1"
+          ],
+          "description": "Ensure links have discernible text",
+          "help": "Links must have discernible text"
+        },
+        {
+          "id": "meta-viewport",
+          "impact": null,
+          "tags": [
+            "cat.sensory-and-visual-cues",
+            "wcag2aa",
+            "wcag144",
+            "EN-301-549",
+            "EN-9.1.4.4",
+            "ACT",
+            "RGAAv4",
+            "RGAA-10.4.2"
+          ],
+          "description": "Ensure <meta name=\"viewport\"> does not disable text scaling and zooming",
+          "help": "Zooming and scaling must not be disabled"
+        },
+        {
+          "id": "nested-interactive",
+          "impact": null,
+          "tags": [
+            "cat.keyboard",
+            "wcag2a",
+            "wcag412",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure interactive controls are not nested as they are not always announced by screen readers or can cause focus problems for assistive technologies",
+          "help": "Interactive controls must not be nested"
+        }
+      ]
+    },
+    {
+      "url": "http://127.0.0.1:3000/ml",
+      "finalUrl": "http://127.0.0.1:3000/ml",
+      "statusCode": 200,
+      "scannedAt": "2026-11-08T14:16:39.087Z",
+      "summary": {
+        "violations": 0,
+        "passes": 21,
+        "incomplete": 0,
+        "inapplicable": 42,
+        "byImpact": {
+          "critical": 0,
+          "serious": 0,
+          "moderate": 0,
+          "minor": 0
+        }
+      },
+      "violations": [],
+      "incomplete": [],
+      "passes": [
+        {
+          "id": "aria-allowed-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure an element's role supports its ARIA attributes",
+          "help": "Elements must only use supported ARIA attributes"
+        },
+        {
+          "id": "aria-conditional-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure ARIA attributes are used as described in the specification of the element's role",
+          "help": "ARIA attributes must be used as specified for the element's role"
+        },
+        {
+          "id": "aria-deprecated-role",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure elements do not use deprecated roles",
+          "help": "Deprecated ARIA roles must not be used"
+        },
+        {
+          "id": "aria-hidden-body",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag131",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.1.3.1",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-10.8.1"
+          ],
+          "description": "Ensure aria-hidden=\"true\" is not present on the document body.",
+          "help": "aria-hidden=\"true\" must not be present on the document body"
+        },
+        {
+          "id": "aria-hidden-focus",
+          "impact": null,
+          "tags": [
+            "cat.name-role-value",
+            "wcag2a",
+            "wcag412",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-10.8.1"
+          ],
+          "description": "Ensure aria-hidden elements are not focusable nor contain focusable elements",
+          "help": "ARIA hidden element must not be focusable or contain focusable elements"
+        },
+        {
+          "id": "aria-prohibited-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure ARIA attributes are not prohibited for an element's role",
+          "help": "Elements must only use permitted ARIA attributes"
+        },
+        {
+          "id": "aria-required-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure elements with ARIA roles have all required ARIA attributes",
+          "help": "Required ARIA attributes must be provided"
+        },
+        {
+          "id": "aria-roles",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure all elements with a role attribute use a valid value",
+          "help": "ARIA roles used must conform to valid values"
+        },
+        {
+          "id": "aria-valid-attr-value",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure all ARIA attributes have valid values",
+          "help": "ARIA attributes must conform to valid values"
+        },
+        {
+          "id": "aria-valid-attr",
+          "impact": null,
+          "tags": [
+            "cat.aria",
+            "wcag2a",
+            "wcag412",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure attributes that begin with aria- are valid ARIA attributes",
+          "help": "ARIA attributes must conform to valid names"
+        },
+        {
+          "id": "button-name",
+          "impact": null,
+          "tags": [
+            "cat.name-role-value",
+            "wcag2a",
+            "wcag412",
+            "section508",
+            "section508.22.a",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-11.9.1"
+          ],
+          "description": "Ensure buttons have discernible text",
+          "help": "Buttons must have discernible text"
+        },
+        {
+          "id": "bypass",
+          "impact": null,
+          "tags": [
+            "cat.keyboard",
+            "wcag2a",
+            "wcag241",
+            "section508",
+            "section508.22.o",
+            "TTv5",
+            "TT9.a",
+            "EN-301-549",
+            "EN-9.2.4.1",
+            "RGAAv4",
+            "RGAA-12.7.1"
+          ],
+          "description": "Ensure each page has at least one mechanism for a user to bypass navigation and jump straight to the content",
+          "help": "Page must have means to bypass repeated blocks"
+        },
+        {
+          "id": "color-contrast",
+          "impact": null,
+          "tags": [
+            "cat.color",
+            "wcag2aa",
+            "wcag143",
+            "TTv5",
+            "TT13.c",
+            "EN-301-549",
+            "EN-9.1.4.3",
+            "ACT",
+            "RGAAv4",
+            "RGAA-3.2.1"
+          ],
+          "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+          "help": "Elements must meet minimum color contrast ratio thresholds"
+        },
+        {
+          "id": "document-title",
+          "impact": null,
+          "tags": [
+            "cat.text-alternatives",
+            "wcag2a",
+            "wcag242",
+            "TTv5",
+            "TT12.a",
+            "EN-301-549",
+            "EN-9.2.4.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-8.5.1"
+          ],
+          "description": "Ensure each HTML document contains a non-empty <title> element",
+          "help": "Documents must have <title> element to aid in navigation"
+        },
+        {
+          "id": "form-field-multiple-labels",
+          "impact": null,
+          "tags": [
+            "cat.forms",
+            "wcag2a",
+            "wcag332",
+            "TTv5",
+            "TT5.c",
+            "EN-301-549",
+            "EN-9.3.3.2",
+            "RGAAv4",
+            "RGAA-11.2.1"
+          ],
+          "description": "Ensure form field does not have multiple label elements",
+          "help": "Form field must not have multiple label elements"
+        },
+        {
+          "id": "html-has-lang",
+          "impact": null,
+          "tags": [
+            "cat.language",
+            "wcag2a",
+            "wcag311",
+            "TTv5",
+            "TT11.a",
+            "EN-301-549",
+            "EN-9.3.1.1",
+            "ACT",
+            "RGAAv4",
+            "RGAA-8.3.1"
+          ],
+          "description": "Ensure every HTML document has a lang attribute",
+          "help": "<html> element must have a lang attribute"
+        },
+        {
+          "id": "html-lang-valid",
+          "impact": null,
+          "tags": [
+            "cat.language",
+            "wcag2a",
+            "wcag311",
+            "TTv5",
+            "TT11.a",
+            "EN-301-549",
+            "EN-9.3.1.1",
+            "ACT",
+            "RGAAv4",
+            "RGAA-8.4.1"
+          ],
+          "description": "Ensure the lang attribute of the <html> element has a valid value",
+          "help": "<html> element must have a valid value for the lang attribute"
+        },
+        {
+          "id": "label",
+          "impact": null,
+          "tags": [
+            "cat.forms",
+            "wcag2a",
+            "wcag412",
+            "section508",
+            "section508.22.n",
+            "TTv5",
+            "TT5.c",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-11.1.1"
+          ],
+          "description": "Ensure every form element has a label",
+          "help": "Form elements must have labels"
+        },
+        {
+          "id": "link-name",
+          "impact": null,
+          "tags": [
+            "cat.name-role-value",
+            "wcag2a",
+            "wcag244",
+            "wcag412",
+            "section508",
+            "section508.22.a",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.2.4.4",
+            "EN-9.4.1.2",
+            "ACT",
+            "RGAAv4",
+            "RGAA-6.2.1"
+          ],
+          "description": "Ensure links have discernible text",
+          "help": "Links must have discernible text"
+        },
+        {
+          "id": "meta-viewport",
+          "impact": null,
+          "tags": [
+            "cat.sensory-and-visual-cues",
+            "wcag2aa",
+            "wcag144",
+            "EN-301-549",
+            "EN-9.1.4.4",
+            "ACT",
+            "RGAAv4",
+            "RGAA-10.4.2"
+          ],
+          "description": "Ensure <meta name=\"viewport\"> does not disable text scaling and zooming",
+          "help": "Zooming and scaling must not be disabled"
+        },
+        {
+          "id": "nested-interactive",
+          "impact": null,
+          "tags": [
+            "cat.keyboard",
+            "wcag2a",
+            "wcag412",
+            "TTv5",
+            "TT6.a",
+            "EN-301-549",
+            "EN-9.4.1.2",
+            "RGAAv4",
+            "RGAA-7.1.1"
+          ],
+          "description": "Ensure interactive controls are not nested as they are not always announced by screen readers or can cause focus problems for assistive technologies",
+          "help": "Interactive controls must not be nested"
+        }
+      ]
+    }
+  ]
+}
