@@ -70,11 +70,13 @@ const browser = await chromium.launch({
   headless: true,
 });
 
-const storageStatePath = process.env.PLAYWRIGHT_STORAGE_STATE
-  ? path.isAbsolute(process.env.PLAYWRIGHT_STORAGE_STATE)
-    ? process.env.PLAYWRIGHT_STORAGE_STATE
-    : path.join(REPO_ROOT, process.env.PLAYWRIGHT_STORAGE_STATE)
-  : undefined;
+function resolveStorageStatePath(raw) {
+  if (!raw) return undefined;
+  if (path.isAbsolute(raw)) return raw;
+  return path.join(REPO_ROOT, raw);
+}
+
+const storageStatePath = resolveStorageStatePath(process.env.PLAYWRIGHT_STORAGE_STATE);
 
 const context = await browser.newContext({
   viewport: {

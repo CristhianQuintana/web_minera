@@ -6,44 +6,26 @@ import { Field, ResourcePage } from "@/presentation/modules/resource-page";
 import { Button, Input } from "@/shared/components/ui";
 import { useState } from "react";
 
-export default function AlertsPage() {
+type ActionHelpers = { refresh: () => void; push: (text: string, tone?: "success" | "error") => void };
+
+function AlertDetail({ row }: Readonly<{ row: Record<string, unknown> }>) {
   return (
-    <PermissionGate permission="view_alerts">
-      <ResourcePage
-        title="Alertas"
-        description="Señales operativas para revisión. No constituyen sentencia."
-        queryKey="alerts"
-        path="/api/v1/alerts"
-        emptyTitle="No hay alertas."
-        emptyDescription="Las desviaciones y señales revisables aparecerán aquí."
-        statuses={[
-          { value: "new", label: "Nueva" },
-          { value: "in_review", label: "En revisión" },
-          { value: "attended", label: "Atendida" },
-          { value: "closed", label: "Cerrada" },
-        ]}
-        columns={[
-          { key: "severity", label: "Severidad" },
-          { key: "alert_type", label: "Tipo" },
-          { key: "lot_id", label: "Lote" },
-          { key: "created_at", label: "Fecha" },
-          { key: "status", label: "Estado" },
-          { key: "title", label: "Resumen" },
-        ]}
-        detailTitle="Revisar alerta"
-        extraActions={(row, helpers) => <ReviewAction alertId={String(row.id)} onDone={helpers} />}
-        renderDetail={(row) => (
-          <div>
-            <Field label="Resumen" value={String(row.title)} />
-            <Field label="Motivo" value={String(row.reason ?? row.summary ?? "—")} />
-            <Field label="Regla aplicada" value={String(row.rule_applied ?? "—")} />
-            <Field label="Resultado ML" value={row.ml_inference_id ? String(row.ml_inference_id) : "Sin inferencia"} />
-            <Field label="Estado" value={String(row.status)} />
-          </div>
-        )}
-      />
-    </PermissionGate>
+    <div>
+      <Field label="Resumen" value={String(row.title)} />
+      <Field label="Motivo" value={String(row.reason ?? row.summary ?? "—")} />
+      <Field label="Regla aplicada" value={String(row.rule_applied ?? "—")} />
+      <Field label="Resultado ML" value={row.ml_inference_id ? String(row.ml_inference_id) : "Sin inferencia"} />
+      <Field label="Estado" value={String(row.status)} />
+    </div>
   );
+}
+
+function alertExtraActions(row: Record<string, unknown>, helpers: ActionHelpers) {
+  return <ReviewAction alertId={String(row.id)} onDone={helpers} />;
+}
+
+function renderAlertDetail(row: Record<string, unknown>) {
+  return <AlertDetail row={row} />;
 }
 
 function ReviewAction({
@@ -51,7 +33,7 @@ function ReviewAction({
   onDone,
 }: Readonly<{
   alertId: string;
-  onDone: { refresh: () => void; push: (text: string, tone?: "success" | "error") => void };
+  onDone: ActionHelpers;
 }>) {
   const [open, setOpen] = useState(false);
   const [result, setResult] = useState("");
@@ -97,5 +79,37 @@ function ReviewAction({
         </div>
       ) : null}
     </>
+  );
+}
+
+export default function AlertsPage() {
+  return (
+    <PermissionGate permission="view_alerts">
+      <ResourcePage
+        title="Alertas"
+        description="Señales operativas para revisión. No constituyen sentencia."
+        queryKey="alerts"
+        path="/api/v1/alerts"
+        emptyTitle="No hay alertas."
+        emptyDescription="Las desviaciones y señales revisables aparecerán aquí."
+        statuses={[
+          { value: "new", label: "Nueva" },
+          { value: "in_review", label: "En revisión" },
+          { value: "attended", label: "Atendida" },
+          { value: "closed", label: "Cerrada" },
+        ]}
+        columns={[
+          { key: "severity", label: "Severidad" },
+          { key: "alert_type", label: "Tipo" },
+          { key: "lot_id", label: "Lote" },
+          { key: "created_at", label: "Fecha" },
+          { key: "status", label: "Estado" },
+          { key: "title", label: "Resumen" },
+        ]}
+        detailTitle="Revisar alerta"
+        extraActions={alertExtraActions}
+        renderDetail={renderAlertDetail}
+      />
+    </PermissionGate>
   );
 }

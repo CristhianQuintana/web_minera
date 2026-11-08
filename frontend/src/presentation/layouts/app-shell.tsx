@@ -57,6 +57,210 @@ function AppShellLoading() {
   );
 }
 
+type NavItem = (typeof nav)[number];
+
+function ShellSidebar({
+  items,
+  pathname,
+  sidebarCollapsed,
+  mobileOpen,
+  onToggleSidebar,
+  onLogout,
+}: Readonly<{
+  items: NavItem[];
+  pathname: string;
+  sidebarCollapsed: boolean;
+  mobileOpen: boolean;
+  onToggleSidebar: () => void;
+  onLogout: () => void;
+}>) {
+  return (
+    <aside
+      className={cn(
+        "fixed inset-y-0 left-0 z-[41] flex flex-col border-r border-border bg-white transition-all duration-300",
+        sidebarCollapsed ? "w-[76px]" : "w-[260px]",
+        mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
+      )}
+    >
+      <div className="flex h-16 items-center justify-between px-4">
+        <span className="font-semibold text-primary">{sidebarCollapsed ? "WM" : "WEB_MINERA"}</span>
+        <button className="hidden rounded-lg p-1 hover:bg-slate-100 lg:block" onClick={onToggleSidebar} aria-label="Colapsar menú">
+          <ChevronLeft className={cn("h-4 w-4 transition", sidebarCollapsed && "rotate-180")} />
+        </button>
+      </div>
+      <nav className="flex-1 space-y-1 overflow-auto px-3 pb-4">
+        {items.map((item) => {
+          const Icon = item.icon;
+          const active = pathname.startsWith(item.href);
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              title={sidebarCollapsed ? item.label : undefined}
+              className={cn(
+                "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm",
+                active ? "bg-primary/10 font-medium text-primary" : "text-slate-600 hover:bg-slate-50",
+              )}
+            >
+              <Icon className="h-4 w-4 shrink-0" />
+              {!sidebarCollapsed ? item.label : null}
+            </Link>
+          );
+        })}
+      </nav>
+      <div className="border-t border-border p-3">
+        <Link href="/profile" className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm hover:bg-slate-50">
+          <UserRound className="h-4 w-4" />
+          {!sidebarCollapsed ? "Perfil" : null}
+        </Link>
+        <button onClick={onLogout} className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm text-error hover:bg-red-50">
+          <LogOut className="h-4 w-4" />
+          {!sidebarCollapsed ? "Cerrar sesión" : null}
+        </button>
+      </div>
+    </aside>
+  );
+}
+
+function ShellSearch({
+  search,
+  onSearchChange,
+  lots,
+}: Readonly<{
+  search: string;
+  onSearchChange: (value: string) => void;
+  lots?: Array<Record<string, unknown>>;
+}>) {
+  return (
+    <div className="relative hidden md:block">
+      <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted" />
+      <input
+        value={search}
+        onChange={(event) => onSearchChange(event.target.value)}
+        placeholder="Buscar lotes, QR..."
+        className="w-64 rounded-xl border border-border bg-slate-50 py-2 pl-9 pr-3 text-sm"
+      />
+      {lots?.length ? (
+        <div className="absolute mt-1 w-full rounded-xl border border-border bg-white p-2 shadow-lg">
+          {lots.map((lot) => (
+            <Link key={String(lot.id)} href="/lots" className="block rounded-lg px-2 py-1.5 text-sm hover:bg-slate-50">
+              {String(lot.code)} · {String(lot.mineral)}
+            </Link>
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function NotificationsPanel({
+  open,
+  items,
+}: Readonly<{
+  open: boolean;
+  items: Array<Record<string, string>>;
+}>) {
+  if (!open) return null;
+  return (
+    <div className="absolute right-4 top-16 z-[20] w-80 rounded-2xl border border-border bg-white p-3 shadow-xl">
+      <p className="mb-2 text-sm font-semibold">Notificaciones</p>
+      {items.length === 0 ? (
+        <p className="p-3 text-sm text-muted">No hay notificaciones recientes.</p>
+      ) : (
+        items.map((item) => (
+          <div key={item.id} className="rounded-xl px-3 py-2 hover:bg-slate-50">
+            <p className="text-sm font-medium">{item.title}</p>
+            <p className="text-xs text-muted">{item.body}</p>
+          </div>
+        ))
+      )}
+    </div>
+  );
+}
+
+function UserMenuDropdown({
+  open,
+  onLogout,
+}: Readonly<{
+  open: boolean;
+  onLogout: () => void;
+}>) {
+  if (!open) return null;
+  return (
+    <div className="absolute right-4 top-16 z-[20] w-52 rounded-2xl border border-border bg-white p-2 shadow-xl">
+      <Link href="/profile" className="block rounded-xl px-3 py-2 text-sm hover:bg-slate-50">Perfil</Link>
+      <Link href="/settings" className="block rounded-xl px-3 py-2 text-sm hover:bg-slate-50">Preferencias</Link>
+      <button onClick={onLogout} className="block w-full rounded-xl px-3 py-2 text-left text-sm text-error hover:bg-red-50">
+        Cerrar sesión
+      </button>
+    </div>
+  );
+}
+
+function ShellHeader({
+  crumbs,
+  search,
+  onSearchChange,
+  lots,
+  userName,
+  userRole,
+  onOpenMobile,
+  onToggleNotify,
+  onToggleMenu,
+}: Readonly<{
+  crumbs: string[];
+  search: string;
+  onSearchChange: (value: string) => void;
+  lots?: Array<Record<string, unknown>>;
+  userName?: string;
+  userRole?: string;
+  onOpenMobile: () => void;
+  onToggleNotify: () => void;
+  onToggleMenu: () => void;
+}>) {
+  return (
+    <header className="sticky top-0 z-[30] flex h-16 items-center justify-between gap-3 border-b border-border bg-white/90 px-4 backdrop-blur">
+      <div className="flex items-center gap-3">
+        <button className="rounded-lg p-2 hover:bg-slate-100 lg:hidden" onClick={onOpenMobile} aria-label="Abrir menú">
+          <Menu className="h-5 w-5" />
+        </button>
+        <nav aria-label="breadcrumb" className="text-sm text-muted">
+          {crumbs.map((crumb, index) => (
+            <span key={crumb}>
+              {index > 0 ? " / " : ""}
+              <span className={index === crumbs.length - 1 ? "font-medium text-text" : ""}>{crumb}</span>
+            </span>
+          ))}
+        </nav>
+      </div>
+      <div className="flex items-center gap-2">
+        <ShellSearch search={search} onSearchChange={onSearchChange} lots={lots} />
+        <button className="relative rounded-xl p-2 hover:bg-slate-100" onClick={onToggleNotify} aria-label="Notificaciones">
+          <Bell className="h-5 w-5" />
+        </button>
+        <button className="flex items-center gap-2 rounded-xl px-2 py-1 hover:bg-slate-100" onClick={onToggleMenu}>
+          <span className="grid h-8 w-8 place-items-center rounded-full bg-primary text-xs text-white">
+            {userName?.slice(0, 1) ?? "U"}
+          </span>
+          <span className="hidden text-left text-sm md:block">
+            <span className="block font-medium">{userName}</span>
+            <span className="block text-xs text-muted">{userRole}</span>
+          </span>
+        </button>
+      </div>
+    </header>
+  );
+}
+
+async function performLogout(
+  setUser: (user: null) => void,
+  router: { replace: (href: string) => void },
+) {
+  await logoutUseCase();
+  setUser(null);
+  router.replace("/login");
+}
+
 export function AppShell({ children }: Readonly<{ children: React.ReactNode }>) {
   const pathname = usePathname();
   const router = useRouter();
@@ -105,134 +309,40 @@ export function AppShell({ children }: Readonly<{ children: React.ReactNode }>) 
     return <AppShellLoading />;
   }
 
-  async function logout() {
-    await logoutUseCase();
-    setUser(null);
-    router.replace("/login");
-  }
+  const onLogout = () => {
+    void performLogout(setUser, router);
+  };
 
   return (
     <div className="min-h-screen bg-background">
       {mobileOpen ? (
         <button className="fixed inset-0 z-[40] bg-[var(--overlay)] lg:hidden" onClick={() => setMobileOpen(false)} />
       ) : null}
-      <aside
-        className={cn(
-          "fixed inset-y-0 left-0 z-[41] flex flex-col border-r border-border bg-white transition-all duration-300",
-          sidebarCollapsed ? "w-[76px]" : "w-[260px]",
-          mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
-        )}
-      >
-        <div className="flex h-16 items-center justify-between px-4">
-          <span className="font-semibold text-primary">{sidebarCollapsed ? "WM" : "WEB_MINERA"}</span>
-          <button className="hidden rounded-lg p-1 hover:bg-slate-100 lg:block" onClick={toggleSidebar} aria-label="Colapsar menú">
-            <ChevronLeft className={cn("h-4 w-4 transition", sidebarCollapsed && "rotate-180")} />
-          </button>
-        </div>
-        <nav className="flex-1 space-y-1 overflow-auto px-3 pb-4">
-          {items.map((item) => {
-            const Icon = item.icon;
-            const active = pathname.startsWith(item.href);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                title={sidebarCollapsed ? item.label : undefined}
-                className={cn(
-                  "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm",
-                  active ? "bg-primary/10 font-medium text-primary" : "text-slate-600 hover:bg-slate-50",
-                )}
-              >
-                <Icon className="h-4 w-4 shrink-0" />
-                {!sidebarCollapsed ? item.label : null}
-              </Link>
-            );
-          })}
-        </nav>
-        <div className="border-t border-border p-3">
-          <Link href="/profile" className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm hover:bg-slate-50">
-            <UserRound className="h-4 w-4" />
-            {!sidebarCollapsed ? "Perfil" : null}
-          </Link>
-          <button onClick={logout} className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm text-error hover:bg-red-50">
-            <LogOut className="h-4 w-4" />
-            {!sidebarCollapsed ? "Cerrar sesión" : null}
-          </button>
-        </div>
-      </aside>
-
+      <ShellSidebar
+        items={items}
+        pathname={pathname}
+        sidebarCollapsed={sidebarCollapsed}
+        mobileOpen={mobileOpen}
+        onToggleSidebar={toggleSidebar}
+        onLogout={onLogout}
+      />
       <div className={cn("min-h-screen transition-all duration-300", sidebarCollapsed ? "lg:pl-[76px]" : "lg:pl-[260px]")}>
-        <header className="sticky top-0 z-[30] flex h-16 items-center justify-between gap-3 border-b border-border bg-white/90 px-4 backdrop-blur">
-          <div className="flex items-center gap-3">
-            <button className="rounded-lg p-2 hover:bg-slate-100 lg:hidden" onClick={() => setMobileOpen(true)} aria-label="Abrir menú">
-              <Menu className="h-5 w-5" />
-            </button>
-            <nav aria-label="breadcrumb" className="text-sm text-muted">
-              {crumbs.map((crumb, index) => (
-                <span key={crumb}>
-                  {index > 0 ? " / " : ""}
-                  <span className={index === crumbs.length - 1 ? "font-medium text-text" : ""}>{crumb}</span>
-                </span>
-              ))}
-            </nav>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="relative hidden md:block">
-              <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted" />
-              <input
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
-                placeholder="Buscar lotes, QR..."
-                className="w-64 rounded-xl border border-border bg-slate-50 py-2 pl-9 pr-3 text-sm"
-              />
-              {results.data?.lots?.length ? (
-                <div className="absolute mt-1 w-full rounded-xl border border-border bg-white p-2 shadow-lg">
-                  {results.data.lots.map((lot) => (
-                    <Link key={String(lot.id)} href="/lots" className="block rounded-lg px-2 py-1.5 text-sm hover:bg-slate-50">
-                      {String(lot.code)} · {String(lot.mineral)}
-                    </Link>
-                  ))}
-                </div>
-              ) : null}
-            </div>
-            <button className="relative rounded-xl p-2 hover:bg-slate-100" onClick={() => setNotifyOpen((value) => !value)} aria-label="Notificaciones">
-              <Bell className="h-5 w-5" />
-            </button>
-            <button className="flex items-center gap-2 rounded-xl px-2 py-1 hover:bg-slate-100" onClick={() => setMenuOpen((value) => !value)}>
-              <span className="grid h-8 w-8 place-items-center rounded-full bg-primary text-xs text-white">
-                {user?.full_name?.slice(0, 1) ?? "U"}
-              </span>
-              <span className="hidden text-left text-sm md:block">
-                <span className="block font-medium">{user?.full_name}</span>
-                <span className="block text-xs text-muted">{user?.role_label}</span>
-              </span>
-            </button>
-          </div>
-        </header>
-        {notifyOpen ? (
-          <div className="absolute right-4 top-16 z-[20] w-80 rounded-2xl border border-border bg-white p-3 shadow-xl">
-            <p className="mb-2 text-sm font-semibold">Notificaciones</p>
-            {(notifications.data?.items ?? []).length === 0 ? (
-              <p className="p-3 text-sm text-muted">No hay notificaciones recientes.</p>
-            ) : (
-              (notifications.data?.items as Array<Record<string, string>> | undefined)?.map((item) => (
-                <div key={item.id} className="rounded-xl px-3 py-2 hover:bg-slate-50">
-                  <p className="text-sm font-medium">{item.title}</p>
-                  <p className="text-xs text-muted">{item.body}</p>
-                </div>
-              ))
-            )}
-          </div>
-        ) : null}
-        {menuOpen ? (
-          <div className="absolute right-4 top-16 z-[20] w-52 rounded-2xl border border-border bg-white p-2 shadow-xl">
-            <Link href="/profile" className="block rounded-xl px-3 py-2 text-sm hover:bg-slate-50">Perfil</Link>
-            <Link href="/settings" className="block rounded-xl px-3 py-2 text-sm hover:bg-slate-50">Preferencias</Link>
-            <button onClick={logout} className="block w-full rounded-xl px-3 py-2 text-left text-sm text-error hover:bg-red-50">
-              Cerrar sesión
-            </button>
-          </div>
-        ) : null}
+        <ShellHeader
+          crumbs={crumbs}
+          search={search}
+          onSearchChange={setSearch}
+          lots={results.data?.lots as Array<Record<string, unknown>> | undefined}
+          userName={user?.full_name}
+          userRole={user?.role_label}
+          onOpenMobile={() => setMobileOpen(true)}
+          onToggleNotify={() => setNotifyOpen((value) => !value)}
+          onToggleMenu={() => setMenuOpen((value) => !value)}
+        />
+        <NotificationsPanel
+          open={notifyOpen}
+          items={(notifications.data?.items as Array<Record<string, string>> | undefined) ?? []}
+        />
+        <UserMenuDropdown open={menuOpen} onLogout={onLogout} />
         <main className="p-4 md:p-6">{children}</main>
       </div>
     </div>

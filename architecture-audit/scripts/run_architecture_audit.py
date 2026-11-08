@@ -10,17 +10,37 @@ detección de ciclos (grimp), revisión de acoplamiento y auditoría del servici
 
 from __future__ import annotations
 
-import ast
-import csv
-import json
 import os
-import re
 import subprocess
 import sys
-from dataclasses import asdict, dataclass, field
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+
+from audit_helpers import (
+    build_module_adjacency,
+    check_adapters_composition,
+    check_presentation_adapters,
+    circular_violation,
+    coupling_candidate_notes,
+    dedupe_violations,
+    fallback_depcruise_err,
+    find_cycles_dfs,
+    ml_adapter_checks,
+    ml_arch_ok,
+    ml_domain_checks,
+    ml_test_checks,
+    ml_use_case_checks,
+    parse_arrow_violation,
+    parse_imports_violation,
+    rule_violation,
+    update_contract_name,
+    write_csv_report,
+    write_depcruise_graph,
+    write_json_report,
+    write_markdown_report,
+)
 
 REPO = Path(__file__).resolve().parents[2]
 AUDIT_ROOT = REPO / "architecture-audit"
@@ -223,39 +243,8 @@ def audit_backend() -> ComponentReport:
 def _find_import_cycles(graph: Any) -> list[list[str]]:
     """DFS para ciclos entre módulos internos app.*."""
     modules = sorted(m for m in graph.modules if isinstance(m, str) and m.startswith("app."))
-    adj: dict[str, list[str]] = {}
-    for mod in modules:
-        try:
-            deps = graph.find_modules_directly_imported_by(mod)
-        except Exception:  # noqa: BLE001
-            deps = []
-        adj[mod] = sorted(d for d in deps if d in modules)
-
-    cycles: list[list[str]] = []
-    seen_cycle_keys: set[tuple[str, ...]] = set()
-    color: dict[str, int] = {m: 0 for m in modules}  # 0=white 1=gray 2=black
-    stack: list[str] = []
-
-    def dfs(node: str) -> None:
-        color[node] = 1
-        stack.append(node)
-        for nxt in adj.get(node, []):
-            if color[nxt] == 1:
-                i = stack.index(nxt)
-                cycle = stack[i:] + [nxt]
-                key = tuple(sorted(set(cycle)))
-                if key not in seen_cycle_keys:
-                    seen_cycle_keys.add(key)
-                    cycles.append(cycle)
-            elif color[nxt] == 0:
-                dfs(nxt)
-        stack.pop()
-        color[node] = 2
-
-    for m in modules:
-        if color[m] == 0:
-            dfs(m)
-    return cycles
+    adj = build_module_adjacency(graph, modules)
+    return find_cycles_dfs(adj, modules)
 
 
 def _parse_import_linter_output(text: str) -> list[Violation]:
@@ -266,66 +255,15 @@ def _parse_import_linter_output(text: str) -> list[Violation]:
         line = raw.strip()
         if not line:
             continue
-        if "independence" in line.lower() or "layer direction" in line.lower():
-            if "KEPT" not in line and "BROKEN" not in line and "Contracts" not in line:
-                current_contract = line[:120]
-
-        # Formato: - app.foo.bar -> app.baz.qux (l.17)
-        m = re.search(
-            r"-\s+(?P<source>app\.[\w\.]+)\s+->\s+(?P<dep>app\.[\w\.]+|[\w\.]+)\s*(?:\(l\.(?P<line>\d+)\))?",
-            line,
-        )
-        if m:
-            source = m.group("source")
-            dep = m.group("dep")
-            line_no = int(m.group("line")) if m.group("line") else None
-            file_guess = "backend/" + source.replace(".", "/") + ".py"
-            violations.append(
-                Violation(
-                    component="backend",
-                    severity="error",
-                    rule=current_contract if current_contract else "import-linter",
-                    file=file_guess,
-                    line=line_no,
-                    dependency=dep,
-                    message=line.lstrip("- ").strip(),
-                    recommendation=_backend_recommendation(current_contract, dep),
-                )
-            )
+        current_contract = update_contract_name(line, current_contract)
+        arrow = parse_arrow_violation(line, current_contract, Violation)
+        if arrow:
+            violations.append(arrow)
             continue
-
-        m2 = re.search(
-            r"(?P<source>app\.[\w\.]+)\s+imports\s+(?P<dep>[\w\.]+)",
-            line,
-            re.I,
-        )
-        if m2:
-            source = m2.group("source")
-            dep = m2.group("dep")
-            violations.append(
-                Violation(
-                    component="backend",
-                    severity="error",
-                    rule=current_contract,
-                    file=f"backend/{source.replace('.', '/')}.py",
-                    line=None,
-                    dependency=dep,
-                    message=line,
-                    recommendation=_backend_recommendation(current_contract, dep),
-                )
-            )
+        imports_v = parse_imports_violation(line, current_contract, Violation)
+        if imports_v:
+            violations.append(imports_v)
     return violations
-
-
-def _backend_recommendation(rule: str, dep: str) -> str:
-    dep_l = dep.lower()
-    if "composition" in dep_l:
-        return "Inyectar el contenedor desde el composition root (p. ej. app.state) sin que adapters importen app.composition."
-    if any(x in dep_l for x in ("fastapi", "starlette", "uvicorn", "httpx", "supabase", "sqlalchemy", "pydantic")):
-        return "Mover el import a adapters/infrastructure o expresar la necesidad vía un puerto."
-    if "adapters" in dep_l:
-        return "Depender del puerto (Protocol) e inyectar el adaptador en composition."
-    return f"Reorientar la dependencia para respetar el contrato '{rule}'."
 
 
 # ---------------------------------------------------------------------------
@@ -351,7 +289,6 @@ def audit_frontend() -> ComponentReport:
         config = FRONTEND_RULES
 
     npx = "npx.cmd" if os.name == "nt" else "npx"
-    # JSON output for machine parsing + text for evidence
     proc_json = _run(
         [npx, "--yes", "depcruise", "--config", str(config), "--output-type", "json", "src"],
         cwd=FRONTEND,
@@ -363,49 +300,15 @@ def audit_frontend() -> ComponentReport:
     report.tool_exit_code = proc_err.returncode
     report.tool_stdout = (proc_err.stdout or "") + (("\n" + proc_err.stderr) if proc_err.stderr else "")
 
-    graph_path = REPORTS / "dependency-graph.json"
-    graph_data: dict[str, Any] = {}
-    raw_json = (proc_json.stdout or "").strip()
-    # depcruise devuelve exit != 0 cuando hay violaciones; eso es ejecución válida.
-    if raw_json.startswith("{"):
-        try:
-            graph_data = json.loads(raw_json)
-            graph_path.write_text(json.dumps(graph_data, indent=2, ensure_ascii=False), encoding="utf-8")
-        except json.JSONDecodeError:
-            graph_path.write_text(raw_json, encoding="utf-8")
-    else:
-        graph_path.write_text(
-            json.dumps(
-                {
-                    "error": "dependency-cruiser json unavailable",
-                    "exit": proc_json.returncode,
-                    "stderr": proc_json.stderr,
-                    "stdout_head": raw_json[:2000],
-                },
-                indent=2,
-            ),
-            encoding="utf-8",
-        )
-
+    graph_data = write_depcruise_graph(
+        REPORTS / "dependency-graph.json",
+        proc_json.stdout or "",
+        proc_json.returncode,
+        proc_json.stderr or "",
+    )
     report.violations.extend(_parse_depcruise_json(graph_data))
-    # También parsear salida err si el JSON no trajo rules (fallback)
     if not report.violations and report.tool_stdout:
-        for m in re.finditer(
-            r"error\s+(?P<rule>[\w-]+):\s+(?P<src>\S+)\s+→\s+(?P<dst>\S+)",
-            report.tool_stdout,
-        ):
-            report.violations.append(
-                Violation(
-                    component="frontend",
-                    severity="error",
-                    rule=m.group("rule"),
-                    file=f"frontend/{m.group('src')}",
-                    line=None,
-                    dependency=m.group("dst"),
-                    message=f"{m.group('src')} → {m.group('dst')} incumple {m.group('rule')}",
-                    recommendation=_frontend_recommendation(m.group("rule")),
-                )
-            )
+        report.violations.extend(fallback_depcruise_err(report.tool_stdout, Violation))
 
     report.circular_dependencies = [
         v.dependency.split(" -> ")
@@ -413,7 +316,11 @@ def audit_frontend() -> ComponentReport:
         if v.rule == "no-circular" and v.dependency
     ]
 
-    tool_ran = bool(graph_data.get("modules")) or "dependency violations" in report.tool_stdout or "modules" in report.tool_stdout
+    tool_ran = (
+        bool(graph_data.get("modules"))
+        or "dependency violations" in report.tool_stdout
+        or "modules" in report.tool_stdout
+    )
     if not tool_ran and not report.violations:
         report.result = "no_verificable"
         report.violations.append(
@@ -434,70 +341,19 @@ def audit_frontend() -> ComponentReport:
 
 
 def _parse_depcruise_json(data: dict[str, Any]) -> list[Violation]:
-    violations: list[Violation] = []
     if not data:
-        return violations
-    modules = data.get("modules") or []
-    for mod in modules:
+        return []
+    violations: list[Violation] = []
+    for mod in data.get("modules") or []:
         source = mod.get("source") or ""
         for dep in mod.get("dependencies") or []:
-            rules = dep.get("rules") or []
-            # Also circular flag
             if dep.get("circular"):
-                cycle = dep.get("cycle") or []
-                violations.append(
-                    Violation(
-                        component="frontend",
-                        severity="error",
-                        rule="no-circular",
-                        file=f"frontend/{source}",
-                        line=None,
-                        dependency=" -> ".join(cycle) if cycle else (dep.get("resolved") or ""),
-                        message=f"Dependencia circular desde {source}",
-                        recommendation="Extraer contrato compartido o invertir la dependencia vía ports/composition.",
-                    )
-                )
-            for rule in rules:
-                name = rule.get("name") or "unknown"
-                severity = rule.get("severity") or "error"
-                if severity == "ignore":
-                    continue
-                to_mod = dep.get("module") or dep.get("resolved") or ""
-                violations.append(
-                    Violation(
-                        component="frontend",
-                        severity="error" if severity == "error" else "warning",
-                        rule=name,
-                        file=f"frontend/{source}",
-                        line=None,
-                        dependency=str(to_mod),
-                        message=f"{source} → {to_mod} incumple {name}",
-                        recommendation=_frontend_recommendation(name),
-                    )
-                )
-    # Deduplicate
-    seen: set[tuple[str, str, str]] = set()
-    unique: list[Violation] = []
-    for v in violations:
-        key = (v.rule, v.file, v.dependency)
-        if key in seen:
-            continue
-        seen.add(key)
-        unique.append(v)
-    return unique
-
-
-def _frontend_recommendation(rule: str) -> str:
-    mapping = {
-        "domain-no-ui-or-outer-layers": "Mantener domain como tipos/reglas puras; mover UI a presentation.",
-        "domain-no-node-modules-ui": "Eliminar import de React/Next del dominio.",
-        "application-no-adapters-or-next": "Inyectar PlatformPort; cablear adaptador solo en composition.",
-        "ports-no-adapters": "El puerto solo declara contratos TypeScript.",
-        "no-direct-database-from-ui": "Toda persistencia debe pasar por API/adaptadores outbound.",
-        "presentation-prefer-ports-over-adapters": "Importar desde @/composition o hooks que usen PlatformPort; no desde @/adapters/....",
-        "no-circular": "Romper el ciclo con un puerto o módulo neutro de tipos.",
-    }
-    return mapping.get(rule, "Ajustar imports para respetar la dirección hexagonal.")
+                violations.append(circular_violation(source, dep, Violation))
+            for rule in dep.get("rules") or []:
+                item = rule_violation(source, dep, rule, Violation)
+                if item:
+                    violations.append(item)
+    return dedupe_violations(violations)
 
 
 # ---------------------------------------------------------------------------
@@ -529,66 +385,12 @@ COUPLING_CANDIDATES = [
 
 
 def review_coupling() -> list[Violation]:
-    out: list[Violation] = []
-    # Concrete known architectural smell with evidence (adapters → composition)
     dep_file = BACKEND / "app" / "adapters" / "inbound" / "http" / "dependencies.py"
-    if dep_file.exists():
-        text = dep_file.read_text(encoding="utf-8")
-        if "app.composition" in text or "from app.composition" in text:
-            line_no = None
-            for i, ln in enumerate(text.splitlines(), 1):
-                if "composition" in ln and "import" in ln:
-                    line_no = i
-                    break
-            out.append(
-                Violation(
-                    component="backend",
-                    severity="error",
-                    rule="adapters-must-not-import-composition",
-                    file=_rel(dep_file),
-                    line=line_no,
-                    dependency="app.composition.container",
-                    message="El adaptador inbound HTTP importa el composition root (Container).",
-                    recommendation="Leer container solo desde request.app.state inyectado en composition; tipar Depends con Protocol/callable sin importar Container.",
-                )
-            )
-
-    # Presentation → adapters (complement AST if depcruise missed)
-    for path in _list_ts(FRONTEND / "src" / "app") + _list_ts(FRONTEND / "src" / "presentation"):
-        text = path.read_text(encoding="utf-8")
-        for m in re.finditer(r"""from\s+["'](@/adapters/[^"']+)["']""", text):
-            line_no = text[: m.start()].count("\n") + 1
-            out.append(
-                Violation(
-                    component="frontend",
-                    severity="error",
-                    rule="presentation-prefer-ports-over-adapters",
-                    file=_rel(path),
-                    line=line_no,
-                    dependency=m.group(1),
-                    message=f"UI importa adaptador concreto {m.group(1)}",
-                    recommendation="Usar @/composition o un hook sobre PlatformPort; tipar errores vía dominio/ports.",
-                )
-            )
-
-    for path, justification, reco in COUPLING_CANDIDATES:
-        if not path.exists():
-            continue
-        nlines = len(path.read_text(encoding="utf-8").splitlines())
-        out.append(
-            Violation(
-                component="backend" if "backend" in str(path) else "frontend",
-                severity="observation",
-                rule="responsibility-concentration",
-                file=_rel(path),
-                line=None,
-                dependency="",
-                message=f"{justification} (tamaño actual: {nlines} líneas; el tamaño solo contextualiza, no define defecto).",
-                recommendation=reco,
-            )
-        )
-
-    # Mix of persistence + domain in same module? Spot-check supabase client
+    out: list[Violation] = []
+    out.extend(check_adapters_composition(dep_file, _rel, Violation))
+    ui_paths = _list_ts(FRONTEND / "src" / "app") + _list_ts(FRONTEND / "src" / "presentation")
+    out.extend(check_presentation_adapters(ui_paths, _rel, Violation))
+    out.extend(coupling_candidate_notes(COUPLING_CANDIDATES, _rel, Violation))
     return out
 
 
@@ -622,73 +424,13 @@ def audit_ml() -> dict[str, Any]:
     check("http_adapter_exists", adapter.exists(), _rel(adapter) if adapter.exists() else "missing")
     check("unit_test_exists", test.exists(), _rel(test) if test.exists() else "missing")
 
-    # Domain independence from ML frameworks / FastAPI
-    forbidden = ("fastapi", "uvicorn", "sklearn", "torch", "tensorflow", "numpy", "pandas", "pydantic")
-    if domain_est.exists():
-        tree = ast.parse(domain_est.read_text(encoding="utf-8"))
-        imports: list[str] = []
-        for node in ast.walk(tree):
-            if isinstance(node, ast.Import):
-                imports.extend(a.name for a in node.names)
-            elif isinstance(node, ast.ImportFrom) and node.module:
-                imports.append(node.module)
-        bad = [i for i in imports if i.split(".")[0] in forbidden]
-        check("domain_free_of_ml_frameworks", not bad, f"imports={imports}; forbidden_hits={bad}")
-        if bad:
-            result["violations"].append(
-                {
-                    "rule": "ml-domain-no-framework",
-                    "file": _rel(domain_est),
-                    "dependency": ",".join(bad),
-                    "message": "Dominio ML importa framework prohibido",
-                }
-            )
-        src = domain_est.read_text(encoding="utf-8")
-        has_version = "version" in src and "1.0.0" in src
-        check("model_version_identified", has_version, "ExpectedQuantityEstimator.version == '1.0.0'")
+    ml_domain_checks(domain_est, _rel, check, result)
+    ml_use_case_checks(use_case, check)
+    ml_adapter_checks(adapter, check)
+    ml_test_checks(test, _rel, check)
 
-    # I/O contracts (dict features in / dict out) — lightweight
-    if use_case.exists():
-        uc = use_case.read_text(encoding="utf-8")
-        check(
-            "input_output_contract",
-            "dict[str, Any]" in uc and "execute" in uc,
-            "EstimateExpectedQuantity.execute(features: dict) -> dict",
-        )
-        check(
-            "use_case_depends_on_domain_not_fastapi",
-            "fastapi" not in uc and "ExpectedQuantityEstimator" in uc,
-            "use case importa estimador de dominio",
-        )
-
-    if adapter.exists():
-        ad = adapter.read_text(encoding="utf-8")
-        check("adapter_uses_composition", "estimate_use_case" in ad or "composition" in ad, "HTTP adapter cablea composition")
-        check("adapter_has_pydantic_request_model", "BaseModel" in ad, "EstimateRequest como contrato de borde HTTP")
-
-    if test.exists():
-        t = test.read_text(encoding="utf-8")
-        check("reproducible_unit_test", "expected_quantity" in t and "model_version" in t, _rel(test))
-        check("test_input_fixture", "origin_quantity" in t, "features de prueba en test_estimator.py")
-
-    # Separation score
-    arch_ok = all(
-        c["ok"]
-        for c in result["checks"]
-        if c["name"]
-        in {
-            "domain_estimator_exists",
-            "application_use_case_exists",
-            "composition_wiring_exists",
-            "domain_free_of_ml_frameworks",
-            "model_version_identified",
-            "input_output_contract",
-            "use_case_depends_on_domain_not_fastapi",
-            "reproducible_unit_test",
-        }
-    )
     result["architectural_conformance"] = {
-        "result": "conforme" if arch_ok and not result["violations"] else "parcialmente_conforme",
+        "result": "conforme" if ml_arch_ok(result) else "parcialmente_conforme",
         "note": "Separación modular verificada estáticamente; validación analítica del modelo = fuera de alcance.",
     }
     return result
@@ -703,9 +445,7 @@ def _overall(components: dict[str, ComponentReport], coupling: list[Violation]) 
     err = [v for c in components.values() for v in c.violations if v.severity == "error"]
     err += [v for v in coupling if v.severity == "error"]
     if any(r == "no_verificable" for r in results):
-        if err:
-            return "parcialmente_conforme"
-        return "no_verificable"
+        return "parcialmente_conforme" if err else "no_verificable"
     if not err:
         return "conforme"
     if len(err) <= 5:
@@ -715,146 +455,13 @@ def _overall(components: dict[str, ComponentReport], coupling: list[Violation]) 
 
 def write_reports(audit: AuditReport) -> None:
     REPORTS.mkdir(parents=True, exist_ok=True)
-
     all_violations: list[Violation] = []
     for comp in audit.components.values():
         all_violations.extend(comp.violations)
     all_violations.extend(audit.coupling_observations)
-
-    # JSON
-    payload = {
-        "project": audit.project,
-        "date": audit.date,
-        "commit": audit.commit,
-        "branch": audit.branch,
-        "overall_result": audit.overall_result,
-        "notes": audit.notes,
-        "components": {
-            name: {
-                "component": c.component,
-                "files_inspected_count": len(c.files_inspected),
-                "files_inspected": c.files_inspected,
-                "rules_evaluated": c.rules_evaluated,
-                "violations_count": len([v for v in c.violations if v.severity != "observation"]),
-                "violations": [asdict(v) for v in c.violations],
-                "circular_dependencies": c.circular_dependencies,
-                "tool_exit_code": c.tool_exit_code,
-                "result": c.result,
-            }
-            for name, c in audit.components.items()
-        },
-        "coupling_observations": [asdict(v) for v in audit.coupling_observations],
-        "ml_audit": audit.ml_audit,
-    }
-    (REPORTS / "architecture-report.json").write_text(
-        json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8"
-    )
-
-    # CSV
-    with (REPORTS / "violations.csv").open("w", encoding="utf-8", newline="") as fh:
-        writer = csv.DictWriter(
-            fh,
-            fieldnames=[
-                "component",
-                "severity",
-                "rule",
-                "file",
-                "line",
-                "dependency",
-                "message",
-                "recommendation",
-            ],
-        )
-        writer.writeheader()
-        for v in all_violations:
-            writer.writerow(asdict(v))
-
-    # Markdown
-    lines: list[str] = [
-        "# Architecture Audit Report — WEB_MINERA",
-        "",
-        "| Campo | Valor |",
-        "|---|---|",
-        f"| Proyecto | {audit.project} |",
-        f"| Fecha | {audit.date} |",
-        f"| Commit | `{audit.commit}` |",
-        f"| Rama | `{audit.branch}` |",
-        f"| Resultado global | **{audit.overall_result}** |",
-        "",
-        "> La ausencia de violaciones detectadas por las reglas configuradas **no** es garantía absoluta de cumplimiento arquitectónico total.",
-        "",
-    ]
-
-    for name, c in audit.components.items():
-        lines += [
-            f"## Componente: {name}",
-            "",
-            f"- Archivos inspeccionados: **{len(c.files_inspected)}**",
-            f"- Reglas evaluadas: **{len(c.rules_evaluated)}**",
-            f"- Violaciones (error/warning): **{len([v for v in c.violations if v.severity != 'observation'])}**",
-            f"- Dependencias circulares: **{len(c.circular_dependencies)}**",
-            f"- Resultado: **{c.result}**",
-            f"- Exit code herramienta: `{c.tool_exit_code}`",
-            "",
-            "### Reglas",
-            "",
-        ]
-        for r in c.rules_evaluated:
-            lines.append(f"- `{r['id']}`: {r['description']}")
-        lines += ["", "### Violaciones", ""]
-        comp_v = [v for v in c.violations if v.severity != "observation"]
-        if not comp_v:
-            lines.append("_Ninguna violación error/warning reportada por el analizador._")
-        else:
-            lines += [
-                "| Severidad | Regla | Archivo | Línea | Dependencia | Mensaje | Recomendación |",
-                "|---|---|---|---|---|---|---|",
-            ]
-            for v in comp_v:
-                msg = v.message.replace("|", "\\|")[:160]
-                reco = v.recommendation.replace("|", "\\|")[:120]
-                lines.append(
-                    f"| {v.severity} | `{v.rule}` | `{v.file}` | {v.line or ''} | `{v.dependency}` | {msg} | {reco} |"
-                )
-        if c.circular_dependencies:
-            lines += ["", "### Ciclos", ""]
-            for cycle in c.circular_dependencies:
-                lines.append(f"- {' → '.join(cycle)}")
-        lines.append("")
-
-    lines += ["## Observaciones de acoplamiento / responsabilidades", ""]
-    obs = [v for v in audit.coupling_observations if v.severity == "observation"]
-    errors_coup = [v for v in audit.coupling_observations if v.severity == "error"]
-    if errors_coup:
-        lines += ["### Hallazgos (error)", ""]
-        for v in errors_coup:
-            lines.append(f"- `{v.file}:{v.line or '-'}` — **{v.rule}**: {v.message}")
-            lines.append(f"  - Recomendación: {v.recommendation}")
-    lines += ["", "### Observaciones (no fallan por LOC sola)", ""]
-    for v in obs:
-        lines.append(f"- `{v.file}` — {v.message}")
-        lines.append(f"  - {v.recommendation}")
-
-    lines += ["", "## Servicio de estimación (ML)", ""]
-    ml = audit.ml_audit
-    lines.append(f"- Conformidad arquitectónica: **{ml.get('architectural_conformance', {}).get('result', 'n/d')}**")
-    lines.append(f"- Nota: {ml.get('analytical_validation_note', '')}")
-    lines += ["", "| Check | OK | Detalle |", "|---|---|---|"]
-    for c in ml.get("checks", []):
-        lines.append(f"| `{c['name']}` | {'sí' if c['ok'] else 'no'} | {c['detail']} |")
-
-    lines += [
-        "",
-        "## Cómo reproducir",
-        "",
-        "```bash",
-        "python architecture-audit/scripts/run_architecture_audit.py",
-        "```",
-        "",
-        "Configs: `architecture-audit/configs/backend-contracts.ini`, `architecture-audit/configs/frontend-rules.cjs`",
-        "",
-    ]
-    (REPORTS / "architecture-report.md").write_text("\n".join(lines), encoding="utf-8")
+    write_json_report(REPORTS, audit)
+    write_csv_report(REPORTS, all_violations)
+    write_markdown_report(REPORTS, audit)
 
 
 def main() -> int:

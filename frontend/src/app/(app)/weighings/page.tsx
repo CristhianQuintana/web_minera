@@ -5,6 +5,42 @@ import { Field, ResourcePage, SimpleForm } from "@/presentation/modules/resource
 import { useSessionStore } from "@/infrastructure/auth/session-store";
 import { formatQuantity } from "@/shared/utils/format";
 
+type CreateFormArgs = {
+  onSubmit: (body: Record<string, unknown>) => void;
+  loading: boolean;
+};
+
+function WeighingCreateForm({ onSubmit, loading }: Readonly<CreateFormArgs>) {
+  return (
+    <SimpleForm
+      loading={loading}
+      onSubmit={onSubmit}
+      fields={[
+        { name: "lot_id", label: "ID de lote" },
+        { name: "weight", label: "Peso", type: "number" },
+        { name: "unit", label: "Unidad" },
+        { name: "instrument", label: "Instrumento" },
+        { name: "responsible", label: "Responsable" },
+      ]}
+    />
+  );
+}
+
+function WeighingDetail({ row }: Readonly<{ row: Record<string, unknown> }>) {
+  return (
+    <div>
+      <Field label="Lote" value={String(row.lot_id)} />
+      <Field label="Peso" value={formatQuantity(Number(row.weight), String(row.unit))} />
+      <Field label="Instrumento" value={String(row.instrument)} />
+      <Field label="Responsable" value={String(row.responsible)} />
+    </div>
+  );
+}
+
+function renderWeighingDetail(row: Record<string, unknown>) {
+  return <WeighingDetail row={row} />;
+}
+
 export default function WeighingsPage() {
   const user = useSessionStore((state) => state.user);
   return (
@@ -27,27 +63,8 @@ export default function WeighingsPage() {
           { key: "instrument", label: "Instrumento" },
         ]}
         detailTitle="Detalle de pesaje"
-        createForm={({ onSubmit, loading }) => (
-          <SimpleForm
-            loading={loading}
-            onSubmit={onSubmit}
-            fields={[
-              { name: "lot_id", label: "ID de lote" },
-              { name: "weight", label: "Peso", type: "number" },
-              { name: "unit", label: "Unidad" },
-              { name: "instrument", label: "Instrumento" },
-              { name: "responsible", label: "Responsable" },
-            ]}
-          />
-        )}
-        renderDetail={(row) => (
-          <div>
-            <Field label="Lote" value={String(row.lot_id)} />
-            <Field label="Peso" value={formatQuantity(Number(row.weight), String(row.unit))} />
-            <Field label="Instrumento" value={String(row.instrument)} />
-            <Field label="Responsable" value={String(row.responsible)} />
-          </div>
-        )}
+        createForm={WeighingCreateForm}
+        renderDetail={renderWeighingDetail}
       />
     </PermissionGate>
   );

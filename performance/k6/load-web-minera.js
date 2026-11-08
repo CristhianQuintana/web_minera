@@ -58,8 +58,20 @@ const profiles = {
   },
 };
 
+const ACTIVE_STAGES = (profiles[PROFILE] || profiles.load).stages;
+const PLANNED_MAX_VUS = Math.max(...ACTIVE_STAGES.map((s) => s.target || 0));
+const PLANNED_DURATION_SEC = ACTIVE_STAGES.reduce((sum, s) => {
+  const m = String(s.duration || "").match(/^(\d+)(s|m|h)?$/i);
+  if (!m) return sum;
+  const n = Number(m[1]);
+  const u = (m[2] || "s").toLowerCase();
+  if (u === "m") return sum + n * 60;
+  if (u === "h") return sum + n * 3600;
+  return sum + n;
+}, 0);
+
 export const options = {
-  stages: (profiles[PROFILE] || profiles.load).stages,
+  stages: ACTIVE_STAGES,
   thresholds: {
     http_req_failed: ["rate<0.10"],
     http_req_duration: ["p(95)<800", "p(99)<1500"],
@@ -69,6 +81,30 @@ export const options = {
   },
   summaryTrendStats: ["avg", "min", "med", "max", "p(90)", "p(95)", "p(99)"],
 };
+
+function formatDuration(sec) {
+  if (sec < 60) return `${sec}s`;
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return s ? `${m}m ${s}s` : `${m}m`;
+}
+
+function printExecutionBanner(title) {
+  const sep = "=".repeat(72);
+  console.log(`\n${sep}`);
+  console.log(title);
+  console.log(sep);
+  console.log(`Ejecución de la prueba de carga mostrando la cantidad de usuarios`);
+  console.log(`virtuales y duración de la prueba.`);
+  console.log(`  Perfil:                    ${PROFILE}`);
+  console.log(`  Usuarios virtuales (máx.): ${PLANNED_MAX_VUS} VU`);
+  console.log(`  Duración planificada:      ${formatDuration(PLANNED_DURATION_SEC)} (${PLANNED_DURATION_SEC}s)`);
+  console.log(`  Stages:`);
+  for (const st of ACTIVE_STAGES) {
+    console.log(`    - ${st.duration} → ${st.target} VU`);
+  }
+  console.log(`${sep}\n`);
+}
 
 const BUSINESS_GETS = [
   "/api/v1/auth/me",
@@ -101,6 +137,9 @@ function track(ok) {
 }
 
 export function setup() {
+  // Solo setup() corre una vez — evidencia limpia en terminal (VU + duración).
+  printExecutionBanner("INICIO — Prueba de carga k6 WEB_MINERA");
+
   let token = TOKEN_ENV;
   let authMode = "none";
 
@@ -227,11 +266,118 @@ function metricBlock(name, m) {
   );
 }
 
+function thresholdPassed(th) {
+  if (typeof th.ok === "boolean") return th.ok;
+  return th.passes !== false;
+}
+
+function loadVerdict(failed, p95) {
+  if (failed < 0.05 && (p95 === undefined || p95 < 800)) {
+    return "  Dictamen: CARGA ACEPTABLE bajo el perfil ejecutado.\n";
+  }
+  if (failed < 0.10) {
+    return "  Dictamen: CARGA CON OBSERVACIONES (fallos o latencia cerca del umbral).\n";
+  }
+  return "  Dictamen: CARGA NO SATISFACTORIA (tasa de fallo o latencia elevada).\n";
+}
+
+function buildExecutionSection(vusMax, vusMin, durationSec, durationMs) {
+  const thin = "-".repeat(72);
+  let out = `${thin}\n`;
+  out += "EJECUCIÓN DE LA PRUEBA DE CARGA\n";
+  out += "(cantidad de usuarios virtuales y duración de la prueba)\n";
+  out += `${thin}\n`;
+  out += `  Usuarios virtuales máximos:     ${vusMax} VU\n`;
+  out += `  Usuarios virtuales (mín. obs.): ${vusMin} VU\n`;
+  out += `  Usuarios virtuales planificados: ${PLANNED_MAX_VUS} VU\n`;
+  out += `  Duración real de la prueba:     ${formatDuration(durationSec)} (${durationSec}s / ${durationMs} ms)\n`;
+  out += `  Duración planificada (stages):  ${formatDuration(PLANNED_DURATION_SEC)} (${PLANNED_DURATION_SEC}s)\n`;
+  out += `  Stages ejecutados:\n`;
+  for (const st of ACTIVE_STAGES) {
+    out += `    - duración ${st.duration} → objetivo ${st.target} usuarios virtuales\n`;
+  }
+  return out;
+}
+
+function buildHttpSection(m, reqs, failed, checksRate, vusMax, durationSec) {
+  const thin = "-".repeat(72);
+  let out = `${thin}\nRESUMEN HTTP\n${thin}\n`;
+  out += `  Iteraciones:        ${m.iterations?.values?.count ?? 0}\n`;
+  out += `  Requests HTTP:      ${reqs}\n`;
+  out += `  Tasa fallo HTTP:    ${(failed * 100).toFixed(2)} %\n`;
+  out += `  Checks OK:          ${(checksRate * 100).toFixed(2)} %\n`;
+  out += `  VUs máx:            ${vusMax}\n`;
+  out += `  Duración:           ${formatDuration(durationSec)}\n`;
+  out += `  Data recibida:      ${((m.data_received?.values?.count ?? 0) / 1024).toFixed(1)} KB\n`;
+  out += `${thin}\nLATENCIAS (http_req_duration)\n${thin}\n`;
+  out += metricBlock("global", m.http_req_duration);
+  out += metricBlock("GET /health", m.endpoint_health_duration);
+  out += metricBlock("POST /auth/login (inválido)", m.endpoint_login_duration);
+  out += metricBlock("GET protegidos → 401", m.endpoint_authz_401_duration);
+  out += metricBlock("GET negocio (si hay token)", m.endpoint_business_duration);
+  return out;
+}
+
+function buildThresholdsSection(thresholds) {
+  const thin = "-".repeat(72);
+  let out = `${thin}\nTHRESHOLDS\n${thin}\n`;
+  const names = Object.keys(thresholds);
+  if (names.length === 0) {
+    return out + "  (thresholds evaluados por k6 en salida estándar)\n";
+  }
+  for (const name of names) {
+    const passed = thresholdPassed(thresholds[name]);
+    out += `  ${passed ? "✓" : "✗"} ${name}\n`;
+  }
+  return out;
+}
+
+function buildAnalysisSection(m, failed) {
+  const thin = "-".repeat(72);
+  const p95 = m.http_req_duration?.values?.["p(95)"];
+  const healthP95 = m.endpoint_health_duration?.values?.["p(95)"];
+  let out = `${thin}\nANÁLISIS\n${thin}\n`;
+  out += loadVerdict(failed, p95);
+  out += `  - Health p95: ${fmtMs(healthP95)} (meta orientativa < 500 ms)\n`;
+  out += `  - HTTP p95:   ${fmtMs(p95)} (meta umbral < 800 ms)\n`;
+  out += `  - Fallo HTTP: ${(failed * 100).toFixed(2)} % (meta < 10 %)\n`;
+  if (!TOKEN_ENV && !(EMAIL && PASSWORD)) {
+    out +=
+      "  - Negocio autenticado: NO EJECUTADO (sin TOKEN / K6_EMAIL+K6_PASSWORD).\n" +
+      "    Se midió infra (/health), camino login inválido y 401/429 en protegidos.\n";
+  } else {
+    out += "  - Negocio autenticado: incluido en la corrida.\n";
+  }
+  out +=
+    "  - Rate limit: API aplica ~120 req/60s por IP+segmento; bajo carga alta es normal ver 429.\n" +
+    "  - Nota: /health valida infraestructura; no sustituye por sí solo la capacidad de negocio.\n";
+  return out;
+}
+
+function buildEndpointsSection() {
+  const thin = "-".repeat(72);
+  let out = `${thin}\nENDPOINTS CUBIERTOS\n${thin}\n`;
+  out += "  GET  /health\n";
+  out += "  POST /api/v1/auth/login (credenciales inválidas)\n";
+  out += "  GET  /api/v1/auth/me | /dashboard | /lots  (sin token → 401)\n";
+  if (TOKEN_ENV || (EMAIL && PASSWORD)) {
+    for (const p of BUSINESS_GETS) {
+      out += `  GET  ${p}  (autenticado)\n`;
+    }
+  }
+  return out;
+}
+
 export function handleSummary(data) {
   const sep = "=".repeat(72);
-  const thin = "-".repeat(72);
   const m = data.metrics || {};
-  const root = data.root_group || {};
+  const reqs = m.http_reqs?.values?.count ?? 0;
+  const failed = m.http_req_failed?.values?.rate ?? 0;
+  const checksRate = m.checks?.values?.rate ?? 0;
+  const vusMax = m.vus_max?.values?.max ?? m.vus?.values?.max ?? PLANNED_MAX_VUS;
+  const vusMin = m.vus?.values?.min ?? 0;
+  const durationMs = data.state?.testRunDurationMs ?? PLANNED_DURATION_SEC * 1000;
+  const durationSec = Math.round(durationMs / 1000);
 
   let report = `\n${sep}\n`;
   report += "RESULTADOS FINALES — Prueba de carga k6 WEB_MINERA\n";
@@ -241,98 +387,19 @@ export function handleSummary(data) {
   report += `BASE_URL:     ${BASE}\n`;
   report += `Perfil:       ${PROFILE}\n`;
   report += `Generado:     ${new Date().toISOString()}\n`;
-  report += `${thin}\n`;
-  report += "RESUMEN HTTP\n";
-  report += `${thin}\n`;
-
-  const reqs = m.http_reqs?.values?.count ?? 0;
-  const failed = m.http_req_failed?.values?.rate ?? 0;
-  const checksRate = m.checks?.values?.rate ?? 0;
-  const vusMax = m.vus_max?.values?.max ?? m.vus?.values?.max ?? 0;
-
-  report += `  Iteraciones:        ${m.iterations?.values?.count ?? 0}\n`;
-  report += `  Requests HTTP:      ${reqs}\n`;
-  report += `  Tasa fallo HTTP:    ${(failed * 100).toFixed(2)} %\n`;
-  report += `  Checks OK:          ${(checksRate * 100).toFixed(2)} %\n`;
-  report += `  VUs máx:            ${vusMax}\n`;
-  report += `  Data recibida:      ${((m.data_received?.values?.count ?? 0) / 1024).toFixed(1)} KB\n`;
-  report += `${thin}\n`;
-  report += "LATENCIAS (http_req_duration)\n";
-  report += `${thin}\n`;
-  report += metricBlock("global", m.http_req_duration);
-  report += metricBlock("GET /health", m.endpoint_health_duration);
-  report += metricBlock("POST /auth/login (inválido)", m.endpoint_login_duration);
-  report += metricBlock("GET protegidos → 401", m.endpoint_authz_401_duration);
-  report += metricBlock("GET negocio (si hay token)", m.endpoint_business_duration);
-  report += `${thin}\n`;
-  report += "THRESHOLDS\n";
-  report += `${thin}\n`;
-
-  const thresholds = data.thresholds || {};
-  let thOk = 0;
-  let thFail = 0;
-  for (const [name, th] of Object.entries(thresholds)) {
-    const ok = th.ok !== false && !(th.passes === false);
-    // k6 summary: th has `ok` boolean in recent versions
-    const passed = typeof th.ok === "boolean" ? th.ok : true;
-    if (passed) thOk += 1;
-    else thFail += 1;
-    report += `  ${passed ? "✓" : "✗"} ${name}\n`;
-  }
-  if (Object.keys(thresholds).length === 0) {
-    report += "  (thresholds evaluados por k6 en salida estándar)\n";
-  }
-
-  report += `${thin}\n`;
-  report += "ANÁLISIS\n";
-  report += `${thin}\n`;
-
-  const p95 = m.http_req_duration?.values?.["p(95)"];
-  const healthP95 = m.endpoint_health_duration?.values?.["p(95)"];
-
-  if (failed < 0.05 && (p95 === undefined || p95 < 800)) {
-    report += "  Dictamen: CARGA ACEPTABLE bajo el perfil ejecutado.\n";
-  } else if (failed < 0.10) {
-    report += "  Dictamen: CARGA CON OBSERVACIONES (fallos o latencia cerca del umbral).\n";
-  } else {
-    report += "  Dictamen: CARGA NO SATISFACTORIA (tasa de fallo o latencia elevada).\n";
-  }
-
-  report += `  - Health p95: ${fmtMs(healthP95)} (meta orientativa < 500 ms)\n`;
-  report += `  - HTTP p95:   ${fmtMs(p95)} (meta umbral < 800 ms)\n`;
-  report += `  - Fallo HTTP: ${(failed * 100).toFixed(2)} % (meta < 10 %)\n`;
-
-  if (!TOKEN_ENV && !(EMAIL && PASSWORD)) {
-    report +=
-      "  - Negocio autenticado: NO EJECUTADO (sin TOKEN / K6_EMAIL+K6_PASSWORD).\n" +
-      "    Se midió infra (/health), camino login inválido y 401/429 en protegidos.\n";
-  } else {
-    report += "  - Negocio autenticado: incluido en la corrida.\n";
-  }
-
-  report +=
-    "  - Rate limit: API aplica ~120 req/60s por IP+segmento; bajo carga alta es normal ver 429.\n" +
-    "  - Nota: /health valida infraestructura; no sustituye por sí solo la capacidad de negocio.\n";
-  report += `${thin}\n`;
-  report += "ENDPOINTS CUBIERTOS\n";
-  report += `${thin}\n`;
-  report += "  GET  /health\n";
-  report += "  POST /api/v1/auth/login (credenciales inválidas)\n";
-  report += "  GET  /api/v1/auth/me | /dashboard | /lots  (sin token → 401)\n";
-  if (TOKEN_ENV || (EMAIL && PASSWORD)) {
-    for (const p of BUSINESS_GETS) {
-      report += `  GET  ${p}  (autenticado)\n`;
-    }
-  }
+  report += buildExecutionSection(vusMax, vusMin, durationSec, durationMs);
+  report += buildHttpSection(m, reqs, failed, checksRate, vusMax, durationSec);
+  report += buildThresholdsSection(data.thresholds || {});
+  report += buildAnalysisSection(m, failed);
+  report += buildEndpointsSection();
   report += `${sep}\n\n`;
 
-  // También el summary nativo de k6 (compacto) al final del texto exportado
   const native = textSummary(data, { indent: "  ", enableColors: false });
-
+  const body = report + "\n--- Resumen nativo k6 ---\n" + native + "\n";
   const outDir = "reports/performance";
   return {
-    stdout: report + "\n--- Resumen nativo k6 ---\n" + native + "\n",
+    stdout: body,
     [`${outDir}/k6-summary.json`]: JSON.stringify(data, null, 2),
-    [`${outDir}/k6-report.txt`]: report + "\n--- Resumen nativo k6 ---\n" + native + "\n",
+    [`${outDir}/k6-report.txt`]: body,
   };
 }

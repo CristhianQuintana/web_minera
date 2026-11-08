@@ -17,6 +17,11 @@ type TransportEvent = {
   is_incident?: boolean;
 };
 
+type CreateFormArgs = {
+  onSubmit: (body: Record<string, unknown>) => void;
+  loading: boolean;
+};
+
 function TransportEventsPanel({ transportId, canRegister }: Readonly<{ transportId: string; canRegister: boolean }>) {
   const [open, setOpen] = useState(false);
   const events = useDetail<{ items: TransportEvent[] }>(
@@ -94,6 +99,48 @@ function TransportEventsPanel({ transportId, canRegister }: Readonly<{ transport
   );
 }
 
+function TransportCreateForm({ onSubmit, loading }: Readonly<CreateFormArgs>) {
+  return (
+    <SimpleForm
+      loading={loading}
+      validate={(body) => {
+        const parsed = parseForm(transportSchema, body);
+        if (!parsed.ok) return parsed;
+        return { ok: true, data: parsed.data as Record<string, unknown> };
+      }}
+      onSubmit={onSubmit}
+      fields={[
+        { name: "lot_id", label: "ID de lote" },
+        { name: "vehicle", label: "Vehículo" },
+        { name: "plate", label: "Placa" },
+        { name: "driver", label: "Conductor" },
+        { name: "origin", label: "Origen", required: false },
+        { name: "destination", label: "Destino", required: false },
+      ]}
+    />
+  );
+}
+
+function TransportDetail({ row }: Readonly<{ row: Record<string, unknown> }>) {
+  const user = useSessionStore((state) => state.user);
+  const canRegister = Boolean(user?.permissions.includes("register_transport"));
+  return (
+    <div>
+      <Field label="Lote" value={String(row.lot_id)} />
+      <Field label="Conductor" value={String(row.driver)} />
+      <Field label="Vehículo" value={`${row.vehicle} · ${row.plate}`} />
+      <Field label="Origen" value={String(row.origin ?? "—")} />
+      <Field label="Destino" value={String(row.destination ?? "—")} />
+      <Field label="Estado" value={String(row.status)} />
+      <TransportEventsPanel transportId={String(row.id)} canRegister={canRegister} />
+    </div>
+  );
+}
+
+function renderTransportDetail(row: Record<string, unknown>) {
+  return <TransportDetail row={row} />;
+}
+
 export default function TransportPage() {
   const user = useSessionStore((state) => state.user);
   const canRegister = Boolean(user?.permissions.includes("register_transport"));
@@ -118,36 +165,8 @@ export default function TransportPage() {
           { key: "status", label: "Estado" },
         ]}
         detailTitle="Detalle de transporte"
-        createForm={({ onSubmit, loading }) => (
-          <SimpleForm
-            loading={loading}
-            validate={(body) => {
-              const parsed = parseForm(transportSchema, body);
-              if (!parsed.ok) return parsed;
-              return { ok: true, data: parsed.data as Record<string, unknown> };
-            }}
-            onSubmit={onSubmit}
-            fields={[
-              { name: "lot_id", label: "ID de lote" },
-              { name: "vehicle", label: "Vehículo" },
-              { name: "plate", label: "Placa" },
-              { name: "driver", label: "Conductor" },
-              { name: "origin", label: "Origen", required: false },
-              { name: "destination", label: "Destino", required: false },
-            ]}
-          />
-        )}
-        renderDetail={(row) => (
-          <div>
-            <Field label="Lote" value={String(row.lot_id)} />
-            <Field label="Conductor" value={String(row.driver)} />
-            <Field label="Vehículo" value={`${row.vehicle} · ${row.plate}`} />
-            <Field label="Origen" value={String(row.origin ?? "—")} />
-            <Field label="Destino" value={String(row.destination ?? "—")} />
-            <Field label="Estado" value={String(row.status)} />
-            <TransportEventsPanel transportId={String(row.id)} canRegister={canRegister} />
-          </div>
-        )}
+        createForm={TransportCreateForm}
+        renderDetail={renderTransportDetail}
       />
     </PermissionGate>
   );

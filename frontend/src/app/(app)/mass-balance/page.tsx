@@ -6,13 +6,14 @@ import { Field, ResourcePage } from "@/presentation/modules/resource-page";
 import { Button } from "@/shared/components/ui";
 import { formatQuantity, labelOf } from "@/shared/utils/format";
 
+type ActionHelpers = { refresh: () => void; push: (text: string, tone?: "success" | "error") => void };
 
 function RecalculateAction({
   row,
   helpers,
 }: Readonly<{
   row: Record<string, unknown>;
-  helpers: { refresh: () => void; push: (text: string, tone?: "success" | "error") => void };
+  helpers: ActionHelpers;
 }>) {
   return (
     <Button
@@ -52,6 +53,14 @@ function BalanceDetail({ row }: Readonly<{ row: Record<string, unknown> }>) {
       <Field label="Estado" value={labelOf(String(row.status))} />
     </div>
   );
+}
+
+function massBalanceExtraActions(row: Record<string, unknown>, helpers: ActionHelpers) {
+  return <RecalculateAction row={row} helpers={helpers} />;
+}
+
+function renderBalanceDetail(row: Record<string, unknown>) {
+  return <BalanceDetail row={row} />;
 }
 
 export default function MassBalancePage() {
@@ -106,8 +115,8 @@ export default function MassBalancePage() {
           },
         ]}
         detailTitle="Detalle de balance"
-        extraActions={(row, helpers) => <RecalculateAction row={row} helpers={helpers} />}
-        renderDetail={(row) => <BalanceDetail row={row} />}
+        extraActions={massBalanceExtraActions}
+        renderDetail={renderBalanceDetail}
       />
     </PermissionGate>
   );

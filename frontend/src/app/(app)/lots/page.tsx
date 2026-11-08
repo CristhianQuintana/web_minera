@@ -16,6 +16,11 @@ type TimelineItem = {
   user_id?: string;
 };
 
+type CreateFormArgs = {
+  onSubmit: (body: Record<string, unknown>) => void;
+  loading: boolean;
+};
+
 function LotTimeline({ lotId }: Readonly<{ lotId: string }>) {
   const timeline = useDetail<{ items: TimelineItem[] }>(
     "lot-timeline",
@@ -41,6 +46,57 @@ function LotTimeline({ lotId }: Readonly<{ lotId: string }>) {
       ))}
     </ol>
   );
+}
+
+function LotsCreateForm({ onSubmit, loading }: Readonly<CreateFormArgs>) {
+  return (
+    <SimpleForm
+      loading={loading}
+      submitLabel="Guardar"
+      validate={(body) => {
+        const parsed = parseForm(registerLotSchema, body);
+        if (!parsed.ok) return parsed;
+        return { ok: true, data: parsed.data as Record<string, unknown> };
+      }}
+      onSubmit={onSubmit}
+      fields={[
+        { name: "code", label: "Código" },
+        { name: "mineral", label: "Mineral" },
+        { name: "quantity", label: "Cantidad", type: "number" },
+        { name: "unit", label: "Unidad" },
+        { name: "observation", label: "Observación", required: false },
+      ]}
+    />
+  );
+}
+
+function LotDetail({ row }: Readonly<{ row: Record<string, unknown> }>) {
+  return (
+    <div>
+      <Field label="Código" value={String(row.code)} />
+      <Field label="Estado" value={String(row.status)} />
+      <Field label="Mineral" value={String(row.mineral)} />
+      <Field label="Cantidad" value={formatQuantity(Number(row.quantity), String(row.unit))} />
+      <Field label="Fecha" value={formatDateTime(String(row.created_at))} />
+      <Field label="QR" value={String(row.qr_payload ?? row.code)} />
+      <Field
+        label="Ubicación"
+        value={row.latitude != null && row.longitude != null ? `${String(row.latitude)}, ${String(row.longitude)}` : "—"}
+      />
+      <h3 className="mt-6 font-semibold">Evidencias</h3>
+      <p className="text-sm text-muted">
+        {Array.isArray(row.evidences) ? `${row.evidences.length} archivos (consulta WEB; carga desde APP_MINERA)` : "Sin evidencias"}
+      </p>
+      <h3 className="mt-4 font-semibold">Cadena de custodia</h3>
+      <p className="text-sm text-muted">{Array.isArray(row.custody) ? `${row.custody.length} transferencias` : "—"}</p>
+      <h3 className="mt-4 font-semibold">Historial / timeline</h3>
+      <LotTimeline lotId={String(row.id)} />
+    </div>
+  );
+}
+
+function renderLotDetail(row: Record<string, unknown>) {
+  return <LotDetail row={row} />;
 }
 
 export default function LotsPage() {
@@ -74,47 +130,8 @@ export default function LotsPage() {
           { key: "status", label: "Estado" },
         ]}
         detailTitle="Detalle del lote"
-        createForm={({ onSubmit, loading }) => (
-          <SimpleForm
-            loading={loading}
-            submitLabel="Guardar"
-            validate={(body) => {
-              const parsed = parseForm(registerLotSchema, body);
-              if (!parsed.ok) return parsed;
-              return { ok: true, data: parsed.data as Record<string, unknown> };
-            }}
-            onSubmit={onSubmit}
-            fields={[
-              { name: "code", label: "Código" },
-              { name: "mineral", label: "Mineral" },
-              { name: "quantity", label: "Cantidad", type: "number" },
-              { name: "unit", label: "Unidad" },
-              { name: "observation", label: "Observación", required: false },
-            ]}
-          />
-        )}
-        renderDetail={(row) => (
-          <div>
-            <Field label="Código" value={String(row.code)} />
-            <Field label="Estado" value={String(row.status)} />
-            <Field label="Mineral" value={String(row.mineral)} />
-            <Field label="Cantidad" value={formatQuantity(Number(row.quantity), String(row.unit))} />
-            <Field label="Fecha" value={formatDateTime(String(row.created_at))} />
-            <Field label="QR" value={String(row.qr_payload ?? row.code)} />
-            <Field
-              label="Ubicación"
-              value={row.latitude != null && row.longitude != null ? `${String(row.latitude)}, ${String(row.longitude)}` : "—"}
-            />
-            <h3 className="mt-6 font-semibold">Evidencias</h3>
-            <p className="text-sm text-muted">
-              {Array.isArray(row.evidences) ? `${row.evidences.length} archivos (consulta WEB; carga desde APP_MINERA)` : "Sin evidencias"}
-            </p>
-            <h3 className="mt-4 font-semibold">Cadena de custodia</h3>
-            <p className="text-sm text-muted">{Array.isArray(row.custody) ? `${row.custody.length} transferencias` : "—"}</p>
-            <h3 className="mt-4 font-semibold">Historial / timeline</h3>
-            <LotTimeline lotId={String(row.id)} />
-          </div>
-        )}
+        createForm={LotsCreateForm}
+        renderDetail={renderLotDetail}
       />
     </PermissionGate>
   );

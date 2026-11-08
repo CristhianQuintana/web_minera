@@ -6,6 +6,50 @@ import { Field, ResourcePage, SimpleForm } from "@/presentation/modules/resource
 import { useSessionStore } from "@/infrastructure/auth/session-store";
 import { formatDateTime, formatQuantity } from "@/shared/utils/format";
 
+type CreateFormArgs = {
+  onSubmit: (body: Record<string, unknown>) => void;
+  loading: boolean;
+};
+
+function CustodyCreateForm({ onSubmit, loading }: Readonly<CreateFormArgs>) {
+  return (
+    <SimpleForm
+      loading={loading}
+      validate={(body) => {
+        const parsed = parseForm(custodySchema, body);
+        if (!parsed.ok) return parsed;
+        return { ok: true, data: parsed.data as Record<string, unknown> };
+      }}
+      onSubmit={onSubmit}
+      fields={[
+        { name: "lot_id", label: "ID de lote" },
+        { name: "origin", label: "Origen" },
+        { name: "destination", label: "Destino" },
+        { name: "quantity", label: "Cantidad", type: "number" },
+        { name: "notes", label: "Observación", required: false },
+      ]}
+    />
+  );
+}
+
+function CustodyDetail({ row }: Readonly<{ row: Record<string, unknown> }>) {
+  return (
+    <div>
+      <Field label="Lote" value={String(row.lot_id)} />
+      <Field label="Origen" value={String(row.origin)} />
+      <Field label="Destino" value={String(row.destination)} />
+      <Field label="Cantidad" value={formatQuantity(Number(row.quantity), "kg")} />
+      <Field label="Fecha" value={formatDateTime(String(row.occurred_at))} />
+      <Field label="Responsable" value={String(row.responsible ?? "—")} />
+      <Field label="Estado" value={String(row.status)} />
+    </div>
+  );
+}
+
+function renderCustodyDetail(row: Record<string, unknown>) {
+  return <CustodyDetail row={row} />;
+}
+
 export default function CustodyPage() {
   const user = useSessionStore((state) => state.user);
   return (
@@ -29,35 +73,8 @@ export default function CustodyPage() {
           { key: "status", label: "Estado" },
         ]}
         detailTitle="Detalle de custodia"
-        createForm={({ onSubmit, loading }) => (
-          <SimpleForm
-            loading={loading}
-            validate={(body) => {
-              const parsed = parseForm(custodySchema, body);
-              if (!parsed.ok) return parsed;
-              return { ok: true, data: parsed.data as Record<string, unknown> };
-            }}
-            onSubmit={onSubmit}
-            fields={[
-              { name: "lot_id", label: "ID de lote" },
-              { name: "origin", label: "Origen" },
-              { name: "destination", label: "Destino" },
-              { name: "quantity", label: "Cantidad", type: "number" },
-              { name: "notes", label: "Observación", required: false },
-            ]}
-          />
-        )}
-        renderDetail={(row) => (
-          <div>
-            <Field label="Lote" value={String(row.lot_id)} />
-            <Field label="Origen" value={String(row.origin)} />
-            <Field label="Destino" value={String(row.destination)} />
-            <Field label="Cantidad" value={formatQuantity(Number(row.quantity), "kg")} />
-            <Field label="Fecha" value={formatDateTime(String(row.occurred_at))} />
-            <Field label="Responsable" value={String(row.responsible ?? "—")} />
-            <Field label="Estado" value={String(row.status)} />
-          </div>
-        )}
+        createForm={CustodyCreateForm}
+        renderDetail={renderCustodyDetail}
       />
     </PermissionGate>
   );

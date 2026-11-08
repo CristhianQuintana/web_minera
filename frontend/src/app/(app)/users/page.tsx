@@ -6,64 +6,57 @@ import { Field, ResourcePage, SimpleForm } from "@/presentation/modules/resource
 import { Button, Modal } from "@/shared/components/ui";
 import { useState } from "react";
 
-export default function UsersPage() {
+type CreateFormArgs = {
+  onSubmit: (body: Record<string, unknown>) => void;
+  loading: boolean;
+};
+
+type ActionHelpers = { refresh: () => void; push: (text: string, tone?: "success" | "error") => void };
+
+function UsersCreateForm({ onSubmit, loading }: Readonly<CreateFormArgs>) {
   return (
-    <PermissionGate permission="manage_users">
-      <ResourcePage
-        title="Usuarios"
-        description="Invitación, activación y control de acceso. No existe registro público."
-        queryKey="users"
-        path="/api/v1/users"
-        canCreate
-        createLabel="Invitar usuario"
-        createPath="/api/v1/users/invite"
-        emptyTitle="No hay usuarios."
-        emptyDescription="Invita a una persona para que active su cuenta."
-        columns={[
-          { key: "full_name", label: "Nombre" },
-          { key: "email", label: "Correo" },
-          { key: "role", label: "Rol" },
-          { key: "invitation_status", label: "Estado" },
-          { key: "last_activity_at", label: "Última actividad" },
-        ]}
-        detailTitle="Detalle de usuario"
-        createForm={({ onSubmit, loading }) => (
-          <SimpleForm
-            loading={loading}
-            submitLabel="Enviar invitación"
-            onSubmit={onSubmit}
-            fields={[
-              { name: "full_name", label: "Nombre" },
-              { name: "email", label: "Correo", type: "email" },
-              {
-                name: "role",
-                label: "Rol",
-                options: [
-                  { value: "admin", label: "Administrador" },
-                  { value: "auditor", label: "Auditor" },
-                  { value: "producer", label: "Productor" },
-                  { value: "carrier", label: "Transportista" },
-                  { value: "receiver", label: "Receptor" },
-                  { value: "supervisor", label: "Supervisor" },
-                ],
-              },
-            ]}
-          />
-        )}
-        extraActions={(row, helpers) => <UserActions row={row} helpers={helpers} />}
-        renderDetail={(row) => (
-          <div>
-            <Field label="Nombre" value={String(row.full_name)} />
-            <Field label="Correo" value={String(row.email ?? "—")} />
-            <Field label="Rol" value={String(row.role)} />
-            <Field label="Estado" value={String(row.invitation_status ?? row.status)} />
-          </div>
-        )}
-      />
-    </PermissionGate>
+    <SimpleForm
+      loading={loading}
+      submitLabel="Enviar invitación"
+      onSubmit={onSubmit}
+      fields={[
+        { name: "full_name", label: "Nombre" },
+        { name: "email", label: "Correo", type: "email" },
+        {
+          name: "role",
+          label: "Rol",
+          options: [
+            { value: "admin", label: "Administrador" },
+            { value: "auditor", label: "Auditor" },
+            { value: "producer", label: "Productor" },
+            { value: "carrier", label: "Transportista" },
+            { value: "receiver", label: "Receptor" },
+            { value: "supervisor", label: "Supervisor" },
+          ],
+        },
+      ]}
+    />
   );
 }
 
+function UserDetail({ row }: Readonly<{ row: Record<string, unknown> }>) {
+  return (
+    <div>
+      <Field label="Nombre" value={String(row.full_name)} />
+      <Field label="Correo" value={String(row.email ?? "—")} />
+      <Field label="Rol" value={String(row.role)} />
+      <Field label="Estado" value={String(row.invitation_status ?? row.status)} />
+    </div>
+  );
+}
+
+function userExtraActions(row: Record<string, unknown>, helpers: ActionHelpers) {
+  return <UserActions row={row} helpers={helpers} />;
+}
+
+function renderUserDetail(row: Record<string, unknown>) {
+  return <UserDetail row={row} />;
+}
 
 function userActionLabel(loading: boolean, confirm: "activate" | "deactivate" | null): string {
   if (loading && confirm === "deactivate") return "Desactivando...";
@@ -77,7 +70,7 @@ function UserActions({
   helpers,
 }: Readonly<{
   row: Record<string, unknown>;
-  helpers: { refresh: () => void; push: (text: string, tone?: "success" | "error") => void };
+  helpers: ActionHelpers;
 }>) {
   const [confirm, setConfirm] = useState<"activate" | "deactivate" | null>(null);
   const [loading, setLoading] = useState(false);
@@ -132,5 +125,34 @@ function UserActions({
         </div>
       </Modal>
     </>
+  );
+}
+
+export default function UsersPage() {
+  return (
+    <PermissionGate permission="manage_users">
+      <ResourcePage
+        title="Usuarios"
+        description="Invitación, activación y control de acceso. No existe registro público."
+        queryKey="users"
+        path="/api/v1/users"
+        canCreate
+        createLabel="Invitar usuario"
+        createPath="/api/v1/users/invite"
+        emptyTitle="No hay usuarios."
+        emptyDescription="Invita a una persona para que active su cuenta."
+        columns={[
+          { key: "full_name", label: "Nombre" },
+          { key: "email", label: "Correo" },
+          { key: "role", label: "Rol" },
+          { key: "invitation_status", label: "Estado" },
+          { key: "last_activity_at", label: "Última actividad" },
+        ]}
+        detailTitle="Detalle de usuario"
+        createForm={UsersCreateForm}
+        extraActions={userExtraActions}
+        renderDetail={renderUserDetail}
+      />
+    </PermissionGate>
   );
 }

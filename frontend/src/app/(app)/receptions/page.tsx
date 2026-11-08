@@ -5,6 +5,43 @@ import { Field, ResourcePage, SimpleForm } from "@/presentation/modules/resource
 import { useSessionStore } from "@/infrastructure/auth/session-store";
 import { formatQuantity } from "@/shared/utils/format";
 
+type CreateFormArgs = {
+  onSubmit: (body: Record<string, unknown>) => void;
+  loading: boolean;
+};
+
+function ReceptionCreateForm({ onSubmit, loading }: Readonly<CreateFormArgs>) {
+  return (
+    <SimpleForm
+      loading={loading}
+      onSubmit={onSubmit}
+      fields={[
+        { name: "lot_id", label: "ID de lote" },
+        { name: "declared_quantity", label: "Cantidad declarada", type: "number" },
+        { name: "received_quantity", label: "Cantidad recibida", type: "number" },
+        { name: "unit", label: "Unidad" },
+        { name: "responsible", label: "Responsable" },
+      ]}
+    />
+  );
+}
+
+function ReceptionDetail({ row }: Readonly<{ row: Record<string, unknown> }>) {
+  return (
+    <div>
+      <Field label="Lote" value={String(row.lot_id)} />
+      <Field label="Declarada" value={formatQuantity(Number(row.declared_quantity), String(row.unit))} />
+      <Field label="Recibida" value={formatQuantity(Number(row.received_quantity), String(row.unit))} />
+      <Field label="Responsable" value={String(row.responsible)} />
+      <Field label="Estado" value={String(row.status)} />
+    </div>
+  );
+}
+
+function renderReceptionDetail(row: Record<string, unknown>) {
+  return <ReceptionDetail row={row} />;
+}
+
 export default function ReceptionsPage() {
   const user = useSessionStore((state) => state.user);
   return (
@@ -28,28 +65,8 @@ export default function ReceptionsPage() {
           { key: "status", label: "Estado" },
         ]}
         detailTitle="Detalle de recepción"
-        createForm={({ onSubmit, loading }) => (
-          <SimpleForm
-            loading={loading}
-            onSubmit={onSubmit}
-            fields={[
-              { name: "lot_id", label: "ID de lote" },
-              { name: "declared_quantity", label: "Cantidad declarada", type: "number" },
-              { name: "received_quantity", label: "Cantidad recibida", type: "number" },
-              { name: "unit", label: "Unidad" },
-              { name: "responsible", label: "Responsable" },
-            ]}
-          />
-        )}
-        renderDetail={(row) => (
-          <div>
-            <Field label="Lote" value={String(row.lot_id)} />
-            <Field label="Declarada" value={formatQuantity(Number(row.declared_quantity), String(row.unit))} />
-            <Field label="Recibida" value={formatQuantity(Number(row.received_quantity), String(row.unit))} />
-            <Field label="Responsable" value={String(row.responsible)} />
-            <Field label="Estado" value={String(row.status)} />
-          </div>
-        )}
+        createForm={ReceptionCreateForm}
+        renderDetail={renderReceptionDetail}
       />
     </PermissionGate>
   );
