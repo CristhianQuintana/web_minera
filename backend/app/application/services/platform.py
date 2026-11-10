@@ -204,11 +204,9 @@ class PlatformService:
 
     def _audit(self, ctx: AuthContext, action: str, entity: str, entity_id: str | None, result: str, extra: dict | None = None) -> None:
         context = dict(extra or {})
-        lot_id = context.pop("lot_id", None)
+        lot_id = context.pop("lot_id", None) or context.pop("related_lot_id", None)
         if not lot_id and entity == "lot" and entity_id:
             lot_id = entity_id
-        if not lot_id and entity in {"alert", "transport", "custody_transfer", "reception", "weighing", "ml_inference"}:
-            lot_id = context.get("related_lot_id")
         payload: dict[str, Any] = {
             "user_id": ctx.actor.id,
             "action": action,
@@ -216,7 +214,12 @@ class PlatformService:
             "entity_id": entity_id,
             "result": result,
             "organization_id": ctx.actor.organization_id,
-            "context": context,
+            "context": {
+                **context,
+                "actor_name": ctx.actor.full_name,
+                "actor_email": ctx.actor.email,
+                "actor_role": getattr(ctx.actor.role, "value", ctx.actor.role),
+            },
         }
         if lot_id:
             payload["lot_id"] = lot_id
@@ -757,7 +760,14 @@ class PlatformService:
             access_token=ctx.access_token,
             admin=self._admin(),
         )
-        self._audit(ctx, "register_transport_event", "transport_event", row["id"], "success")
+        self._audit(
+            ctx,
+            "register_transport_event",
+            "transport_event",
+            row["id"],
+            "success",
+            {"lot_id": transport.get("lot_id"), "event_type": command.event_type},
+        )
         return row
 
     def register_reception(self, ctx: AuthContext, command: ReceptionCommand) -> dict[str, Any]:
@@ -782,7 +792,14 @@ class PlatformService:
         )
         self._db.update("lots", command.lot_id, {"status": "received"}, access_token=ctx.access_token, admin=self._admin())
         self.recalculate_balance(ctx, command.lot_id)
-        self._audit(ctx, "register_reception", "reception", row["id"], "success")
+        self._audit(
+            ctx,
+            "register_reception",
+            "reception",
+            row["id"],
+            "success",
+            {"lot_id": command.lot_id},
+        )
         return row
 
     def register_weighing(self, ctx: AuthContext, command: WeighingCommand) -> dict[str, Any]:
@@ -804,7 +821,14 @@ class PlatformService:
             access_token=ctx.access_token,
             admin=self._admin(),
         )
-        self._audit(ctx, "register_weighing", "weighing", row["id"], "success")
+        self._audit(
+            ctx,
+            "register_weighing",
+            "weighing",
+            row["id"],
+            "success",
+            {"lot_id": command.lot_id},
+        )
         return row
 
     def _active_tolerance(self, ctx: AuthContext) -> dict[str, Any] | None:
@@ -1066,11 +1090,12 @@ class PlatformService:
         actor = None
         if row.get("user_id"):
             actor = self._db.get("profiles", str(row["user_id"]), access_token=ctx.access_token, admin=self._admin())
+        context = row.get("context") if isinstance(row.get("context"), dict) else {}
         return {
             **row,
-            "actor_name": (actor or {}).get("full_name"),
-            "actor_email": (actor or {}).get("email"),
-            "actor_role": (actor or {}).get("role"),
+            "actor_name": (actor or {}).get("full_name") or context.get("actor_name"),
+            "actor_email": (actor or {}).get("email") or context.get("actor_email"),
+            "actor_role": (actor or {}).get("role") or context.get("actor_role"),
         }
 
     def list_audits(self, ctx: AuthContext, query: PageQuery) -> dict[str, Any]:
