@@ -67,6 +67,21 @@ def _page(query: PageQuery) -> tuple[int, int, str]:
     return query.page_size, (query.page - 1) * query.page_size, order
 
 
+# Tablas cuyo timestamp canónico no es created_at (esquema real en Supabase).
+_TABLE_ORDER_COLUMN: dict[str, str] = {
+    "ml_models": "registered_at",
+}
+
+
+def _order_for_table(table: str, query: PageQuery) -> str:
+    preferred = _TABLE_ORDER_COLUMN.get(table)
+    sort = query.sort or "created_at"
+    if preferred and sort in {"created_at", preferred}:
+        sort = preferred
+    direction = query.order if query.order in {"asc", "desc"} else "desc"
+    return f"{sort}.{direction}"
+
+
 def _envelope(items: list[Any], total: int, query: PageQuery) -> dict[str, Any]:
     return {
         "items": items,
@@ -573,7 +588,8 @@ class PlatformService:
         filters: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         ctx.require(permission)
-        limit, offset, order = _page(query)
+        limit, offset, _ = _page(query)
+        order = _order_for_table(table, query)
         applied = dict(filters or {})
         if query.status:
             applied["status"] = query.status

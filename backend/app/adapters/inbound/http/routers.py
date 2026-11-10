@@ -396,6 +396,7 @@ def ml_status(ctx: AuthContext = Depends(get_context), platform: PlatformService
             platform._db.select(  # noqa: SLF001 — diagnóstico operativo
                 table,
                 {"organization_id": ctx.actor.organization_id} if table != "ml_models" else None,
+                order="registered_at.desc" if table == "ml_models" else "created_at.desc",
                 limit=1,
                 access_token=ctx.access_token,
                 admin=platform._admin(),  # noqa: SLF001
