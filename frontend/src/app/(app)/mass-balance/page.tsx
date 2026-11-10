@@ -40,12 +40,12 @@ function BalanceDetail({ row }: Readonly<{ row: Record<string, unknown> }>) {
     <div>
       <Field label="Lote" value={String(row.lot_code ?? row.lot_id)} />
       <Field label="Mineral" value={String(row.mineral ?? "—")} />
-      <Field label="Cantidad de origen" value={formatQuantity(Number(row.origin_quantity), "kg")} />
+      <Field label="Valor esperado (origen)" value={formatQuantity(Number(row.origin_quantity), "kg")} />
       <Field
-        label="Cantidad recibida"
+        label="Valor observado (recibido)"
         value={row.received_quantity == null ? "—" : formatQuantity(Number(row.received_quantity), "kg")}
       />
-      <Field label="Diferencia" value={difference} />
+      <Field label="Desviación" value={difference} />
       <Field
         label="Tolerancia"
         value={`${String(row.tolerance_value)} ${String(row.tolerance_unit)} · v${String(row.tolerance_version ?? "—")}`}
@@ -67,8 +67,8 @@ export default function MassBalancePage() {
   return (
     <PermissionGate permission="view_balance">
       <ResourcePage
-        title="Balance de masas"
-        description="Comparación entre cantidad de origen y cantidad recibida."
+        title="Desviación esperada vs observada"
+        description="Compara cantidad de origen (esperada) con cantidad recibida (observada) y la desviación frente a la tolerancia."
         queryKey="mass-balance"
         path="/api/v1/mass-balance"
         emptyTitle="No hay lotes para balance."
@@ -86,18 +86,18 @@ export default function MassBalancePage() {
           },
           {
             key: "origin_quantity",
-            label: "Origen",
+            label: "Esperado",
             render: (row) => formatQuantity(Number(row.origin_quantity), "kg"),
           },
           {
             key: "received_quantity",
-            label: "Recibida",
+            label: "Observado",
             render: (row) =>
               row.received_quantity == null ? "—" : formatQuantity(Number(row.received_quantity), "kg"),
           },
           {
             key: "difference",
-            label: "Diferencia",
+            label: "Desviación",
             render: (row) =>
               row.difference == null
                 ? "—"

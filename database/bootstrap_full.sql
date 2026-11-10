@@ -506,7 +506,7 @@ create policy transports_insert on public.transports
       select 1 from public.lots l
       where l.id = lot_id and l.organization_id = public.current_org_id()
     )
-    and public.current_role() in ('transporter', 'carrier', 'admin')
+    and public.current_role() in ('transporter', 'carrier', 'admin', 'producer')
   );
 
 drop policy if exists transports_update on public.transports;
@@ -517,8 +517,12 @@ create policy transports_update on public.transports
       where l.id = lot_id and l.organization_id = public.current_org_id()
     )
     and (
-      public.current_role() in ('transporter', 'carrier', 'admin')
-      and (assigned_to = auth.uid() or assigned_to is null)
+      public.current_role() = 'admin'
+      or public.current_role() = 'producer'
+      or (
+        public.current_role() in ('transporter', 'carrier')
+        and (assigned_to = auth.uid() or assigned_to is null)
+      )
     )
   );
 

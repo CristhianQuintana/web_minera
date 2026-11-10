@@ -203,17 +203,26 @@ class PlatformService:
 
 
     def _audit(self, ctx: AuthContext, action: str, entity: str, entity_id: str | None, result: str, extra: dict | None = None) -> None:
+        context = dict(extra or {})
+        lot_id = context.pop("lot_id", None)
+        if not lot_id and entity == "lot" and entity_id:
+            lot_id = entity_id
+        if not lot_id and entity in {"alert", "transport", "custody_transfer", "reception", "weighing", "ml_inference"}:
+            lot_id = context.get("related_lot_id")
+        payload: dict[str, Any] = {
+            "user_id": ctx.actor.id,
+            "action": action,
+            "entity": entity,
+            "entity_id": entity_id,
+            "result": result,
+            "organization_id": ctx.actor.organization_id,
+            "context": context,
+        }
+        if lot_id:
+            payload["lot_id"] = lot_id
         self._db.insert(
             "audit_log",
-            {
-                "user_id": ctx.actor.id,
-                "action": action,
-                "entity": entity,
-                "entity_id": entity_id,
-                "result": result,
-                "organization_id": ctx.actor.organization_id,
-                "context": extra or {},
-            },
+            payload,
             access_token=ctx.access_token,
             admin=self._admin(),
         )
@@ -507,7 +516,7 @@ class PlatformService:
             access_token=ctx.access_token,
             admin=self._admin(),
         )
-        self._audit(ctx, "register_lot", "lot", lot["id"], "success")
+        self._audit(ctx, "register_lot", "lot", lot["id"], "success", {"lot_id": lot["id"]})
         return lot
 
     def export_lots(self, ctx: AuthContext, query: PageQuery) -> str:
@@ -585,11 +594,73 @@ class PlatformService:
         self._audit(ctx, "custody_transfer", "custody_transfer", row["id"], "success", {"lot_id": command.lot_id})
         return row
 
+    def _resolve_transport_assignee(self, ctx: AuthContext, command: TransportCommand) -> tuple[str, str]:
+        """Devuelve (assigned_to, driver). Productor debe elegir un transportista de la org."""
+        requested = (command.assigned_to or "").strip() or None
+        if not requested:
+            if ctx.actor.role.canonical in {UserRole.CARRIER, UserRole.ADMIN}:
+                return ctx.actor.id, command.driver
+            raise ForbiddenError("Debes seleccionar un transportista para asignar el transporte.")
+
+        profile = self._db.get("profiles", requested, access_token=ctx.access_token, admin=self._admin())
+        if not profile:
+            raise NotFoundError("El transportista seleccionado no existe.")
+        if str(profile.get("organization_id") or "") != str(ctx.actor.organization_id):
+            raise ForbiddenError(MSG_FORBIDDEN)
+        role = str(profile.get("role") or "").lower()
+        if role not in {"carrier", "transporter"}:
+            raise ForbiddenError("Solo se puede asignar a un usuario con rol transportista.")
+        driver_name = command.driver.strip() or str(profile.get("full_name") or "Transportista")
+        return str(profile["id"]), driver_name
+
+    def list_carriers(self, ctx: AuthContext) -> dict[str, Any]:
+        """Listado corto de transportistas de la organización (para selector del productor)."""
+        ctx.require(Permission.VIEW_TRANSPORT)
+        items, _ = self._db.select(
+            "profiles",
+            {"organization_id": ctx.actor.organization_id},
+            order="full_name.asc",
+            limit=200,
+            access_token=ctx.access_token,
+            admin=self._admin(),
+        )
+        carriers = [
+            {
+                "id": row["id"],
+                "full_name": row.get("full_name"),
+                "email": row.get("email"),
+                "role": row.get("role"),
+            }
+            for row in items
+            if str(row.get("role") or "").lower() in {"carrier", "transporter"}
+            and str(row.get("status") or "active") == "active"
+        ]
+        return {
+            "items": carriers,
+            "page": 1,
+            "page_size": len(carriers) or 20,
+            "total": len(carriers),
+        }
+
+    def list_transports(self, ctx: AuthContext, query: PageQuery) -> dict[str, Any]:
+        filters: dict[str, Any] = {}
+        if ctx.actor.role.canonical == UserRole.CARRIER:
+            filters["assigned_to"] = ctx.actor.id
+        return self.list_table(
+            ctx,
+            "transports",
+            Permission.VIEW_TRANSPORT,
+            query,
+            ["vehicle", "plate", "driver", "code"],
+            filters or None,
+        )
+
     def register_transport(self, ctx: AuthContext, command: TransportCommand) -> dict[str, Any]:
         ctx.require(Permission.REGISTER_TRANSPORT)
         lot = self.get_row(ctx, "lots", command.lot_id, Permission.VIEW_LOTS)
         if str(lot.get("organization_id") or "") != str(ctx.actor.organization_id):
             raise ForbiddenError(MSG_FORBIDDEN)
+        assigned_to, driver = self._resolve_transport_assignee(ctx, command)
         row = self._db.insert(
             "transports",
             {
@@ -597,13 +668,13 @@ class PlatformService:
                 "lot_id": command.lot_id,
                 "vehicle": command.vehicle,
                 "plate": command.plate,
-                "driver": command.driver,
+                "driver": driver,
                 "status": "in_progress",
                 "started_at": _now().isoformat(),
                 "origin": command.origin,
                 "destination": command.destination,
                 "notes": command.notes,
-                "assigned_to": ctx.actor.id,
+                "assigned_to": assigned_to,
             },
             access_token=ctx.access_token,
             admin=self._admin(),
@@ -617,12 +688,19 @@ class PlatformService:
                 "event_type": "transport_started",
                 "occurred_at": _now().isoformat(),
                 "user_id": ctx.actor.id,
-                "notes": f"Transporte {row['id']}",
+                "notes": f"Transporte {row['id']} asignado a {driver}",
             },
             access_token=ctx.access_token,
             admin=self._admin(),
         )
-        self._audit(ctx, "register_transport", "transport", row["id"], "success")
+        self._audit(
+            ctx,
+            "register_transport",
+            "transport",
+            row["id"],
+            "success",
+            {"assigned_to": assigned_to, "driver": driver, "lot_id": command.lot_id},
+        )
         return row
 
     def list_transport_events(self, ctx: AuthContext, transport_id: str) -> dict[str, Any]:
@@ -876,9 +954,26 @@ class PlatformService:
             admin=self._admin(),
         )
 
+    def get_alert(self, ctx: AuthContext, alert_id: str) -> dict[str, Any]:
+        ctx.require(Permission.VIEW_ALERTS)
+        alert = self.get_row(ctx, "alerts", alert_id, Permission.VIEW_ALERTS)
+        if str(alert.get("organization_id") or "") != str(ctx.actor.organization_id):
+            raise ForbiddenError(MSG_FORBIDDEN)
+        reviews, _ = self._db.select(
+            "alert_reviews",
+            {"alert_id": alert_id},
+            order="created_at.desc",
+            limit=50,
+            access_token=ctx.access_token,
+            admin=self._admin(),
+        )
+        return {**alert, "reviews": reviews}
+
     def review_alert(self, ctx: AuthContext, alert_id: str, command: AlertReviewCommand) -> dict[str, Any]:
         ctx.require(Permission.REVIEW_ALERT)
         alert = self.get_row(ctx, "alerts", alert_id, Permission.VIEW_ALERTS)
+        if str(alert.get("organization_id") or "") != str(ctx.actor.organization_id):
+            raise ForbiddenError(MSG_FORBIDDEN)
         self._db.insert(
             "alert_reviews",
             {
@@ -890,19 +985,145 @@ class PlatformService:
             access_token=ctx.access_token,
             admin=self._admin(),
         )
+        next_status = "closed" if command.close else "attended"
         updated = self._db.update(
             "alerts",
             alert_id,
-            {"status": "attended", "updated_at": _now().isoformat()},
+            {"status": next_status, "updated_at": _now().isoformat()},
             access_token=ctx.access_token,
             admin=self._admin(),
         )
-        self._audit(ctx, "review_alert", "alert", alert_id, "success", {"previous": alert.get("status")})
-        return updated
+        self._audit(
+            ctx,
+            "close_review" if command.close else "review_alert",
+            "alert",
+            alert_id,
+            "success",
+            {
+                "previous": alert.get("status"),
+                "status": next_status,
+                "lot_id": alert.get("lot_id"),
+            },
+        )
+        return self.get_alert(ctx, alert_id)
+
+    def close_alert_review(self, ctx: AuthContext, alert_id: str, command: AlertReviewCommand) -> dict[str, Any]:
+        """Cierra formalmente una revisión (estado final closed)."""
+        command.close = True
+        return self.review_alert(ctx, alert_id, command)
 
     def audit_case(self, ctx: AuthContext, lot_id: str) -> dict[str, Any]:
         ctx.require(Permission.VIEW_AUDIT)
-        return self.get_lot(ctx, lot_id)
+        dossier = self.get_lot(ctx, lot_id)
+        inferences, _ = self._db.select(
+            "ml_inferences",
+            {"lot_id": lot_id, "organization_id": ctx.actor.organization_id},
+            order="created_at.desc",
+            limit=50,
+            access_token=ctx.access_token,
+            admin=self._admin(),
+        )
+        alerts, _ = self._db.select(
+            "alerts",
+            {"lot_id": lot_id, "organization_id": ctx.actor.organization_id},
+            order="created_at.desc",
+            limit=50,
+            access_token=ctx.access_token,
+            admin=self._admin(),
+        )
+        return {**dossier, "ml_inferences": inferences, "alerts": alerts}
+
+    def export_case(self, ctx: AuthContext, lot_id: str) -> str:
+        ctx.require(Permission.EXPORT)
+        dossier = self.audit_case(ctx, lot_id)
+        buffer = io.StringIO()
+        writer = csv.writer(buffer)
+        writer.writerow(["seccion", "campo", "valor"])
+        writer.writerow(["lote", "id", dossier.get("id")])
+        writer.writerow(["lote", "code", dossier.get("code")])
+        writer.writerow(["lote", "mineral", dossier.get("mineral")])
+        writer.writerow(["lote", "quantity", dossier.get("quantity")])
+        writer.writerow(["lote", "unit", dossier.get("unit")])
+        writer.writerow(["lote", "status", dossier.get("status")])
+        writer.writerow(["lote", "created_at", dossier.get("created_at")])
+        balance = dossier.get("balance") or {}
+        if isinstance(balance, dict):
+            for key, value in balance.items():
+                writer.writerow(["balance", key, value])
+        for section in ("custody", "transports", "receptions", "weighings", "evidences", "audit", "alerts", "ml_inferences"):
+            rows = dossier.get(section) or []
+            if not isinstance(rows, list):
+                continue
+            for index, row in enumerate(rows, start=1):
+                if not isinstance(row, dict):
+                    continue
+                for key, value in row.items():
+                    writer.writerow([f"{section}[{index}]", key, value])
+        self._audit(ctx, "export_case", "lot", lot_id, "success", {"lot_id": lot_id})
+        return buffer.getvalue()
+
+    def _enrich_audit_actor(self, ctx: AuthContext, row: dict[str, Any]) -> dict[str, Any]:
+        actor = None
+        if row.get("user_id"):
+            actor = self._db.get("profiles", str(row["user_id"]), access_token=ctx.access_token, admin=self._admin())
+        return {
+            **row,
+            "actor_name": (actor or {}).get("full_name"),
+            "actor_email": (actor or {}).get("email"),
+            "actor_role": (actor or {}).get("role"),
+        }
+
+    def list_audits(self, ctx: AuthContext, query: PageQuery) -> dict[str, Any]:
+        data = self.list_table(
+            ctx,
+            "audit_log",
+            Permission.VIEW_AUDIT,
+            query,
+            ["action", "entity", "result"],
+            {"organization_id": ctx.actor.organization_id},
+        )
+        data["items"] = [self._enrich_audit_actor(ctx, row) for row in data.get("items", [])]
+        return data
+
+    def get_audit_event(self, ctx: AuthContext, event_id: str) -> dict[str, Any]:
+        ctx.require(Permission.VIEW_AUDIT)
+        row = self.get_row(ctx, "audit_log", event_id, Permission.VIEW_AUDIT)
+        if row.get("organization_id") and str(row.get("organization_id")) != str(ctx.actor.organization_id):
+            raise ForbiddenError(MSG_FORBIDDEN)
+        return self._enrich_audit_actor(ctx, row)
+
+    def update_user_role(self, ctx: AuthContext, user_id: str, role: str) -> dict[str, Any]:
+        ctx.require(Permission.MANAGE_USERS)
+        if role not in {r.value for r in UserRole}:
+            raise ForbiddenError("El rol indicado no es válido.")
+        profile = self.get_row(ctx, "profiles", user_id, Permission.MANAGE_USERS)
+        if str(profile.get("organization_id") or "") != str(ctx.actor.organization_id):
+            raise ForbiddenError(MSG_FORBIDDEN)
+        row = self._db.update(
+            "profiles",
+            user_id,
+            {"role": role, "updated_at": _now().isoformat()},
+            access_token=ctx.access_token,
+            admin=True,
+        )
+        self._audit(ctx, "update_user_role", "profile", user_id, "success", {"role": role})
+        return row
+
+    def set_ml_model_status(self, ctx: AuthContext, model_id: str, status: str) -> dict[str, Any]:
+        ctx.require(Permission.MANAGE_SETTINGS)
+        if status not in {"active", "archived"}:
+            raise ForbiddenError("Estado de modelo no válido.")
+        row = self._db.update(
+            "ml_models",
+            model_id,
+            {"status": status},
+            access_token=ctx.access_token,
+            admin=True,
+        )
+        if not row:
+            raise NotFoundError("El modelo no existe.")
+        self._audit(ctx, "set_ml_model_status", "ml_model", model_id, "success", {"status": status})
+        return row
 
     def invite_user(self, ctx: AuthContext, command: InviteCommand) -> dict[str, Any]:
         ctx.require(Permission.MANAGE_USERS)
@@ -1185,6 +1406,14 @@ class PlatformService:
                 "Señal para revisión (estimación ML)",
                 f"Desviación estimada {deviation:.2f}% respecto a la cantidad esperada. No constituye sentencia.",
             )
+        self._audit(
+            ctx,
+            "estimate_ml",
+            "ml_inference",
+            str(inference.get("id")),
+            "success",
+            {"lot_id": lot_id, "signal": signal, "model_version": inference.get("model_version")},
+        )
         return inference
 
     def search(self, ctx: AuthContext, term: str) -> dict[str, Any]:

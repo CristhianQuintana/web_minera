@@ -1,12 +1,14 @@
 "use client";
 
 import { parseForm, transportEventSchema, transportSchema } from "@/application/dto/resource-schemas";
+import { platform } from "@/composition/container";
 import { PermissionGate } from "@/presentation/layouts/app-shell";
 import { Field, ResourcePage, SimpleForm } from "@/presentation/modules/resource-page";
 import { useSessionStore } from "@/infrastructure/auth/session-store";
 import { useAction, useDetail } from "@/shared/hooks/use-platform";
 import { Button, ErrorState, Skeleton } from "@/shared/components/ui";
 import { formatDateTime } from "@/shared/utils/format";
+import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
 type TransportEvent = {
@@ -21,6 +23,8 @@ type CreateFormArgs = {
   onSubmit: (body: Record<string, unknown>) => void;
   loading: boolean;
 };
+
+type CarrierOption = { id: string; full_name?: string; email?: string; role?: string };
 
 function TransportEventsPanel({ transportId, canRegister }: Readonly<{ transportId: string; canRegister: boolean }>) {
   const [open, setOpen] = useState(false);
@@ -100,20 +104,48 @@ function TransportEventsPanel({ transportId, canRegister }: Readonly<{ transport
 }
 
 function TransportCreateForm({ onSubmit, loading }: Readonly<CreateFormArgs>) {
+  const user = useSessionStore((state) => state.user);
+  const isCarrier = user?.role === "carrier";
+  const carriers = useQuery({
+    queryKey: ["transport-carriers"],
+    queryFn: () => platform.list<CarrierOption>("/api/v1/transport/carriers", { page_size: 100 }),
+    enabled: !isCarrier,
+  });
+  const options = (carriers.data?.items ?? []).map((item) => ({
+    value: String(item.id),
+    label: `${String(item.full_name ?? "Transportista")}${item.email ? ` · ${item.email}` : ""}`,
+  }));
+
   return (
     <SimpleForm
-      loading={loading}
+      loading={loading || (!isCarrier && carriers.isLoading)}
       validate={(body) => {
-        const parsed = parseForm(transportSchema, body);
+        const selected = options.find((item) => item.value === String(body.assigned_to ?? ""));
+        const parsed = parseForm(transportSchema, {
+          ...body,
+          driver: isCarrier
+            ? (user?.full_name ?? body.driver ?? "Transportista")
+            : (selected?.label.split(" · ")[0] ?? body.driver ?? "Transportista"),
+          assigned_to: isCarrier ? user?.id : body.assigned_to,
+        });
         if (!parsed.ok) return parsed;
+        if (!isCarrier && !String(body.assigned_to ?? "").trim()) {
+          return {
+            ok: false,
+            errors: { assigned_to: "Debes seleccionar un transportista." },
+            message: "Debes seleccionar un transportista.",
+          };
+        }
         return { ok: true, data: parsed.data as Record<string, unknown> };
       }}
       onSubmit={onSubmit}
       fields={[
         { name: "lot_id", label: "ID de lote" },
+        ...(isCarrier
+          ? []
+          : [{ name: "assigned_to", label: "Transportista", options }]),
         { name: "vehicle", label: "Vehículo" },
         { name: "plate", label: "Placa" },
-        { name: "driver", label: "Conductor" },
         { name: "origin", label: "Origen", required: false },
         { name: "destination", label: "Destino", required: false },
       ]}
@@ -127,7 +159,7 @@ function TransportDetail({ row }: Readonly<{ row: Record<string, unknown> }>) {
   return (
     <div>
       <Field label="Lote" value={String(row.lot_id)} />
-      <Field label="Conductor" value={String(row.driver)} />
+      <Field label="Transportista" value={String(row.driver)} />
       <Field label="Vehículo" value={`${row.vehicle} · ${row.plate}`} />
       <Field label="Origen" value={String(row.origin ?? "—")} />
       <Field label="Destino" value={String(row.destination ?? "—")} />

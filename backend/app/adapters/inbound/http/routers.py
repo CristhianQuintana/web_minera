@@ -17,6 +17,7 @@ from app.application.dto import (
     CustodyCommand,
     InviteCommand,
     LoginCommand,
+    MlModelStatusCommand,
     PageQuery,
     ProfileCommand,
     ReceptionCommand,
@@ -25,6 +26,7 @@ from app.application.dto import (
     ToleranceCommand,
     TransportCommand,
     TransportEventCommand,
+    UpdateUserRoleCommand,
     WeighingCommand,
 )
 from app.application.services.platform import PlatformService
@@ -202,7 +204,15 @@ def transports(
     platform: PlatformService = Depends(get_platform),
     query: PageQuery = Depends(_query),
 ):
-    return platform.list_table(ctx, "transports", Permission.VIEW_TRANSPORT, query, ["vehicle", "plate", "driver", "code"])
+    return platform.list_transports(ctx, query)
+
+
+@api_router.get("/transport/carriers")
+def transport_carriers(
+    ctx: AuthContext = Depends(get_context),
+    platform: PlatformService = Depends(get_platform),
+):
+    return platform.list_carriers(ctx)
 
 
 @api_router.get("/transport/{record_id}")
@@ -312,7 +322,7 @@ def alerts(
 
 @api_router.get("/alerts/{record_id}")
 def alert_detail(record_id: str, ctx: AuthContext = Depends(get_context), platform: PlatformService = Depends(get_platform)):
-    return platform.get_row(ctx, "alerts", record_id, Permission.VIEW_ALERTS)
+    return platform.get_alert(ctx, record_id)
 
 
 @api_router.post("/alerts/{record_id}/review")
@@ -325,18 +335,43 @@ def review_alert(
     return review.execute(ctx, record_id, command)
 
 
+@api_router.post("/alerts/{record_id}/close")
+def close_alert_review(
+    record_id: str,
+    command: AlertReviewCommand,
+    ctx: AuthContext = Depends(get_context),
+    platform: PlatformService = Depends(get_platform),
+):
+    return platform.close_alert_review(ctx, record_id, command)
+
+
 @api_router.get("/audits")
 def audits(
     ctx: AuthContext = Depends(get_context),
     platform: PlatformService = Depends(get_platform),
     query: PageQuery = Depends(_query),
 ):
-    return platform.list_table(ctx, "audit_log", Permission.VIEW_AUDIT, query, ["action", "entity", "result"])
+    return platform.list_audits(ctx, query)
+
+
+@api_router.get("/audits/cases/{lot_id}/export")
+def export_audit_case(lot_id: str, ctx: AuthContext = Depends(get_context), platform: PlatformService = Depends(get_platform)):
+    csv_body = platform.export_case(ctx, lot_id)
+    return Response(
+        content=csv_body,
+        media_type="text/csv",
+        headers={"Content-Disposition": f'attachment; filename="expediente-{lot_id}.csv"'},
+    )
 
 
 @api_router.get("/audits/cases/{lot_id}")
 def audit_case(lot_id: str, ctx: AuthContext = Depends(get_context), platform: PlatformService = Depends(get_platform)):
     return platform.audit_case(ctx, lot_id)
+
+
+@api_router.get("/audits/{record_id}")
+def audit_detail(record_id: str, ctx: AuthContext = Depends(get_context), platform: PlatformService = Depends(get_platform)):
+    return platform.get_audit_event(ctx, record_id)
 
 
 @api_router.get("/ml/status")
@@ -379,6 +414,16 @@ def ml_models(
     query: PageQuery = Depends(_query),
 ):
     return platform.list_table(ctx, "ml_models", Permission.VIEW_ML, query, ["name", "version"])
+
+
+@api_router.post("/ml/models/{model_id}/status")
+def ml_model_status(
+    model_id: str,
+    command: MlModelStatusCommand,
+    ctx: AuthContext = Depends(get_context),
+    platform: PlatformService = Depends(get_platform),
+):
+    return platform.set_ml_model_status(ctx, model_id, command.status)
 
 
 @api_router.get("/ml/inferences")
@@ -427,6 +472,11 @@ def users(
     return platform.list_users(ctx, query)
 
 
+@api_router.get("/users/{user_id}")
+def user_detail(user_id: str, ctx: AuthContext = Depends(get_context), platform: PlatformService = Depends(get_platform)):
+    return platform.get_row(ctx, "profiles", user_id, Permission.MANAGE_USERS)
+
+
 @api_router.post("/users/invite")
 def invite(
     command: InviteCommand,
@@ -439,6 +489,16 @@ def invite(
 @api_router.post("/users/{user_id}/resend-invite")
 def resend(user_id: str, ctx: AuthContext = Depends(get_context), platform: PlatformService = Depends(get_platform)):
     return platform.resend_invite(ctx, user_id)
+
+
+@api_router.post("/users/{user_id}/role")
+def update_user_role(
+    user_id: str,
+    command: UpdateUserRoleCommand,
+    ctx: AuthContext = Depends(get_context),
+    platform: PlatformService = Depends(get_platform),
+):
+    return platform.update_user_role(ctx, user_id, command.role)
 
 
 @api_router.post("/users/{user_id}/deactivate")

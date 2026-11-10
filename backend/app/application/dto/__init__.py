@@ -52,6 +52,7 @@ class TransportCommand(BaseModel):
     origin: str | None = None
     destination: str | None = None
     notes: str | None = None
+    assigned_to: str | None = None
     client_operation_id: str | None = None
 
 
@@ -89,6 +90,15 @@ class WeighingCommand(BaseModel):
 class AlertReviewCommand(BaseModel):
     result: str = Field(min_length=2)
     observation: str | None = None
+    close: bool = False
+
+
+class UpdateUserRoleCommand(BaseModel):
+    role: str
+
+
+class MlModelStatusCommand(BaseModel):
+    status: str = Field(pattern="^(active|archived)$")
 
 
 class ToleranceCommand(BaseModel):

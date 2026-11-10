@@ -65,6 +65,15 @@ function userActionLabel(loading: boolean, confirm: "activate" | "deactivate" | 
   return "Activar";
 }
 
+const ROLE_OPTIONS = [
+  { value: "admin", label: "Administrador" },
+  { value: "auditor", label: "Auditor" },
+  { value: "producer", label: "Productor" },
+  { value: "carrier", label: "Transportista" },
+  { value: "receiver", label: "Receptor" },
+  { value: "supervisor", label: "Supervisor" },
+];
+
 function UserActions({
   row,
   helpers,
@@ -73,12 +82,14 @@ function UserActions({
   helpers: ActionHelpers;
 }>) {
   const [confirm, setConfirm] = useState<"activate" | "deactivate" | null>(null);
+  const [roleOpen, setRoleOpen] = useState(false);
+  const [role, setRole] = useState(String(row.role ?? "producer"));
   const [loading, setLoading] = useState(false);
   const active = row.status === "active" && row.invitation_status !== "inactive";
-  async function run(path: string, success: string) {
+  async function run(path: string, success: string, body?: Record<string, unknown>) {
     setLoading(true);
     try {
-      await platform.post(path);
+      await platform.post(path, body);
       helpers.push(success);
       helpers.refresh();
     } catch (error) {
@@ -86,6 +97,7 @@ function UserActions({
     } finally {
       setLoading(false);
       setConfirm(null);
+      setRoleOpen(false);
     }
   }
   return (
@@ -95,9 +107,34 @@ function UserActions({
           Reenviar invitación
         </Button>
       ) : null}
+      <Button variant="secondary" onClick={() => setRoleOpen(true)}>
+        Cambiar rol
+      </Button>
       <Button variant={active ? "danger" : "secondary"} onClick={() => setConfirm(active ? "deactivate" : "activate")}>
         {active ? "Desactivar" : "Activar"}
       </Button>
+      <Modal open={roleOpen} title="Asignar rol" onClose={() => setRoleOpen(false)}>
+        <label className="mb-2 block text-sm font-medium">Rol</label>
+        <select
+          className="mb-4 w-full rounded-xl border border-border px-3 py-2 text-sm"
+          value={role}
+          onChange={(event) => setRole(event.target.value)}
+        >
+          {ROLE_OPTIONS.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+        <div className="flex justify-end gap-2">
+          <Button variant="secondary" onClick={() => setRoleOpen(false)}>
+            Cancelar
+          </Button>
+          <Button loading={loading} onClick={() => run(`/api/v1/users/${row.id}/role`, "Rol actualizado correctamente.", { role })}>
+            Guardar rol
+          </Button>
+        </div>
+      </Modal>
       <Modal
         open={confirm !== null}
         title={confirm === "deactivate" ? "¿Desactivar usuario?" : "¿Activar usuario?"}

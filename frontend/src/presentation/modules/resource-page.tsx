@@ -386,7 +386,7 @@ function ResourceDetailBody({
   renderDetail?: (row: Record<string, unknown>) => ReactNode;
   onRetry: () => void;
 }>) {
-  if (loading) {
+  if (loading && !selected) {
     return (
       <div className="space-y-3">
         <Skeleton className="h-8" />
@@ -394,7 +394,7 @@ function ResourceDetailBody({
       </div>
     );
   }
-  if (error) {
+  if (error && !selected) {
     return <ErrorState message="No pudimos cargar el detalle." onRetry={onRetry} />;
   }
   if (!selected) return null;

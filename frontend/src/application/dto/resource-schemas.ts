@@ -21,6 +21,7 @@ export const transportSchema = z.object({
   vehicle: z.string().trim().min(1, "El vehiculo es obligatorio."),
   plate: z.string().trim().min(1, "La placa es obligatoria."),
   driver: z.string().trim().min(1, "El conductor es obligatorio."),
+  assigned_to: z.string().trim().min(1, "Debes seleccionar un transportista.").optional(),
   origin: z.string().optional(),
   destination: z.string().optional(),
 });

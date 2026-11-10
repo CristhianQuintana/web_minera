@@ -127,6 +127,7 @@ ROLE_PERMISSIONS: dict[UserRole, set[Permission]] = {
         Permission.VIEW_CUSTODY,
         Permission.TRANSFER_CUSTODY,
         Permission.VIEW_TRANSPORT,
+        Permission.REGISTER_TRANSPORT,
         Permission.VIEW_BALANCE,
         Permission.VIEW_ALERTS,
     },

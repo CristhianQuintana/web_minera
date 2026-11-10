@@ -16,6 +16,7 @@ def test_auditor_can_review_alerts_but_not_register_lots() -> None:
 def test_producer_can_register_lot_but_not_manage_users() -> None:
     assert allows(UserRole.PRODUCER, Permission.REGISTER_LOT)
     assert allows(UserRole.PRODUCER, Permission.TRANSFER_CUSTODY)
+    assert allows(UserRole.PRODUCER, Permission.REGISTER_TRANSPORT)
     assert not allows(UserRole.PRODUCER, Permission.MANAGE_USERS)
 
 
