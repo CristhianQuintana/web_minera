@@ -62,10 +62,13 @@ function GenerateSignalPanel() {
   const [lotId, setLotId] = useState("");
   const [message, setMessage] = useState<string | null>(null);
   const mutation = useMutation({
-    mutationFn: () => platform.post<Record<string, unknown>>(`/api/v1/ml/estimate/${lotId.trim()}`),
+    mutationFn: () => {
+      const ref = encodeURIComponent(lotId.trim());
+      return platform.post<Record<string, unknown>>(`/api/v1/ml/estimate/${ref}`);
+    },
     onSuccess: (data) => {
       setMessage(
-        `Señal generada (${String(data.signal)}) · esperada ${String(data.expected_quantity)} · observada ${String(data.observed_quantity ?? "—")}`,
+        `Señal generada (${String(data.signal)}) · lote ${String(data.lot_code ?? lotId)} · esperada ${String(data.expected_quantity)} · observada ${String(data.observed_quantity ?? "—")}`,
       );
       client.invalidateQueries({ queryKey: ["ml-inferences"] });
       client.invalidateQueries({ queryKey: ["alerts"] });
@@ -76,11 +79,16 @@ function GenerateSignalPanel() {
     <Card>
       <h2 className="font-semibold">Generar señal revisable</h2>
       <p className="mt-1 text-sm text-muted">
-        Ejecuta el modelo sobre un lote. El resultado es una señal para revisión humana, no una sentencia.
+        Ejecuta el modelo sobre un lote. Puedes usar el código comercial (ej. LOT-2026-090) o el UUID interno.
       </p>
       <div className="mt-4 flex flex-wrap items-end gap-3">
         <div className="min-w-[260px] flex-1">
-          <Input label="ID de lote" value={lotId} onChange={(event) => setLotId(event.target.value)} />
+          <Input
+            label="Código o ID de lote"
+            value={lotId}
+            onChange={(event) => setLotId(event.target.value)}
+            placeholder="LOT-2026-090"
+          />
         </div>
         <Button loading={mutation.isPending} disabled={!lotId.trim()} onClick={() => mutation.mutate()}>
           Ejecutar análisis ML

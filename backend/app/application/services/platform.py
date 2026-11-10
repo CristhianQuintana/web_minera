@@ -27,6 +27,7 @@ from app.application.dto import (
     WeighingCommand,
 )
 from app.domain.exceptions import (
+    DomainError,
     ForbiddenError,
     InvitationInvalidError,
     NotFoundError,
@@ -442,19 +443,44 @@ class PlatformService:
         except Exception:
             return []
 
-    def get_lot(self, ctx: AuthContext, lot_id: str) -> dict[str, Any]:
-        ctx.require(Permission.VIEW_LOTS)
-        lot = self._db.get("lots", lot_id, access_token=ctx.access_token, admin=self._admin())
+    def _resolve_lot(self, ctx: AuthContext, lot_ref: str) -> dict[str, Any]:
+        """Resuelve un lote por UUID interno o por código comercial (p. ej. LOT-2026-090)."""
+        from app.domain.services.identifiers import is_uuid
+
+        key = str(lot_ref or "").strip()
+        if not key:
+            raise NotFoundError("Debes indicar el identificador o código del lote.")
+        lot: dict[str, Any] | None = None
+        if is_uuid(key):
+            lot = self._db.get("lots", key, access_token=ctx.access_token, admin=self._admin())
         if not lot:
-            raise NotFoundError("El lote no existe.")
+            items, _ = self._db.select(
+                "lots",
+                {"code": key, "organization_id": ctx.actor.organization_id},
+                limit=1,
+                access_token=ctx.access_token,
+                admin=self._admin(),
+            )
+            lot = items[0] if items else None
+        if not lot and not is_uuid(key):
+            # Reintento por código sin filtro org (get ya usa code para no-UUID).
+            lot = self._db.get("lots", key, access_token=ctx.access_token, admin=self._admin())
+        if not lot:
+            raise NotFoundError(f"No se encontró el lote '{key}'. Usa el UUID o el código comercial.")
         if str(lot.get("organization_id") or "") != str(ctx.actor.organization_id):
             raise ForbiddenError(MSG_FORBIDDEN)
-        evidences = self._related_rows(ctx, "evidences", lot_id)
-        transfers = self._related_rows(ctx, "custody_transfers", lot_id)
-        transports = self._related_rows(ctx, "transports", lot_id)
-        receptions = self._related_rows(ctx, "receptions", lot_id)
-        weighings = self._related_rows(ctx, "weighings", lot_id)
-        audits = self._related_rows(ctx, "audit_log", lot_id)
+        return lot
+
+    def get_lot(self, ctx: AuthContext, lot_id: str) -> dict[str, Any]:
+        ctx.require(Permission.VIEW_LOTS)
+        lot = self._resolve_lot(ctx, lot_id)
+        resolved_id = str(lot["id"])
+        evidences = self._related_rows(ctx, "evidences", resolved_id)
+        transfers = self._related_rows(ctx, "custody_transfers", resolved_id)
+        transports = self._related_rows(ctx, "transports", resolved_id)
+        receptions = self._related_rows(ctx, "receptions", resolved_id)
+        weighings = self._related_rows(ctx, "weighings", resolved_id)
+        audits = self._related_rows(ctx, "audit_log", resolved_id)
         balance = None
         try:
             if allows(ctx.actor.role, Permission.VIEW_BALANCE):
@@ -475,10 +501,11 @@ class PlatformService:
 
     def lot_timeline(self, ctx: AuthContext, lot_id: str) -> dict[str, Any]:
         ctx.require(Permission.VIEW_LOTS)
-        self.get_lot(ctx, lot_id)
+        lot = self._resolve_lot(ctx, lot_id)
+        resolved_id = str(lot["id"])
         events, _ = self._db.select(
             "lot_events",
-            {"lot_id": lot_id},
+            {"lot_id": resolved_id},
             order=ORDER_OCCURRED_AT_ASC,
             limit=200,
             access_token=ctx.access_token,
@@ -565,6 +592,8 @@ class PlatformService:
 
     def get_row(self, ctx: AuthContext, table: str, record_id: str, permission: Permission) -> dict[str, Any]:
         ctx.require(permission)
+        if table == "lots":
+            return self._resolve_lot(ctx, record_id)
         row = self._db.get(table, record_id, access_token=ctx.access_token, admin=self._admin())
         if not row:
             raise NotFoundError("El recurso solicitado no existe o ya no está disponible.")
@@ -1365,12 +1394,11 @@ class PlatformService:
 
     def estimate_quantity(self, ctx: AuthContext, lot_id: str) -> dict[str, Any]:
         ctx.require(Permission.ESTIMATE_ML)
-        lot = self.get_row(ctx, "lots", lot_id, Permission.VIEW_LOTS)
-        if str(lot.get("organization_id") or "") != str(ctx.actor.organization_id):
-            raise ForbiddenError(MSG_FORBIDDEN)
+        lot = self._resolve_lot(ctx, lot_id)
+        resolved_id = str(lot["id"])
         receptions, _ = self._db.select(
             "receptions",
-            {"lot_id": lot_id},
+            {"lot_id": resolved_id},
             limit=1,
             order=ORDER_OCCURRED_AT_DESC,
             access_token=ctx.access_token,
@@ -1382,11 +1410,17 @@ class PlatformService:
             "mineral": lot.get("mineral"),
             "unit": lot.get("unit"),
             "observed_quantity": observed,
-            "lot_id": lot_id,
+            "lot_id": resolved_id,
             "lot_code": lot.get("code"),
             "mining_operation_id": lot.get("mining_operation_id"),
         }
-        result = self._ml.estimate(features)
+        try:
+            result = self._ml.estimate(features)
+        except Exception as exc:  # noqa: BLE001 — degradar a mensaje de dominio
+            raise DomainError(
+                f"No se pudo completar el análisis ML: {exc}",
+                code="ml_inference_failed",
+            ) from exc
         expected = float(result["expected_quantity"])
         deviation = self._deviation.percent(expected, observed)
         signal = "review_signal" if deviation is not None and abs(deviation) > 5 else "none"
@@ -1405,27 +1439,33 @@ class PlatformService:
         )
         stored_features = dict(result.get("features") or features)
         stored_features["source"] = result.get("source") or stored_features.get("source") or "unknown"
-        inference = self._db.insert(
-            "ml_inferences",
-            {
-                "organization_id": ctx.actor.organization_id,
-                "lot_id": lot_id,
-                "model_id": model.get("id"),
-                "model_version": preferred_version or model.get("version") or "1.0.0",
-                "expected_quantity": expected,
-                "observed_quantity": observed,
-                "deviation": (observed - expected) if observed is not None else None,
-                "deviation_percent": deviation,
-                "signal": signal,
-                "features": stored_features,
-            },
-            access_token=ctx.access_token,
-            admin=self._admin(),
-        )
+        try:
+            inference = self._db.insert(
+                "ml_inferences",
+                {
+                    "organization_id": ctx.actor.organization_id,
+                    "lot_id": resolved_id,
+                    "model_id": model.get("id"),
+                    "model_version": preferred_version or model.get("version") or "1.0.0",
+                    "expected_quantity": expected,
+                    "observed_quantity": observed,
+                    "deviation": (observed - expected) if observed is not None else None,
+                    "deviation_percent": deviation,
+                    "signal": signal,
+                    "features": stored_features,
+                },
+                access_token=ctx.access_token,
+                admin=self._admin(),
+            )
+        except Exception as exc:  # noqa: BLE001
+            raise DomainError(
+                "El análisis se ejecutó pero no se pudo persistir la inferencia. Revisa la tabla ml_inferences.",
+                code="ml_persist_failed",
+            ) from exc
         if signal == "review_signal" and deviation is not None:
             self._ensure_alert(
                 ctx,
-                lot_id,
+                resolved_id,
                 "ml_deviation",
                 "medium",
                 "Señal para revisión (estimación ML)",
@@ -1437,9 +1477,9 @@ class PlatformService:
             "ml_inference",
             str(inference.get("id")),
             "success",
-            {"lot_id": lot_id, "signal": signal, "model_version": inference.get("model_version")},
+            {"lot_id": resolved_id, "lot_code": lot.get("code"), "signal": signal, "model_version": inference.get("model_version")},
         )
-        return inference
+        return {**inference, "lot_code": lot.get("code"), "resolved_lot_id": resolved_id}
 
     def search(self, ctx: AuthContext, term: str) -> dict[str, Any]:
         if not allows(ctx.actor.role, Permission.VIEW_LOTS):

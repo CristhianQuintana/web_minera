@@ -5,7 +5,8 @@ from typing import Any
 import httpx
 
 from app.domain.entities import Actor
-from app.domain.exceptions import NotFoundError, UnauthorizedError
+from app.domain.exceptions import DomainError, NotFoundError, UnauthorizedError
+from app.domain.services.identifiers import is_uuid
 from app.domain.services.profile_status import normalize_role
 from app.domain.value_objects import UserRole
 from app.application.messages import JSON_MIME, MSG_BAD_CREDENTIALS, MSG_SESSION_EXPIRED, MSG_ACTIVATE_FAILED
@@ -69,6 +70,21 @@ class SupabaseGateway:
                 "Ejecuta database/seeds/APPLY_FIX_BALANCE_ML_DEMO.sql en el SQL Editor."
             )
         if response.status_code >= 400:
+            lowered = message.lower()
+            if response.status_code == 400 and (
+                "invalid input syntax for type uuid" in lowered
+                or "22p02" in code.lower()
+                or code == "22P02"
+            ):
+                raise NotFoundError(
+                    f"El identificador indicado no es válido para '{table}'. "
+                    "Usa el UUID interno o el código comercial del lote."
+                )
+            if response.status_code in {400, 404, 409, 422}:
+                raise DomainError(
+                    message or f"Supabase rechazó la consulta sobre '{table}' ({response.status_code}).",
+                    code="supabase_query_error",
+                )
             response.raise_for_status()
 
     def sign_in(self, email: str, password: str) -> dict[str, Any]:
@@ -228,9 +244,26 @@ class SupabaseGateway:
         access_token: str | None = None,
         admin: bool = False,
     ) -> dict[str, Any] | None:
+        key = str(record_id or "").strip()
+        if not key:
+            return None
+        # lots.id es UUID; el código comercial (p. ej. LOT-2026-090) vive en lots.code.
+        if table == "lots" and not is_uuid(key):
+            items, _ = self.select(
+                table,
+                {"code": key},
+                select=select,
+                limit=1,
+                access_token=access_token,
+                admin=admin,
+            )
+            return items[0] if items else None
+        if not is_uuid(key) and table != "lots":
+            # Evita GET id=eq.NO-UUID → HTTP 400 de PostgREST/Postgres.
+            return None
         items, _ = self.select(
             table,
-            {"id": record_id},
+            {"id": key},
             select=select,
             limit=1,
             access_token=access_token,
