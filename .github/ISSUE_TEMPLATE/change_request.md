@@ -1,4 +1,3 @@
-
 ---
 name: "Solicitud de Cambio (RFC)"
 about: "Propuesta formal de modificación del sistema de gestión minera"
