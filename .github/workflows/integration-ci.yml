@@ -1,18 +1,36 @@
 name: integration-ci
+
 on:
   push:
   pull_request:
+    branches:
+      - develop
+      - main
+  workflow_dispatch:
+
 jobs:
   smoke:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - run: pip install --require-hashes -r backend/requirements/dev.hashed.txt
-      - run: pytest backend/tests/unit
-      - run: pip install --require-hashes -r ml/requirements.hashed.txt
-      - run: pytest ml/tests
+
+      - name: Instalar dependencias backend
+        run: pip install --require-hashes -r backend/requirements/dev.hashed.txt
+
+      - name: Ejecutar pruebas unitarias backend
+        run: pytest backend/tests/unit
+
+      - name: Instalar dependencias ML
+        run: pip install --require-hashes -r ml/requirements.hashed.txt
+
+      - name: Ejecutar pruebas ML
+        run: pytest ml/tests
         env:
           PYTHONPATH: ml

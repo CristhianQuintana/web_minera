@@ -1,19 +1,36 @@
 name: ml-ci
+
 on:
   push:
-    paths: ["ml/**"]
+    paths:
+      - "ml/**"
   pull_request:
-    paths: ["ml/**"]
+    branches:
+      - develop
+      - main
+    paths:
+      - "ml/**"
+  workflow_dispatch:
+
 jobs:
   test:
     runs-on: ubuntu-latest
+
     defaults:
       run:
         working-directory: ml
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - run: pip install --require-hashes -r requirements.hashed.txt
-      - run: pytest
+
+      - name: Instalar dependencias
+        run: pip install --require-hashes -r requirements.hashed.txt
+
+      - name: Ejecutar pruebas ML
+        run: pytest
