@@ -81,6 +81,9 @@ jobs:
       - name: Instalar dependencias
         run: npm ci --ignore-scripts --legacy-peer-deps
 
+      - name: Informar que las pruebas frontend siguen habilitadas
+        run: echo "::notice::Las pruebas de backend y ML están temporalmente suspendidas y pendientes de corrección; las validaciones frontend siguen activas."
+
       - name: Ejecutar pruebas unitarias
         run: npm test
 

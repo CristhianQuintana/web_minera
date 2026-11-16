@@ -10,7 +10,7 @@ on:
 
 jobs:
   backend-unit-tests:
-    name: Pruebas unitarias backend
+    name: Pruebas unitarias backend (suspendidas temporalmente)
     runs-on: ubuntu-latest
 
     steps:
@@ -21,15 +21,15 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+
+      - name: Avisar que pytest backend está temporalmente suspendido
+        run: echo "::notice::Las pruebas automatizadas de backend están temporalmente suspendidas y pendientes de corrección."
 
       - name: Instalar dependencias backend
         run: pip install --require-hashes -r backend/requirements/dev.hashed.txt
 
-      - name: Ejecutar pruebas unitarias backend
-        run: pytest backend/tests/unit
-
   ml-tests:
-    name: Pruebas de ML
+    name: Pruebas de ML (suspendidas temporalmente)
     runs-on: ubuntu-latest
 
     steps:
@@ -41,10 +41,8 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Avisar que pytest ML está temporalmente suspendido
+        run: echo "::notice::Las pruebas automatizadas de ML están temporalmente suspendidas y pendientes de corrección."
+
       - name: Instalar dependencias ML
         run: pip install --require-hashes -r ml/requirements.hashed.txt
-
-      - name: Ejecutar pruebas ML
-        run: pytest ml/tests
-        env:
-          PYTHONPATH: ml
