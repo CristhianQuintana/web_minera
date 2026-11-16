@@ -161,20 +161,54 @@ class SupabaseGateway:
 
     def invite_user(self, email: str, full_name: str) -> dict[str, Any] | None:
         if not self._service:
-            return None
+            raise RuntimeError("El proveedor de autenticación no está configurado para enviar invitaciones.")
         response = httpx.post(
             f"{self._url}/auth/v1/invite",
             headers=self._headers(admin=True),
             json={"email": email, "data": {"full_name": full_name}},
             timeout=30.0,
         )
-        if response.status_code >= 400:
-            return None
+        response.raise_for_status()
         return response.json()
+
+    def auth_email_exists(self, email: str) -> bool:
+        if not self._service:
+            raise RuntimeError("El proveedor de autenticación requiere service role para validar el correo.")
+        page = 1
+        page_size = 1000
+        while True:
+            response = httpx.get(
+                f"{self._url}/auth/v1/admin/users",
+                headers=self._headers(admin=True),
+                params={"page": page, "per_page": page_size},
+                timeout=30.0,
+            )
+            response.raise_for_status()
+            data = response.json()
+            users = data.get("users", []) if isinstance(data, dict) else data
+            if any(str(user.get("email") or "").strip().lower() == email.strip().lower() for user in users):
+                return True
+            if len(users) < page_size:
+                return False
+            page += 1
+
+    def claim_invitation(self, token_hash: str) -> dict[str, Any] | None:
+        if not self._service:
+            raise RuntimeError("El proveedor de persistencia requiere service role para activar invitaciones.")
+        with self._rest(admin=True) as client:
+            response = client.post(
+                "/rpc/claim_invitation",
+                json={"p_token_hash": token_hash},
+            )
+            response.raise_for_status()
+            data = response.json()
+            return data[0] if isinstance(data, list) and data else None
 
 
     @staticmethod
     def _filter_param(key: str, value: Any) -> tuple[str, str]:
+        if key.endswith("__ilike"):
+            return key.removesuffix("__ilike"), f"ilike.{value}"
         if key.endswith("__gte"):
             return key.replace("__gte", ""), f"gte.{value}"
         if key.endswith("__lte"):

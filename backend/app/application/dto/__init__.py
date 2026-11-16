@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, field_validator
 
 
 class LoginCommand(BaseModel):
@@ -17,9 +17,22 @@ class ActivateCommand(BaseModel):
 
 
 class InviteCommand(BaseModel):
-    full_name: str = Field(min_length=2)
+    full_name: str = Field(min_length=2, max_length=120)
     email: EmailStr
     role: str
+
+    @field_validator("full_name")
+    @classmethod
+    def normalize_full_name(cls, value: str) -> str:
+        value = value.strip()
+        if len(value) < 2:
+            raise ValueError("El nombre debe tener al menos 2 caracteres.")
+        return value
+
+    @field_validator("email")
+    @classmethod
+    def normalize_email(cls, value: str) -> str:
+        return value.strip().lower()
 
 
 class RegisterLotCommand(BaseModel):

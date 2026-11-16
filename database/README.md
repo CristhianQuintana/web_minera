@@ -11,7 +11,8 @@ Persistencia en Supabase (proyecto configurado en `.env` / `backend/.env`).
 
 1. Migraciones móviles 0001, 0004 y 0005 (si aún no están).
 2. `migrations/0006_web_platform.sql` — o pegar `supabase_compile.sql` en el SQL Editor.
-3. En proyecto **nuevo**, preferir un solo run de `bootstrap_full.sql`.
+3. `migrations/0009_user_management_safety.sql` para instalaciones existentes.
+4. En proyecto **nuevo**, ejecutar `bootstrap_full.sql` y después `migrations/0009_user_management_safety.sql`.
 
 ## Tablas nuevas
 
