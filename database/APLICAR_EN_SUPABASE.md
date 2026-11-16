@@ -1,7 +1,7 @@
 # Aplicar tablas en el proyecto Supabase
 
-**Archivo SQL completo:** [`bootstrap_full.sql`](./bootstrap_full.sql)  
-(incluye migraciones `0001` + `0004` + `0005` + `0006` + `0009` y organización piloto)
+**Archivos SQL para un proyecto nuevo:** [`bootstrap_full.sql`](./bootstrap_full.sql), seguido de [`migrations/0009_user_management_safety.sql`](./migrations/0009_user_management_safety.sql).
+El bootstrap incluye las migraciones `0001` + `0004` + `0005` + `0006` y la organización piloto.
 
 ## Por qué hace falta este paso
 
@@ -10,12 +10,13 @@ Hace falta ejecutar SQL en el Dashboard (o usar la **database password** / `serv
 
 ## Pasos (SQL Editor — recomendado)
 
-1. Inicia sesión en https://supabase.com/dashboard  
-2. Abre tu proyecto  
-3. Ve a **SQL → New query**  
-4. Copia **todo** el contenido de `database/bootstrap_full.sql`  
-5. Pulsa **Run**  
-6. Verifica en **Table Editor** que existan: `organizations`, `profiles`, `lots`, `custody_transfers`, `invitations`, `alerts`, etc.
+1. Inicia sesión en https://supabase.com/dashboard
+2. Abre tu proyecto
+3. Ve a **SQL → New query**
+4. Copia **todo** el contenido de `database/bootstrap_full.sql`
+5. Pulsa **Run**
+6. Ejecuta `database/migrations/0009_user_management_safety.sql`
+7. Verifica en **Table Editor** que existan: `organizations`, `profiles`, `lots`, `custody_transfers`, `invitations`, `alerts`, etc.
 
 En instalaciones existentes, aplica [`migrations/0009_user_management_safety.sql`](./migrations/0009_user_management_safety.sql) después de `0006_web_platform.sql`.
 

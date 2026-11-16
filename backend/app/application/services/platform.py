@@ -56,6 +56,17 @@ from app.application.messages import (
 # Organización piloto del bootstrap (UUID estable de migraciones). No es demo-org.
 PILOTO_ORG_ID = "e857fa80-1678-4b27-b80f-c38f471a8931"
 PILOTO_ORG_NAME = "Cooperativa piloto"
+_INVITATION_PUBLIC_FIELDS = (
+    "id",
+    "email",
+    "full_name",
+    "role",
+    "organization_id",
+    "status",
+    "expires_at",
+    "created_at",
+)
+_INVITATION_PUBLIC_SELECT = ",".join(_INVITATION_PUBLIC_FIELDS)
 
 
 def _now() -> datetime:
@@ -1055,7 +1066,7 @@ class PlatformService:
             admin=self._admin(),
         )
         next_status = "closed" if command.close else "attended"
-        updated = self._db.update(
+        self._db.update(
             "alerts",
             alert_id,
             {"status": next_status, "updated_at": _now().isoformat()},
@@ -1219,7 +1230,7 @@ class PlatformService:
         pending, _ = self._db.select(
             "invitations",
             {"organization_id": ctx.actor.organization_id, "email": email, "status": "pending"},
-            limit=1000, select="id,email,full_name,role,organization_id,status,expires_at,created_at",
+            limit=1000, select=_INVITATION_PUBLIC_SELECT,
             access_token=ctx.access_token, admin=True,
         )
         now = _now()
@@ -1341,9 +1352,10 @@ class PlatformService:
         invitations = self._select_all(
             "invitations", {"organization_id": ctx.actor.organization_id, "status": "pending"},
             search=(["full_name", "email", "role"], query.q or ""),
-            select="id,email,full_name,role,organization_id,status,expires_at,created_at",
+            select=_INVITATION_PUBLIC_SELECT,
             order="created_at.desc", access_token=ctx.access_token, admin=True,
         )
+        invitations = [self._public_invitation(row) for row in invitations]
         invited_emails = {str(row.get("email", "")).lower() for row in invitations}
         rows = [row for row in profiles if str(row.get("email", "")).lower() not in invited_emails]
         rows.extend({**row, "invitation_status": "pending", "status": "inactive"} for row in invitations)
@@ -1369,17 +1381,26 @@ class PlatformService:
             raise ForbiddenError(MSG_FORBIDDEN)
         return profile
 
+    @staticmethod
+    def _public_invitation(invitation: dict[str, Any]) -> dict[str, Any]:
+        return {
+            field: invitation[field]
+            for field in _INVITATION_PUBLIC_FIELDS
+            if field in invitation
+        }
+
     def get_user(self, ctx: AuthContext, user_id: str) -> dict[str, Any]:
         ctx.require(Permission.MANAGE_USERS)
         invitation = self._db.get(
             "invitations", user_id,
-            select="id,email,full_name,role,organization_id,status,expires_at,created_at",
+            select=_INVITATION_PUBLIC_SELECT,
             access_token=ctx.access_token, admin=True,
         )
         if invitation:
             if str(invitation.get("organization_id")) != str(ctx.actor.organization_id):
                 raise ForbiddenError(MSG_FORBIDDEN)
-            return {**invitation, "invitation_status": invitation.get("status")}
+            public_invitation = self._public_invitation(invitation)
+            return {**public_invitation, "invitation_status": invitation.get("status")}
         return self._managed_user_profile(ctx, user_id)
 
     def set_user_status(self, ctx: AuthContext, user_id: str, active: bool) -> dict[str, Any]:

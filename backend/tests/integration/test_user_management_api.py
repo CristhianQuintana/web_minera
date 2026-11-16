@@ -100,7 +100,8 @@ def test_concurrent_activation_claims_single_use_invitation() -> None:
     with ThreadPoolExecutor(max_workers=2) as executor:
         responses = list(executor.map(lambda _: activate(), range(2)))
     assert sorted(response.status_code for response in responses) == [200, 400]
-    gateway.claim_invitation.assert_called_once_with(invitation["token_hash"])
+    assert gateway.claim_invitation.call_count == 2
+    gateway.claim_invitation.assert_called_with(invitation["token_hash"])
     gateway.create_user.assert_called_once()
     gateway.upsert.assert_called_once()
 

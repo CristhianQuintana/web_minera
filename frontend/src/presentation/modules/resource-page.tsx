@@ -81,7 +81,7 @@ export function ResourcePage({
   const detail = useDetail<Record<string, unknown>>(`${queryKey}-detail`, selectedId ? `${path}/${selectedId}` : null);
   const action = useAction([queryKey, `${queryKey}-detail`]);
 
-  const items = list.data?.items ?? [];
+  const items = useMemo(() => list.data?.items ?? [], [list.data?.items]);
   const total = list.data?.total ?? 0;
   const from = total === 0 ? 0 : (page - 1) * 20 + 1;
   const to = Math.min(page * 20, total);

@@ -137,6 +137,24 @@ def test_invite_sends_activation_link_and_lists_no_token_hash(setup):
     assert "token_hash" not in listed["items"][0]
 
 
+def test_get_invitation_does_not_expose_token_hash(setup):
+    service, gateway, _, ctx = setup
+    gateway.rows["invitations"].append({
+        "id": "invite-1",
+        "email": "new@example.org",
+        "full_name": "New Employee",
+        "role": "producer",
+        "organization_id": ORG,
+        "status": "pending",
+        "token_hash": "secret-hash",
+    })
+
+    invitation = service.get_user(ctx, "invite-1")
+
+    assert invitation["invitation_status"] == "pending"
+    assert "token_hash" not in invitation
+
+
 def test_existing_account_email_is_rejected(setup):
     service, gateway, _, ctx = setup
     gateway.rows["profiles"].append({"id": "existing", "email": "new@example.org", "organization_id": OTHER_ORG})
