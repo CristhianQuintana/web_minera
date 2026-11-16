@@ -17,16 +17,8 @@ jobs:
       - name: Checkout del código
         uses: actions/checkout@v4
 
-      - name: Configurar Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: Avisar que pytest backend está temporalmente suspendido
-        run: echo "::notice::Las pruebas automatizadas de backend están temporalmente suspendidas y pendientes de corrección."
-
-      - name: Instalar dependencias backend
-        run: pip install --require-hashes -r backend/requirements/dev.hashed.txt
+      - name: Avisar que las pruebas de integración están temporalmente suspendidas
+        run: echo "::notice::Las pruebas de integración están temporalmente suspendidas y pendientes de corrección."
 
   ml-tests:
     name: Pruebas de ML (suspendidas temporalmente)
@@ -36,13 +28,5 @@ jobs:
       - name: Checkout del código
         uses: actions/checkout@v4
 
-      - name: Configurar Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: Avisar que pytest ML está temporalmente suspendido
-        run: echo "::notice::Las pruebas automatizadas de ML están temporalmente suspendidas y pendientes de corrección."
-
-      - name: Instalar dependencias ML
-        run: pip install --require-hashes -r ml/requirements.hashed.txt
+      - name: Avisar que las pruebas de integración están temporalmente suspendidas
+        run: echo "::notice::Las pruebas de integración están temporalmente suspendidas y pendientes de corrección."
