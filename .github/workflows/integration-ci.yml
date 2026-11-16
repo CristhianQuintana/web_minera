@@ -9,7 +9,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  smoke:
+  backend-unit-tests:
+    name: Pruebas unitarias backend
     runs-on: ubuntu-latest
 
     steps:
@@ -26,6 +27,19 @@ jobs:
 
       - name: Ejecutar pruebas unitarias backend
         run: pytest backend/tests/unit
+
+  ml-tests:
+    name: Pruebas de ML
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
 
       - name: Instalar dependencias ML
         run: pip install --require-hashes -r ml/requirements.hashed.txt

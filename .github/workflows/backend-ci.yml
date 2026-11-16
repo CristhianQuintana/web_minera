@@ -2,18 +2,15 @@ name: backend-ci
 
 on:
   push:
-    paths:
-      - "backend/**"
   pull_request:
     branches:
       - develop
       - main
-    paths:
-      - "backend/**"
   workflow_dispatch:
 
 jobs:
-  test:
+  lint:
+    name: Lint backend con Ruff
     runs-on: ubuntu-latest
 
     defaults:
@@ -35,5 +32,48 @@ jobs:
       - name: Análisis estático con Ruff
         run: ruff check app tests
 
-      - name: Ejecutar pruebas backend
-        run: pytest
+  unit-tests:
+    name: Pruebas unitarias backend
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar dependencias backend
+        run: pip install --require-hashes -r requirements/dev.hashed.txt
+
+      - name: Ejecutar pruebas unitarias backend
+        run: pytest tests/unit
+
+  integration-tests:
+    name: Pruebas de integración backend
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar dependencias backend
+        run: pip install --require-hashes -r requirements/dev.hashed.txt
+
+      - name: Ejecutar pruebas de integración backend
+        run: pytest tests/integration

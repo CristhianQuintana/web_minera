@@ -2,14 +2,10 @@ name: ml-ci
 
 on:
   push:
-    paths:
-      - "ml/**"
   pull_request:
     branches:
       - develop
       - main
-    paths:
-      - "ml/**"
   workflow_dispatch:
 
 jobs:

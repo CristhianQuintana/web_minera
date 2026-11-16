@@ -2,18 +2,15 @@ name: frontend-ci
 
 on:
   push:
-    paths:
-      - "frontend/**"
   pull_request:
     branches:
       - develop
       - main
-    paths:
-      - "frontend/**"
   workflow_dispatch:
 
 jobs:
-  test:
+  lint:
+    name: Lint frontend con ESLint
     runs-on: ubuntu-latest
 
     defaults:
@@ -37,11 +34,77 @@ jobs:
       - name: Ejecutar ESLint
         run: npm run lint
 
+  typecheck:
+    name: Verificar tipos del frontend
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Instalar dependencias
+        run: npm ci --ignore-scripts --legacy-peer-deps
+
       - name: Verificar TypeScript
         run: npm run typecheck
 
+  unit-tests:
+    name: Pruebas unitarias frontend
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Instalar dependencias
+        run: npm ci --ignore-scripts --legacy-peer-deps
+
       - name: Ejecutar pruebas unitarias
         run: npm test
+
+  build:
+    name: Build de producción frontend
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Instalar dependencias
+        run: npm ci --ignore-scripts --legacy-peer-deps
 
       - name: Compilar frontend
         run: npm run build
