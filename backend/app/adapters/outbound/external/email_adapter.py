@@ -13,8 +13,7 @@ class SmtpEmailAdapter:
 
     def send(self, to: str, subject: str, body: str) -> None:
         if not self._settings.smtp_host:
-            logger.info("Invitación registrada. Correo no enviado (SMTP no configurado).")
-            return
+            raise RuntimeError("El servicio de correo no está configurado; la invitación no fue enviada.")
         message = EmailMessage()
         message["From"] = self._settings.smtp_from
         message["To"] = to
@@ -24,4 +23,7 @@ class SmtpEmailAdapter:
             smtp.starttls()
             if self._settings.smtp_user:
                 smtp.login(self._settings.smtp_user, self._settings.smtp_password)
-            smtp.send_message(message)
+            refused = smtp.send_message(message)
+            if refused:
+                raise smtplib.SMTPRecipientsRefused(refused)
+        logger.info("Correo de invitación enviado.")

@@ -13,6 +13,18 @@ type CreateFormArgs = {
 
 type ActionHelpers = { refresh: () => void; push: (text: string, tone?: "success" | "error") => void };
 
+const ROLE_OPTIONS = [
+  { value: "admin", label: "Administrador" },
+  { value: "auditor", label: "Auditor" },
+  { value: "producer", label: "Productor" },
+  { value: "carrier", label: "Transportista" },
+  { value: "transporter", label: "Transportista (legado)" },
+  { value: "receiver", label: "Receptor" },
+  { value: "plant_manager", label: "Receptor (legado)" },
+  { value: "supervisor", label: "Supervisor" },
+  { value: "control_center", label: "Supervisor (legado)" },
+];
+
 function UsersCreateForm({ onSubmit, loading }: Readonly<CreateFormArgs>) {
   return (
     <SimpleForm
@@ -25,14 +37,7 @@ function UsersCreateForm({ onSubmit, loading }: Readonly<CreateFormArgs>) {
         {
           name: "role",
           label: "Rol",
-          options: [
-            { value: "admin", label: "Administrador" },
-            { value: "auditor", label: "Auditor" },
-            { value: "producer", label: "Productor" },
-            { value: "carrier", label: "Transportista" },
-            { value: "receiver", label: "Receptor" },
-            { value: "supervisor", label: "Supervisor" },
-          ],
+          options: ROLE_OPTIONS,
         },
       ]}
     />
@@ -64,15 +69,6 @@ function userActionLabel(loading: boolean, confirm: "activate" | "deactivate" | 
   if (confirm === "deactivate") return "Desactivar";
   return "Activar";
 }
-
-const ROLE_OPTIONS = [
-  { value: "admin", label: "Administrador" },
-  { value: "auditor", label: "Auditor" },
-  { value: "producer", label: "Productor" },
-  { value: "carrier", label: "Transportista" },
-  { value: "receiver", label: "Receptor" },
-  { value: "supervisor", label: "Supervisor" },
-];
 
 function UserActions({
   row,
@@ -107,12 +103,16 @@ function UserActions({
           Reenviar invitación
         </Button>
       ) : null}
-      <Button variant="secondary" onClick={() => setRoleOpen(true)}>
-        Cambiar rol
-      </Button>
-      <Button variant={active ? "danger" : "secondary"} onClick={() => setConfirm(active ? "deactivate" : "activate")}>
-        {active ? "Desactivar" : "Activar"}
-      </Button>
+      {row.invitation_status !== "pending" ? (
+        <>
+          <Button variant="secondary" onClick={() => setRoleOpen(true)}>
+            Cambiar rol
+          </Button>
+          <Button variant={active ? "danger" : "secondary"} onClick={() => setConfirm(active ? "deactivate" : "activate")}>
+            {active ? "Desactivar" : "Activar"}
+          </Button>
+        </>
+      ) : null}
       <Modal open={roleOpen} title="Asignar rol" onClose={() => setRoleOpen(false)}>
         <label className="mb-2 block text-sm font-medium">Rol</label>
         <select
@@ -176,6 +176,7 @@ export default function UsersPage() {
         canCreate
         createLabel="Invitar usuario"
         createPath="/api/v1/users/invite"
+        createSuccessMessage="Invitación enviada correctamente."
         emptyTitle="No hay usuarios."
         emptyDescription="Invita a una persona para que active su cuenta."
         columns={[

@@ -56,6 +56,17 @@ from app.application.messages import (
 # Organización piloto del bootstrap (UUID estable de migraciones). No es demo-org.
 PILOTO_ORG_ID = "e857fa80-1678-4b27-b80f-c38f471a8931"
 PILOTO_ORG_NAME = "Cooperativa piloto"
+_INVITATION_PUBLIC_FIELDS = (
+    "id",
+    "email",
+    "full_name",
+    "role",
+    "organization_id",
+    "status",
+    "expires_at",
+    "created_at",
+)
+_INVITATION_PUBLIC_SELECT = ",".join(_INVITATION_PUBLIC_FIELDS)
 
 
 def _now() -> datetime:
@@ -1055,7 +1066,7 @@ class PlatformService:
             admin=self._admin(),
         )
         next_status = "closed" if command.close else "attended"
-        updated = self._db.update(
+        self._db.update(
             "alerts",
             alert_id,
             {"status": next_status, "updated_at": _now().isoformat()},
@@ -1166,9 +1177,9 @@ class PlatformService:
         ctx.require(Permission.MANAGE_USERS)
         if role not in {r.value for r in UserRole}:
             raise ForbiddenError("El rol indicado no es válido.")
-        profile = self.get_row(ctx, "profiles", user_id, Permission.MANAGE_USERS)
-        if str(profile.get("organization_id") or "") != str(ctx.actor.organization_id):
-            raise ForbiddenError(MSG_FORBIDDEN)
+        profile = self._managed_user_profile(ctx, user_id)
+        if str(profile.get("id")) == str(ctx.actor.id):
+            raise ForbiddenError("No puedes cambiar tu propio rol.")
         row = self._db.update(
             "profiles",
             user_id,
@@ -1199,13 +1210,43 @@ class PlatformService:
         ctx.require(Permission.MANAGE_USERS)
         if command.role not in {r.value for r in UserRole}:
             raise ForbiddenError("El rol indicado no es válido.")
+        email = str(command.email).strip().lower()
+        try:
+            if self._db.auth_email_exists(email):
+                raise DomainError("Ya existe una cuenta con ese correo.", code="duplicate_email")
+        except DomainError:
+            raise
+        except Exception as exc:
+            raise DomainError(
+                "No se pudo validar el correo con el proveedor de autenticación.",
+                code="auth_provider_unavailable",
+            ) from exc
+        existing_profiles, _ = self._db.select(
+            "profiles", {"email__ilike": email}, limit=1,
+            access_token=ctx.access_token, admin=True,
+        )
+        if existing_profiles:
+            raise DomainError("Ya existe una cuenta con ese correo.", code="duplicate_email")
+        pending, _ = self._db.select(
+            "invitations",
+            {"organization_id": ctx.actor.organization_id, "email": email, "status": "pending"},
+            limit=1000, select=_INVITATION_PUBLIC_SELECT,
+            access_token=ctx.access_token, admin=True,
+        )
+        now = _now()
+        for old_invitation in pending:
+            expiry = datetime.fromisoformat(old_invitation["expires_at"].replace("Z", "+00:00"))
+            if expiry <= now:
+                self._db.update("invitations", old_invitation["id"], {"status": "expired"}, admin=True)
+            else:
+                raise DomainError("Ya existe una invitación pendiente para ese correo.", code="duplicate_invitation")
         token = secrets.token_urlsafe(32)
         token_hash = hashlib.sha256(token.encode()).hexdigest()
         expires = _now() + timedelta(hours=self._settings.invite_expiry_hours)
         invitation = self._db.insert(
             "invitations",
             {
-                "email": command.email.lower(),
+                "email": email,
                 "full_name": command.full_name,
                 "role": command.role,
                 "organization_id": ctx.actor.organization_id,
@@ -1217,19 +1258,25 @@ class PlatformService:
             access_token=ctx.access_token,
             admin=True,
         )
-        self._db.invite_user(command.email, command.full_name)
         link = f"{self._settings.invite_base_url}?token={token}"
-        self._email.send(
-            command.email,
-            "Invitación a WEB_MINERA",
-            (
-                f"Hola {command.full_name},\n\n"
-                f"Has sido invitado a WEB_MINERA con el rol {command.role}.\n"
-                f"Activa tu cuenta: {link}\n"
-                f"El enlace expira el {expires.isoformat()}.\n"
-                "Si no esperabas este correo, ignóralo.\n"
-            ),
-        )
+        try:
+            self._email.send(
+                email,
+                "Invitación a WEB_MINERA",
+                (
+                    f"Hola {command.full_name},\n\n"
+                    f"Has sido invitado a WEB_MINERA con el rol {command.role}.\n"
+                    f"Activa tu cuenta: {link}\n"
+                    f"El enlace expira el {expires.isoformat()}.\n"
+                    "Si no esperabas este correo, ignóralo.\n"
+                ),
+            )
+        except Exception as exc:
+            self._db.update("invitations", invitation["id"], {"status": "revoked"}, admin=True)
+            raise DomainError(
+                "No se pudo enviar la invitación. Verifica el servicio de correo e inténtalo de nuevo.",
+                code="invitation_delivery_failed",
+            ) from exc
         self._audit(ctx, "invite_user", "invitation", invitation["id"], "success")
         return {"id": invitation["id"], "status": "pending", "message": "Invitación enviada correctamente."}
 
@@ -1243,11 +1290,22 @@ class PlatformService:
         }
 
     def activate_account(self, command: ActivateCommand) -> dict[str, Any]:
-        invitation = self._find_invitation(command.token)
-        created = self._db.create_user(invitation["email"], command.password, command.full_name)
+        token_hash = hashlib.sha256(command.token.encode()).hexdigest()
+        invitation = self._db.claim_invitation(token_hash)
+        if not invitation:
+            raise InvitationInvalidError("Esta invitación ya no es válida.")
+        try:
+            created = self._db.create_user(invitation["email"], command.password, command.full_name)
+        except Exception as exc:
+            self._db.update("invitations", invitation["id"], {"status": "pending"}, admin=True)
+            raise DomainError(
+                "No pudimos activar la cuenta. Verifica el servicio de autenticación e inténtalo de nuevo.",
+                code="auth_provider_failed",
+            ) from exc
         user = created.get("user") or created
         user_id = user.get("id") or created.get("id")
         if not user_id:
+            self._db.update("invitations", invitation["id"], {"status": "pending"}, admin=True)
             raise InvitationInvalidError("No pudimos activar la cuenta. Intenta nuevamente.")
         self._db.upsert(
             "profiles",
@@ -1278,7 +1336,7 @@ class PlatformService:
             raise InvitationInvalidError("Esta invitación ya no es válida.")
         invitation = items[0]
         expires = datetime.fromisoformat(invitation["expires_at"].replace("Z", "+00:00"))
-        if invitation["status"] != "pending" or expires < _now():
+        if invitation["status"] != "pending" or expires <= _now():
             if invitation["status"] == "pending":
                 self._db.update("invitations", invitation["id"], {"status": "expired"}, admin=True)
             raise InvitationInvalidError("Esta invitación ya no es válida.")
@@ -1286,17 +1344,70 @@ class PlatformService:
 
     def list_users(self, ctx: AuthContext, query: PageQuery) -> dict[str, Any]:
         ctx.require(Permission.MANAGE_USERS)
-        return self.list_table(
-            ctx,
-            "profiles",
-            Permission.MANAGE_USERS,
-            query,
-            ["full_name", "email", "role"],
-            {"organization_id": ctx.actor.organization_id},
+        profiles = self._select_all(
+            "profiles", {"organization_id": ctx.actor.organization_id},
+            search=(["full_name", "email", "role"], query.q or ""),
+            order="created_at.desc", access_token=ctx.access_token, admin=True,
         )
+        invitations = self._select_all(
+            "invitations", {"organization_id": ctx.actor.organization_id, "status": "pending"},
+            search=(["full_name", "email", "role"], query.q or ""),
+            select=_INVITATION_PUBLIC_SELECT,
+            order="created_at.desc", access_token=ctx.access_token, admin=True,
+        )
+        invitations = [self._public_invitation(row) for row in invitations]
+        invited_emails = {str(row.get("email", "")).lower() for row in invitations}
+        rows = [row for row in profiles if str(row.get("email", "")).lower() not in invited_emails]
+        rows.extend({**row, "invitation_status": "pending", "status": "inactive"} for row in invitations)
+        if query.status:
+            rows = [row for row in rows if row.get("invitation_status") == query.status or row.get("status") == query.status]
+        rows.sort(key=lambda row: str(row.get("created_at") or ""), reverse=query.order != "asc")
+        start = (query.page - 1) * query.page_size
+        return _envelope(rows[start : start + query.page_size], len(rows), query)
+
+    def _select_all(self, table: str, filters: dict[str, Any], **kwargs: Any) -> list[dict[str, Any]]:
+        rows: list[dict[str, Any]] = []
+        offset = 0
+        while True:
+            batch, total = self._db.select(table, filters, limit=1000, offset=offset, **kwargs)
+            rows.extend(batch)
+            offset += len(batch)
+            if not batch or offset >= total or len(batch) < 1000:
+                return rows
+
+    def _managed_user_profile(self, ctx: AuthContext, user_id: str) -> dict[str, Any]:
+        profile = self.get_row(ctx, "profiles", user_id, Permission.MANAGE_USERS)
+        if str(profile.get("organization_id") or "") != str(ctx.actor.organization_id):
+            raise ForbiddenError(MSG_FORBIDDEN)
+        return profile
+
+    @staticmethod
+    def _public_invitation(invitation: dict[str, Any]) -> dict[str, Any]:
+        return {
+            field: invitation[field]
+            for field in _INVITATION_PUBLIC_FIELDS
+            if field in invitation
+        }
+
+    def get_user(self, ctx: AuthContext, user_id: str) -> dict[str, Any]:
+        ctx.require(Permission.MANAGE_USERS)
+        invitation = self._db.get(
+            "invitations", user_id,
+            select=_INVITATION_PUBLIC_SELECT,
+            access_token=ctx.access_token, admin=True,
+        )
+        if invitation:
+            if str(invitation.get("organization_id")) != str(ctx.actor.organization_id):
+                raise ForbiddenError(MSG_FORBIDDEN)
+            public_invitation = self._public_invitation(invitation)
+            return {**public_invitation, "invitation_status": invitation.get("status")}
+        return self._managed_user_profile(ctx, user_id)
 
     def set_user_status(self, ctx: AuthContext, user_id: str, active: bool) -> dict[str, Any]:
         ctx.require(Permission.MANAGE_USERS)
+        profile = self._managed_user_profile(ctx, user_id)
+        if not active and str(profile.get("id")) == str(ctx.actor.id):
+            raise ForbiddenError("No puedes desactivar tu propia cuenta.")
         payload = {
             "status": "active" if active else "inactive",
             "invitation_status": "active" if active else "inactive",
@@ -1308,7 +1419,25 @@ class PlatformService:
 
     def resend_invite(self, ctx: AuthContext, user_id: str) -> dict[str, str]:
         ctx.require(Permission.MANAGE_USERS)
-        profile = self.get_row(ctx, "profiles", user_id, Permission.MANAGE_USERS)
+        invitation = self._db.get("invitations", user_id, access_token=ctx.access_token, admin=True)
+        if invitation:
+            if str(invitation.get("organization_id")) != str(ctx.actor.organization_id):
+                raise ForbiddenError(MSG_FORBIDDEN)
+            if invitation.get("status") != "pending":
+                raise NotFoundError("La invitación ya no está pendiente.")
+            profile = invitation
+            self._db.update("invitations", user_id, {"status": "revoked"}, admin=True)
+            try:
+                self.invite_user(
+                    ctx,
+                    InviteCommand(full_name=profile["full_name"], email=profile["email"], role=profile["role"]),
+                )
+            except Exception:
+                self._db.update("invitations", user_id, {"status": "pending"}, admin=True)
+                raise
+            return {"message": "Invitación reenviada correctamente."}
+        else:
+            profile = self._managed_user_profile(ctx, user_id)
         if not profile.get("email"):
             raise NotFoundError("El usuario no tiene correo asociado.")
         self.invite_user(
