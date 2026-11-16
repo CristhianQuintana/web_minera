@@ -29,6 +29,7 @@ interface ResourcePageProps {
     loading: boolean;
   }) => ReactNode;
   createPath?: string;
+  createSuccessMessage?: string;
   detailTitle: string;
   renderDetail?: (row: Record<string, unknown>) => ReactNode;
   canCreate?: boolean;
@@ -49,6 +50,7 @@ export function ResourcePage({
   createLabel,
   createForm,
   createPath,
+  createSuccessMessage,
   detailTitle,
   renderDetail,
   canCreate,
@@ -252,7 +254,7 @@ export function ResourcePage({
                     { path: createPath, body },
                     {
                       onSuccess: () => {
-                        push(`${title.slice(0, -1)} registrado correctamente.`);
+                        push(createSuccessMessage ?? `${title.slice(0, -1)} registrado correctamente.`);
                         setCreateOpen(false);
                         setDirty(false);
                         list.refetch();

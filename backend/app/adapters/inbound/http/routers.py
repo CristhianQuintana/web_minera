@@ -475,7 +475,7 @@ def users(
 
 @api_router.get("/users/{user_id}")
 def user_detail(user_id: str, ctx: AuthContext = Depends(get_context), platform: PlatformService = Depends(get_platform)):
-    return platform.get_row(ctx, "profiles", user_id, Permission.MANAGE_USERS)
+    return platform.get_user(ctx, user_id)
 
 
 @api_router.post("/users/invite")

@@ -1,7 +1,7 @@
 # Aplicar tablas en el proyecto Supabase
 
 **Archivo SQL completo:** [`bootstrap_full.sql`](./bootstrap_full.sql)  
-(incluye migraciones `0001` + `0004` + `0005` + `0006` y organización piloto)
+(incluye migraciones `0001` + `0004` + `0005` + `0006` + `0009` y organización piloto)
 
 ## Por qué hace falta este paso
 
@@ -16,6 +16,8 @@ Hace falta ejecutar SQL en el Dashboard (o usar la **database password** / `serv
 4. Copia **todo** el contenido de `database/bootstrap_full.sql`  
 5. Pulsa **Run**  
 6. Verifica en **Table Editor** que existan: `organizations`, `profiles`, `lots`, `custody_transfers`, `invitations`, `alerts`, etc.
+
+En instalaciones existentes, aplica [`migrations/0009_user_management_safety.sql`](./migrations/0009_user_management_safety.sql) después de `0006_web_platform.sql`.
 
 ## Después del SQL — usuario admin
 
